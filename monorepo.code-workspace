@@ -12,10 +12,10 @@
       "name": "config",
       "path": "./packages/config",
     },
-    // {
-    //   "name": "core",
-    //   "path": "./packages/core",
-    // },
+    {
+      "name": "core",
+      "path": "./packages/core",
+    },
     // {
     //   "name": "openapi",
     //   "path": "./packages/openapi",
@@ -56,7 +56,7 @@
       "./apps/api-server",
       "./apps/web",
       "./packages/config",
-      // "./packages/core",
+      "./packages/core",
       // "./packages/openapi",
       // "./packages/transactional",
       // "./packages/ui-lib",

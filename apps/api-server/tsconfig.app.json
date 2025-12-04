@@ -10,12 +10,17 @@
     "emitDecoratorMetadata": true,
     "target": "es2021",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@peernest/config": ["../../packages/config/src"],
+      "@peernest/core": ["../../packages/core/src"]
     }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["eslint.config.js", "eslint.config.cjs", "eslint.config.mjs"],
   "references": [
+    {
+      "path": "../../packages/core/tsconfig.lib.json"
+    },
     {
       "path": "../../packages/config/tsconfig.lib.json"
     }
