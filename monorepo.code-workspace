@@ -8,13 +8,13 @@
       "name": "web",
       "path": "./apps/web",
     },
+    {
+      "name": "config",
+      "path": "./packages/config",
+    },
     // {
     //   "name": "core",
     //   "path": "./packages/core",
-    // },
-    // {
-    //   "name": "db-drizzle",
-    //   "path": "./packages/db-drizzle",
     // },
     // {
     //   "name": "openapi",
@@ -55,8 +55,8 @@
     "eslint.workingDirectories": [
       "./apps/api-server",
       "./apps/web",
+      "./packages/config",
       // "./packages/core",
-      // "./packages/db-drizzle",
       // "./packages/openapi",
       // "./packages/transactional",
       // "./packages/ui-lib",
@@ -87,7 +87,7 @@
       "titleBar.activeBackground": "#374d6a",
       "titleBar.activeForeground": "#e7e7e7",
       "titleBar.inactiveBackground": "#374d6a99",
-      "titleBar.inactiveForeground": "#e7e7e799"
+      "titleBar.inactiveForeground": "#e7e7e799",
     },
     "peacock.remoteColor": "#374d6a",
     "github.copilot.enable": {

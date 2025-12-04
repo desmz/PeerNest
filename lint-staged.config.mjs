@@ -15,7 +15,7 @@ import { concatFilesForPrettier } from './lint-staged.common.mjs';
  * @type {Record<string, (filenames: string[]) => string | string[] | Promise<string|string[]>>}
  */
 export default {
-  '{app,packages}/**/*.{json,yml,yaml,md,mdx,html,css,scss,ts,js,tsx,jsx,mjs}': (filenames) => {
+  '{app,packages}/**/*.{json,yml,yaml,md,mdx,html,css,scss,ts,js,tsx,jsx,mjs,mts}': (filenames) => {
     return `prettier --write ${concatFilesForPrettier(filenames)}`;
   },
 };

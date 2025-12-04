@@ -20,7 +20,7 @@ export default {
       cwd: import.meta.dirname,
       fix: true,
       cache: true,
-      cacheLocation: '../../.cache/eslint/web.eslintcache',
+      cacheLocation: '../../.cache/eslint/config.eslintcache',
       // when autofixing staged-files a good tip is to disable react-hooks/exhaustive-deps, because a change here can potentially break things without proper visibility
       rules: ['react-hooks/exhaustive-deps: off'],
       maxWarnings: 30,
