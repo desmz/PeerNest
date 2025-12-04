@@ -1,0 +1,100 @@
+{
+  "folders": [
+    {
+      "name": "api-server",
+      "path": "./apps/api-server",
+    },
+    {
+      "name": "web",
+      "path": "./apps/web",
+    },
+    // {
+    //   "name": "core",
+    //   "path": "./packages/core",
+    // },
+    // {
+    //   "name": "db-drizzle",
+    //   "path": "./packages/db-drizzle",
+    // },
+    // {
+    //   "name": "openapi",
+    //   "path": "./packages/openapi",
+    // },
+    // {
+    //   "name": "transactional",
+    //   "path": "./packages/transactional",
+    // },
+    // {
+    //   "name": "ui-lib",
+    //   "path": "./packages/ui-lib",
+    // },
+    // {
+    //   "name": "eslint-config-bases",
+    //   "path": "./packages/eslint-config-bases",
+    // },
+    {
+      "name": "root",
+      "path": ".",
+    },
+  ],
+  "extensions": {
+    "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
+  },
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+    },
+    // Disable vscode formatting for js,jsx,ts,tsx files
+    // to allow dbaeumer.vscode-eslint to format them
+    // "[javascript]": {
+    //   "editor.formatOnSave": false,
+    // },
+    // https://github.com/Microsoft/vscode-eslint#mono-repository-setup
+    "eslint.workingDirectories": [
+      "./apps/api-server",
+      "./apps/web",
+      // "./packages/core",
+      // "./packages/db-drizzle",
+      // "./packages/openapi",
+      // "./packages/transactional",
+      // "./packages/ui-lib",
+      // "./packages/eslint-config-bases",
+    ],
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/*.code-search": true,
+      "**/dist": true,
+    },
+    "cSpell.words": ["peernest"],
+    "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#48658c",
+      "activityBar.background": "#48658c",
+      "activityBar.foreground": "#e7e7e7",
+      "activityBar.inactiveForeground": "#e7e7e799",
+      "activityBarBadge.background": "#c996ac",
+      "activityBarBadge.foreground": "#15202b",
+      "commandCenter.border": "#e7e7e799",
+      "sash.hoverBorder": "#48658c",
+      "sideBar.border": "#48658c",
+      "statusBar.background": "#374d6a",
+      "statusBar.foreground": "#e7e7e7",
+      "statusBarItem.hoverBackground": "#48658c",
+      "statusBarItem.remoteBackground": "#374d6a",
+      "statusBarItem.remoteForeground": "#e7e7e7",
+      "titleBar.activeBackground": "#374d6a",
+      "titleBar.activeForeground": "#e7e7e7",
+      "titleBar.inactiveBackground": "#374d6a99",
+      "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.remoteColor": "#374d6a",
+    "github.copilot.enable": {
+      "*": false,
+      "plaintext": false,
+      "markdown": true,
+      "scminput": false,
+    },
+  },
+}

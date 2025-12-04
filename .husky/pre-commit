@@ -1,0 +1,4 @@
+#!/bin/sh
+pnpm many:typecheck && \
+pnpm many:lint-fix && \
+pnpm lint-staged-files --debug

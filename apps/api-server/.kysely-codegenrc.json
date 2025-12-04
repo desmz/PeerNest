@@ -1,0 +1,8 @@
+{
+  "dialect": "postgres",
+  "camelCase": true,
+  "envFile": "../../.env",
+  "outFile": "./src/database/types/db.d.ts",
+  "url": "env(PG_DATABASE_URL)",
+  "defaultSchemas": ["dev"]
+}
