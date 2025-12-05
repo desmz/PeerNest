@@ -12,7 +12,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@peernest/config": ["../../packages/config/src"],
-      "@peernest/core": ["../../packages/core/src"]
+      "@peernest/core": ["../../packages/core/src"],
+      "@peernest/db": ["../../packages/db/src"]
     }
   },
   "include": ["src/**/*.ts"],
@@ -23,6 +24,9 @@
     },
     {
       "path": "../../packages/config/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/db/tsconfig.lib.json"
     }
   ]
 }

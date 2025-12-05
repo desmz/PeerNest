@@ -1,0 +1,672 @@
+notation crows-foot
+colorMode pastel
+styleMode plain
+typeface rough
+
+role [color: blue] {
+  id varchar pk
+  name varchar
+  rank int
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+user [color: blue] {
+  id varchar pk
+  display_name varchar
+  display_name_tsv tsvector
+  password_hash varchar
+  role_id varchar fk
+  email varchar
+  avatar_url text
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+  last_signed_time timestamptz
+
+  // unique(email)
+}
+
+role.id < user.role_id
+
+account [color: blue] {
+  id varchar pk
+  user_id varchar fk
+  type varchar // social, local
+  provider varchar // google, password
+  provider_user_id varchar
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(provider, provider_user_id)
+}
+
+user.id < account.user_id
+
+attachment [color:blue] {
+  id varchar pk
+  owner_id varchar fk
+  path text
+  name varchar
+  size int
+  mimetype varchar
+  width int?
+  height int?
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+user_token [color: blue] {
+  id varchar pk
+  user_id varchar fk
+  type varchar
+  token_hash varchar
+  created_time timestamptz
+  expired_time timestamptz
+  used_time timestamptz
+}
+
+user.id < user_token.user_id
+
+pronoun [color: blue] {
+  id varchar pk
+  name varchar
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+
+university [color: blue] {
+  id varchar pk
+  name varchar
+  country varchar
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+university.id - user_info.university_id
+
+domain [color: blue] {
+  id varchar pk
+  name varchar
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+domain.id - user_info.domain_id
+
+user_info [color: blue] {
+  id varchar pk
+  user_id varchar fk
+  pronoun_id varchar? fk
+  university_id varchar? fk
+  domain_id varchar? fk
+  bio text?
+  looking_for text?
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+user.id - user_info.user_id
+pronoun.id - user_info.pronoun_id
+
+interest [color: blue] {
+  id varchar pk
+  name varchar
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+personal_goal [color: blue] {
+  id varchar pk
+  title varchar
+  name varchar
+  description text?
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+user_info_interest [color: green] {
+  id varchar pk
+  user_info_id varchar fk
+  interest_id varchar fk
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+
+  // unique(user_info_id, interest_id)
+}
+
+user_info.id < user_info_interest.user_info_id
+interest.id < user_info_interest.interest_id
+
+user_info_personal_goal [color: green] {
+  id varchar pk
+  user_info_id varchar fk
+  personal_goal_id varchar fk
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+
+  // unique(user_info_id, personal_goal_id)
+}
+
+user_info.id < user_info_personal_goal.user_info_id
+personal_goal.id < user_info_personal_goal.personal_goal_id
+
+discussion [color: blue] {
+  id varchar pk
+  author_id varchar fk
+  title varchar
+  content text
+  search_tsv tsvector
+  status varchar // active, archived, deleted
+  created_time timestamptz
+  updated_time timestamptz?
+  archived_time timestamptz?
+  archived_by varchar? fk
+  deleted_time timestamptz?
+
+  // to_tsvector(title, content)
+}
+
+user.id < discussion.author_id
+user.id < discussion.archived_by
+
+discussion_attachment [color: green] {
+  id varchar pk
+  discussion_id varchar fk
+  attachment_id varchar fk
+
+  // unique(discussion, attachment_id)
+}
+
+discussion.id < discussion_attachment.discussion_id
+attachment.id < discussion_attachment.attachment_id
+
+discussion_personal_goal [color: green] {
+  id varchar pk
+  discussion_id varchar fk
+  personal_goal_id varchar fk
+  position numeric // numeric(20, 10)
+
+  // unique(discussion_id, personal_goal_id)
+}
+
+discussion.id < discussion_personal_goal.discussion_id
+personal_goal.id < discussion_personal_goal.personal_goal_id
+
+discussion_interest [color: green] {
+  id varchar pk
+  discussion_id varchar fk
+  interest_id varchar fk
+  position numeric // numeric(20, 10)
+
+  // unique(discussion_id, interest_id)
+}
+
+discussion.id < discussion_interest.discussion_id
+interest.id < discussion_interest.interest_id
+
+user_discussion_report [color: green] {
+  id varchar pk
+  reporter_id varchar fk
+  discussion_id varchar fk
+  status varchar // reported, deleted, released 
+  reported_time timestamptz
+  resolver_id varchar? fk
+  resolved_time timestamptz?
+
+  // unique(reporter_id, discussion_id)
+}
+
+user.id < user_discussion_report.reporter_id
+discussion.id < user_discussion_report.discussion_id
+user.id < user_discussion_report.resolver_id
+
+comment [color: blue] {
+  id varchar pk
+  author_id varchar fk
+  discussion_id varchar fk
+  parent_comment_id varchar? fk
+  content text 
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // index(author_id, discussion_id)
+}
+
+user.id < comment.author_id
+discussion.id < comment.discussion_id
+comment.parent_comment_id < comment.id
+ 
+user_comment_report [color: green] {
+  id varchar pk
+  comment_id varchar fk
+  reporter_id varchar fk
+  status varchar // reported, deleted, released 
+  reported_time timestamptz
+  resolver_id varchar? fk
+  resolved_time timestamptz?
+
+  // unique(reporter_id, discussion_id)
+}
+
+user.id < user_comment_report.reporter_id
+comment.id < user_comment_report.comment_id
+user.id < user_comment_report.resolver_id
+
+user_discussion_like [color: green] {
+  id varchar pk
+  user_id varchar fk
+  discussion_id varchar fk
+  created_time timestamptz
+
+  // unique(user_id, discussion_id)
+}
+
+user.id < user_discussion_like.user_id
+discussion.id < user_discussion_like.discussion_id
+
+user_comment_like [color: green] {
+  id varchar pk
+  user_id varchar fk
+  comment_id varchar fk
+  created_time timestamptz
+
+  // unique(user_id, comment_id)
+}
+
+user.id < user_comment_like.user_id
+comment.id < user_comment_like.comment_id
+
+ban_request [color: blue] {
+  id varchar pk
+  requester_id varchar fk
+  banned_user_id varchar fk
+  status varchar // pending, approved, rejected
+  reasons text
+  proof_reference_raw text
+  created_time timestamptz
+  resolver_id varchar? fk
+  resolved_time timestamptz?
+
+  // check(requester_id != banned_user_id)
+  // check(requester_id != resolver_id)
+}
+
+user.id < ban_request.requester_id
+user.id < ban_request.banned_user_id
+user.id < ban_request.resolver_id
+
+ban_request_proof [color: blue] {
+  id varchar pk
+  ban_request_id varchar fk
+  resource_id varchar
+  resource_type varchar // discussion, comment 
+  reference_raw text
+}
+
+ban_request.id < ban_request_proof.ban_request_id
+
+ban_action [color: blue] {
+  id varchar pk
+  banned_user_id varchar fk
+  ban_request_id varchar? fk
+  banned_by varchar fk
+  reason text
+  created_time timestamptz
+  updated_time timestamptz?
+  ban_start_time timestamptz
+  ban_end_time timestamptz?
+
+  // check(banned_user_id != banned_by)
+}
+
+user.id < ban_action.ban_user_id
+ban_request.id < ban_action.ban_request_id
+user.id < ban_action.banned_by
+
+friend_request [color: blue] {
+  id varchar pk
+  from_id varchar fk
+  to_id varchar fk
+  status varchar // pending, accepted, rejected
+  matched_by_system boolean
+  created_time timestamptz
+  resolved_time timestamptz?
+
+  // unique(from_id, to_id)
+  // check(from_id != to_id)
+}
+
+user.id < friend_request.from_id
+user.id < friend_request.to_id
+
+relationship [color: green] {
+  id varchar pk
+  user_id_a varchar fk
+  user_id_b varchar fk
+  type varchar // friend
+  created_time timestamptz
+
+  // unique(user_id_a, user_id_b)
+  // check(user_id_a < user_id_b)
+}
+
+user.id < relationship.user_id_a
+user.id < relationship.user_id_b
+
+conversation [color: blue] {
+  id varchar pk
+  type varchar // direct
+  created_time timestamptz
+  updated_time timestamptz?
+}
+
+message [color: blue] {
+  id varchar pk
+  author_id varchar fk
+  content text
+  content_tsv tsvector
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+user.id < message.author_id
+
+message_attachment [color: green] {
+  id varchar pk
+  message_id varchar fk
+  attachment_id varchar fk
+
+  // unique(message_id, attachment_id)
+}
+
+message.id < message_attachment.message_id
+attachment.id < message_attachment.attachment_id
+
+conversation_participant [color: green] {
+  id varchar pk
+  conversation_id varchar fk
+  participant_id varchar fk
+  role varchar // member, mod, admin, counselor
+  last_read_message_id varchar? fk
+  joined_time timestamptz
+
+  // unique(conversation_id, participant_id)
+}
+
+conversation.id < conversation_participant.conversation_id
+user.id < conversation_participant.participant_id
+message.id < conversation_participant.last_read_message_id
+
+wellness_mood [color: blue] {
+  id varchar pk
+  name varchar
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+wellness_symptom_category [color: blue] {
+  id varchar pk
+  name varchar
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+wellness_symptom [color: blue] {
+  id varchar pk
+  name varchar
+  wellness_symptom_category_id varchar fk
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+wellness_symptom_category.id < wellness_symptom.wellness_symptom_category_id
+
+wellness_factor_category [color: blue] {
+  id varchar pk
+  name varchar
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+wellness_factor [color: blue] {
+  id varchar pk
+  wellness_factor_category_id varchar fk
+  name varchar
+  position numeric // numeric(20, 10)
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+wellness_factor_category.id < wellness_factor.wellness_factor_category_id
+
+check_in [color: blue] {
+  id varchar pk
+  user_id varchar fk
+  mood_rating int
+  sleep_quality_rating int?
+  sleep_time interval?
+  check_in_time timestamptz
+  created_time timestamptz
+  updated_time timestamptz?
+}
+
+user.id < check_in.user_id
+
+check_in_wellness_mood [color: green] {
+  id varchar pk
+  check_in_id varchar fk
+  wellness_mood_id varchar fk
+
+  // unique(check_in_id, wellness_mood_id)
+}
+
+check_in.id < check_in_wellness_mood.check_in_id
+wellness_mood.id < check_in_wellness_mood.wellness_mood_id
+
+check_in_wellness_symptom [color: green] {
+  id varchar pk
+  check_in_id varchar fk
+  wellness_symptom_id varchar fk
+
+  // unique(check_in_id, wellness_symptom_id)
+}
+
+check_in.id < check_in_wellness_symptom.check_in_id
+wellness_symptom.id < check_in_wellness_symptom.wellness_symptom_id
+
+check_in_wellness_factor [color: green] {
+  id varchar pk
+  check_in_id varchar fk
+  wellness_factor_id varchar fk
+
+  // unique(check_in_id, wellness_factor_id)
+}
+
+check_in.id < check_in_wellness_factor.check_in_id
+wellness_factor.id < check_in_wellness_factor.wellness_factor_id
+
+check_in_health_measurement [color: blue] {
+  id varchar pk
+  check_in_id varchar fk
+  heart_rate int?
+  step_count int?
+  weight double?
+}
+
+check_in.id - check_in_health_measurement.check_in_id
+
+counselor_user [color: blue] {
+  id varchar pk
+  counselor_id varchar fk
+  user_id varchar fk
+  note text?
+  created_time timestamptz
+  updated_time timestamptz?
+  released_tine timestamptz?
+}
+
+user.id < counselor_user.counselor_id
+user.id < counselor_user.user_id
+
+role_application [color: blue] {
+  id varchar pk
+  applicant_id  varchar fk
+  applied_role_id varchar fk
+  status // pending, approved, rejected
+  description text?
+  created_time timestamptz
+  processed_time timestamptz?
+  processed_by varchar? fk
+  updated_time timestamptz?
+  deleted_time timestamptz?
+}
+
+user.id < role_application.applicant_id
+role.id < role_application.applied_role_id
+user.id < role_application.processed_by
+
+role_attachment [color: green] {
+  id varchar pk
+  role_application_id varchar fk
+  attachment_id varchar fk
+
+  // unique(role_application_id, attachment_id)
+}
+
+role_application.id < role_attachment.role_application_id
+attachment.id < role_attachment.attachment_id
+
+role_change_action [color: blue] {
+  id varchar pk
+  target_user_id varchar fk
+  old_role_id varchar fk
+  new_role_id varchar fk
+  type varchar // promotion, demotion
+  processed_by varchar fk
+  role_application_id varchar? fk
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz
+
+  // check(old_role_id != new_role_id)
+}
+
+user.id < role_change_action.target_user_id
+role.id < role_change_action.old_role_id
+role.id < role_change_action.new_role_id
+user.id < role_change_action.processed_by
+role_application.id < role_change_action.role_application_id
+
+achievement_category [color: blue] {
+  id varchar pk
+  name varchar 
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+achievement [color: blue] {
+  id varchar pk
+  achievement_category_id varchar fk
+  title varchar
+  description text
+  criteria jsonb
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+} 
+
+achievement_category.id < achievement.achievement_category_id
+
+user_achievement [color: green] {
+  id varchar pk
+  user_id varchar fk
+  achievement_id varchar fk
+  is_visible boolean
+  awarded_time timestamptz
+  updated_time timestamptz?
+
+  // unique(user_id, achievement_id)
+} 
+
+user.id < user_achievement.user_id
+achievement.id < user_achievement.achievement_id
+
+notification_category [color: blue] {
+  id varchar pk
+  name varchar // discussion, friend, conversation, system
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+
+  // unique(name)
+}
+
+notification_type [color: blue] {
+  id varchar pk
+  notification_category_id varchar fk
+  name varchar
+  payload_fields jsonb
+  created_time timestamptz
+  updated_time timestamptz?
+  deleted_time timestamptz?
+  
+  // unique(name)
+}
+
+notification_category.id < notification_type.notification_category_id
+
+notification [color: blue] {
+  id varchar pk
+  notification_type_id varchar fk
+  recipient_id varchar fk
+  title text
+  body text
+  payload jsonb
+  seen_time timestamptz?
+  read_time timestamptz?
+  created_time timestamptz
+}
+
+notification_type.id < notification.notification_type_id
+user.id < notification.recipient_id

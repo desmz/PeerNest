@@ -3,6 +3,19 @@ const { join } = require('path');
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 
 module.exports = {
+  ignoreWarnings: [
+    // Ignore sql-formatter source map warnings
+    {
+      module: /sql-formatter/,
+      message: /Failed to parse source map/,
+    },
+
+    // Ignore pg-native optional dependency warning
+    {
+      module: /pg[\\/]lib[\\/]native/,
+      message: /Can't resolve 'pg-native'/,
+    },
+  ],
   output: {
     path: join(__dirname, 'dist'),
     clean: true,

@@ -16,6 +16,10 @@
       "name": "core",
       "path": "./packages/core",
     },
+    {
+      "name": "db",
+      "path": "./packages/db",
+    },
     // {
     //   "name": "openapi",
     //   "path": "./packages/openapi",
@@ -57,6 +61,7 @@
       "./apps/web",
       "./packages/config",
       "./packages/core",
+      "./packages/db",
       // "./packages/openapi",
       // "./packages/transactional",
       // "./packages/ui-lib",
@@ -68,7 +73,7 @@
       "**/*.code-search": true,
       "**/dist": true,
     },
-    "cSpell.words": ["peernest"],
+    "cSpell.words": ["peernest", "kysely"],
     "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#48658c",
       "activityBar.background": "#48658c",

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://www.schemastore.org/package.json",
+  "name": "@peernest/db",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@peernest/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "migration:create": "tsx src/migrate.ts create",
+    "migration:up": "tsx src/migrate.ts up",
+    "migration:down": "tsx src/migrate.ts down",
+    "migration:latest": "tsx src/migrate.ts latest",
+    "migration:redo": "tsx src/migrate.ts redo",
+    "migration:reset": "tsx src/migrate.ts down-to NO_MIGRATIONS",
+    "migration:codegen": "kysely-codegen"
+  },
+  "dependencies": {
+    "@peernest/config": "workspace:*",
+    "@swc/helpers": "~0.5.11",
+    "kysely": "^0.28.8",
+    "kysely-migration-cli": "^0.4.2",
+    "pg": "^8.16.3",
+    "@nestjs/common": "^11.0.0",
+    "sql-formatter": "15.6.10"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.6",
+    "kysely-codegen": "^0.19.0",
+    "sql-formatter": "^15.6.10"
+  }
+}
