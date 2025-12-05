@@ -2,10 +2,11 @@ import { Module, DynamicModule } from '@nestjs/common';
 import { ConfigModule as BaseConfigModule } from '@nestjs/config';
 
 import { appConfig } from './app.config';
+import { authConfig } from './auth.config';
 import { securityWebConfig } from './bootstrap.config';
 import { loggerConfig } from './logger.config';
 
-const configurations = [securityWebConfig, appConfig, loggerConfig];
+const configurations = [securityWebConfig, appConfig, authConfig, loggerConfig];
 
 @Module({})
 export class ConfigModule {

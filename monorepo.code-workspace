@@ -20,10 +20,10 @@
       "name": "db",
       "path": "./packages/db",
     },
-    // {
-    //   "name": "openapi",
-    //   "path": "./packages/openapi",
-    // },
+    {
+      "name": "contract",
+      "path": "./packages/contract",
+    },
     // {
     //   "name": "transactional",
     //   "path": "./packages/transactional",
@@ -62,7 +62,7 @@
       "./packages/config",
       "./packages/core",
       "./packages/db",
-      // "./packages/openapi",
+      "./packages/contract",
       // "./packages/transactional",
       // "./packages/ui-lib",
       // "./packages/eslint-config-bases",
@@ -73,7 +73,7 @@
       "**/*.code-search": true,
       "**/dist": true,
     },
-    "cSpell.words": ["peernest", "kysely"],
+    "cSpell.words": ["peernest", "kysely", "uuidv7"],
     "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#48658c",
       "activityBar.background": "#48658c",
