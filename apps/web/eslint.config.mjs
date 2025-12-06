@@ -11,7 +11,7 @@ export default [
     rules: {},
   },
   {
-    files: ['src/app/**/*.{ts,tsx,mts}'],
+    files: ['src/**/*.{ts,tsx,mts}'],
     rules: {
       '@typescript-eslint/naming-convention': [
         'error',
@@ -31,9 +31,10 @@ export default [
           format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
           leadingUnderscore: 'allow',
         },
+        // disable for function
         {
-          selector: ['function'],
-          format: ['camelCase', 'PascalCase'],
+          selector: 'function',
+          format: null, // disables naming convention for all functions
         },
         {
           selector: 'parameter',

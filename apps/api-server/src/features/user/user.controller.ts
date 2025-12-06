@@ -1,5 +1,5 @@
 import { Controller, Get, HttpCode, HttpStatus, Req } from '@nestjs/common';
-import { TSelectableUser } from '@peernest/db';
+import { type TMeVo } from '@peernest/contract';
 import { type Request } from 'express';
 
 import { Public } from '@/features/auth/decorators/public.decorator';
@@ -17,7 +17,7 @@ export class UserController {
 
   @Get('/me')
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@Req() req: Request): Promise<TSelectableUser> {
-    return req.user as TSelectableUser;
+  async getCurrentUser(@Req() req: Request): Promise<TMeVo> {
+    return req.user as TMeVo;
   }
 }

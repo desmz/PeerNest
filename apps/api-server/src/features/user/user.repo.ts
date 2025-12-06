@@ -10,8 +10,6 @@ import {
 
 import { CustomHttpException } from '@/custom.exception';
 
-console.log(new Date());
-
 @Injectable()
 export class UserRepository {
   private static repoName = 'USER_REPOSITORY';

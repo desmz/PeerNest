@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-import { envObj } from '@peernest/config';
+import { envObj } from '@peernest/config/dynamic';
 import { Kysely, Migrator, PostgresDialect, FileMigrationProvider } from 'kysely';
 import { run } from 'kysely-migration-cli';
 import pg from 'pg';
@@ -9,8 +9,6 @@ import pg from 'pg';
 import { TKyselyDB } from './types';
 
 const migrationFolder = path.join(__dirname, './migrations');
-
-console.log(envObj.PG_DATABASE_URL);
 
 const db = new Kysely<TKyselyDB>({
   dialect: new PostgresDialect({

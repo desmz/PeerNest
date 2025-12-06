@@ -9,10 +9,19 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "@peernest/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./dynamic": {
+      "types": "./dist/dynamic/index.d.ts",
+      "import": "./dist/dynamic/index.js",
+      "default": "./dist/dynamic/index.js"
+    },
+    "./static": {
+      "types": "./dist/static/index.d.ts",
+      "import": "./dist/static/index.js",
+      "default": "./dist/static/index.js"
     }
   },
   "dependencies": {

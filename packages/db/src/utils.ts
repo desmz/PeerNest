@@ -1,4 +1,4 @@
-import { envObj } from '@peernest/config';
+import { envObj } from '@peernest/config/dynamic';
 
 import { TKyselyTransaction, TKyselyDB } from './types/kysely.type';
 

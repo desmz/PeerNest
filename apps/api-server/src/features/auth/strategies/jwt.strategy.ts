@@ -1,20 +1,21 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { HttpErrorCode } from '@peernest/core';
-import { TSelectableUser } from '@peernest/db';
+import { type TMeVo } from '@peernest/contract';
+import { ACCESS_TOKEN_STRATEGY_NAME, HttpErrorCode } from '@peernest/core';
 import { Strategy } from 'passport-jwt';
 
-import { type TAuthConfig } from '@/configs/auth.config';
+import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { CustomHttpException } from '@/custom.exception';
 import { UserRepository } from '@/features/user/user.repo';
 
 import { TJwtPayload, JwtType } from '../types/jwt-payload.type';
 import { fromCookie } from '../util';
+import { pickUserMe } from '../utils';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEGY_NAME) {
   constructor(
-    authConfig: TAuthConfig,
+    @AuthConfig() authConfig: TAuthConfig,
     private readonly userRepository: UserRepository
   ) {
     super({
@@ -24,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: TJwtPayload): Promise<TSelectableUser> {
+  async validate(payload: TJwtPayload): Promise<TMeVo> {
     const { sub: userId, type } = payload;
 
     if (type !== JwtType.ACCESS) {
@@ -42,6 +43,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // set to cls
 
-    return user;
+    return pickUserMe(user);
   }
 }

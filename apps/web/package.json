@@ -2,5 +2,14 @@
   "$schema": "https://www.schemastore.org/package.json",
   "name": "@peernest/web",
   "version": "0.0.1",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@peernest/config": "workspace:*",
+    "@peernest/contract": "workspace:*",
+    "@peernest/core": "workspace:*",
+    "@tanstack/react-query": "^5.90.12",
+    "jotai": "^2.15.2",
+    "react-helmet-async": "^2.0.5",
+    "react-router": "^7.10.1"
+  }
 }

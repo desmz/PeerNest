@@ -1,5 +1,5 @@
 import { Injectable, Logger as NestLogger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { envObj } from '@peernest/config';
+import { envObj } from '@peernest/config/dynamic';
 import { CamelCasePlugin, Kysely, LogEvent, PostgresDialect, sql } from 'kysely';
 import { Pool, types } from 'pg';
 import { format, type FormatOptionsWithLanguage } from 'sql-formatter';

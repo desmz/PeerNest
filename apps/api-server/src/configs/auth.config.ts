@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { ConfigType, registerAs } from '@nestjs/config';
-import { envObj } from '@peernest/config';
+import { envObj } from '@peernest/config/dynamic';
 import { AUTH_COOKIE_MAX_AGE, AUTH_COOKIE_NAME } from '@peernest/core';
 import ms, { StringValue } from 'ms';
 

@@ -11,10 +11,10 @@
     "target": "es2021",
     "paths": {
       "@/*": ["./src/*"],
-      "@peernest/config": ["../../packages/config/src"],
-      "@peernest/core": ["../../packages/core/src"],
-      "@peernest/db": ["../../packages/db/src"],
-      "@peernest/contract": ["../../packages/contract/src"]
+      "@peernest/config/*": ["../../packages/config/src/*"],
+      "@peernest/core/*": ["../../packages/core/src/*"],
+      "@peernest/db/*": ["../../packages/db/src/*"],
+      "@peernest/contract/*": ["../../packages/contract/src/*"]
     }
   },
   "include": ["src/**/*.ts"],

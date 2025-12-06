@@ -1,4 +1,5 @@
 /// <reference types='vitest' />
+
 import path from 'path';
 
 import react from '@vitejs/plugin-react';
@@ -8,15 +9,13 @@ import { loadEnv } from 'vite';
 export const envPath = path.resolve(process.cwd(), '..', '..');
 
 export default defineConfig(({ mode }) => {
-  const { API_ORIGIN, HOST, FRONTEND_PORT, PUBLIC_ORIGIN } = loadEnv(mode, envPath, '');
+  const { HOST, FRONTEND_PORT } = loadEnv(mode, envPath, '');
 
   return {
     define: {
       'process.env': {
-        API_ORIGIN,
         FRONTEND_PORT,
         HOST,
-        PUBLIC_ORIGIN,
       },
       APP_VERSION: JSON.stringify(process.env.npm_package_version),
     },
@@ -27,10 +26,8 @@ export default defineConfig(({ mode }) => {
       host: 'localhost',
     },
     preview: {
-      // port: parseInt(FRONTEND_PORT),
-      // host: HOST,
-      port: 3001,
-      host: 'localhost',
+      port: parseInt(FRONTEND_PORT),
+      host: HOST,
     },
     plugins: [react()],
     // Uncomment this if you are using workers.
