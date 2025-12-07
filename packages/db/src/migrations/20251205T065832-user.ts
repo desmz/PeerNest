@@ -17,5 +17,5 @@ export async function up(db: TKyselyDB): Promise<void> {
 }
 
 export async function down(db: TKyselyDB): Promise<void> {
-  await db.schema.dropTable('user').execute();
+  await db.withSchema(DbSchema.DEV).schema.dropTable('user').execute();
 }

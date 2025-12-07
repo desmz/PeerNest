@@ -22,3 +22,13 @@ export const PERMITTED_USERNAMES = [
 
 export const MAX_AVATAR_SIZE = 3 * 1024 * 1024; // 3MB
 export const AVATAR_MIMETYPE_REGEX = /(jpeg|png|gif)$/;
+
+export enum AccountType {
+  Local = 'local',
+  Social = 'social',
+}
+
+export enum AccountProvider {
+  Google = 'google',
+  Password = 'password',
+}

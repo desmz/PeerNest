@@ -17,6 +17,7 @@ export default function SignInPage() {
   const signUpData: TSignUpRo = {
     ...signInData,
     displayName: 'Lee Jia Hee',
+    confirmPassword: 'fdsf!l0289A',
   };
 
   async function onSignUpClick() {

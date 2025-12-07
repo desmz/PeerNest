@@ -73,7 +73,16 @@
       "**/*.code-search": true,
       "**/dist": true,
     },
-    "cSpell.words": ["peernest", "kysely", "uuidv7"],
+    "cSpell.words": [
+      "peernest",
+      "kysely",
+      "uuidv7",
+      "updateable",
+      "insertable",
+      "varchar",
+      "tsvector",
+      "timestamptz",
+    ],
     "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#48658c",
       "activityBar.background": "#48658c",

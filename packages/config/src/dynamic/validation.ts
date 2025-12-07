@@ -52,6 +52,18 @@ export const envValidationSchema = z.object({
   AUTH_JWT_ACCESS_SECRET: z.string().nonempty(),
   AUTH_JWT_ACCESS_EXPIRES_IN: z.string().nonempty(), // e.g. "5m", "1h"
 
+  // storage
+  BACKEND_STORAGE_PROVIDER: z.string().nonempty(),
+  BACKEND_STORAGE_PUBLIC_BUCKET: z.string().nonempty(),
+  BACKEND_STORAGE_PRIVATE_BUCKET: z.string().nonempty(),
+
+  BACKEND_STORAGE_S3_REGION: z.string().nonempty(),
+  BACKEND_STORAGE_S3_ENDPOINT: z.url(),
+  BACKEND_STORAGE_S3_ACCESS_KEY: z.string().nonempty(),
+  BACKEND_STORAGE_S3_SECRET_KEY: z.string().nonempty(),
+  BACKEND_STORAGE_S3_PUBLIC_BASE_URL: z.url(),
+  BACKEND_STORAGE_S3_PRIVATE_BASE_URL: z.url(),
+
   // Mail Service Provider
   BACKEND_MAIL_HOST: z.string().nonempty(),
   BACKEND_MAIL_PORT: zPort,

@@ -8,9 +8,11 @@ export const ME = '/users/me';
 export const userIdSchema = z.string().startsWith(IdPrefix.User);
 
 export const meVoSchema = z.object({
-  id: userIdSchema,
-  email: emailSchema,
   displayName: displayNameSchema,
+  role: z.string().nonempty(),
+  email: emailSchema,
+  avatarUrl: z.string().nonempty(),
+  lastSignedTime: z.date(),
 });
 
 export type TMeVo = z.infer<typeof meVoSchema>;

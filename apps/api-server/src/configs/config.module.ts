@@ -5,8 +5,9 @@ import { appConfig } from './app.config';
 import { authConfig } from './auth.config';
 import { securityWebConfig } from './bootstrap.config';
 import { loggerConfig } from './logger.config';
+import { storageConfig } from './storage.config';
 
-const configurations = [securityWebConfig, appConfig, authConfig, loggerConfig];
+const configurations = [securityWebConfig, appConfig, authConfig, loggerConfig, storageConfig];
 
 @Module({})
 export class ConfigModule {

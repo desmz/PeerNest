@@ -1,0 +1,5 @@
+role_id,name,rank
+1,user,0
+2,admin,100
+3,moderator,80
+4,counselor,50

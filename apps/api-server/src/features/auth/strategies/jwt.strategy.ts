@@ -9,8 +9,7 @@ import { CustomHttpException } from '@/custom.exception';
 import { UserRepository } from '@/features/user/user.repo';
 
 import { TJwtPayload, JwtType } from '../types/jwt-payload.type';
-import { fromCookie } from '../util';
-import { pickUserMe } from '../utils';
+import { fromCookie, pickUserMe } from '../utils';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEGY_NAME) {
@@ -37,8 +36,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
     if (!user) {
       throw new CustomHttpException('User is unauthorized', HttpErrorCode.UNAUTHORIZED);
     }
-    if (user.deletedTime) {
-      throw new CustomHttpException(`User ${user.email} is disabled`, HttpErrorCode.FREEZE_ACCOUNT);
+    if (user.userDeletedTime) {
+      throw new CustomHttpException(
+        `User ${user.userEmail} is disabled`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
     }
 
     // set to cls

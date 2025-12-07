@@ -17,8 +17,8 @@ export class TokenService {
 
   async generateAccessToken(user: TSelectableUser) {
     const payload: TJwtPayload = {
-      sub: user.id,
-      email: user.email,
+      sub: user.userId,
+      email: user.userEmail,
       type: JwtType.ACCESS,
     };
 

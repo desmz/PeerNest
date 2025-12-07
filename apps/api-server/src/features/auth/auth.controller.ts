@@ -2,21 +2,17 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/commo
 import { signInRoSchema, signUpRoSchema, type TSignInRo, type TSignUpRo } from '@peernest/contract';
 import { type Response } from 'express';
 
-import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 // import { GoogleGuard } from './guards/google.guard';
 // import { GoogleAuthRo } from './types/social-auth.type';
-import { setAuthCookie } from './util';
+import { setAuthCookie } from './utils';
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    @AuthConfig() private readonly authConfig: TAuthConfig
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @HttpCode(HttpStatus.CREATED)
@@ -27,7 +23,7 @@ export class AuthController {
   ): Promise<void> {
     const { accessToken } = await this.authService.signup(userRo);
 
-    setAuthCookie(res, accessToken, this.authConfig);
+    setAuthCookie(res, accessToken);
   }
 
   @Public()
@@ -39,7 +35,7 @@ export class AuthController {
   ): Promise<void> {
     const { accessToken } = await this.authService.signIn(userRo);
 
-    setAuthCookie(res, accessToken, this.authConfig);
+    setAuthCookie(res, accessToken);
   }
 
   // @Public()

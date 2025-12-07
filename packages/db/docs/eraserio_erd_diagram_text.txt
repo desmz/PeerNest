@@ -49,7 +49,7 @@ user.id < account.user_id
 
 attachment [color:blue] {
   id varchar pk
-  owner_id varchar fk
+  owner_id varchar?
   path text
   name varchar
   size int
@@ -68,7 +68,7 @@ user_token [color: blue] {
   token_hash varchar
   created_time timestamptz
   expired_time timestamptz
-  used_time timestamptz
+  used_time timestamptz?
 }
 
 user.id < user_token.user_id

@@ -3,36 +3,29 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from 'kysely';
+import type { ColumnType } from "kysely";
 
-export type AuthAalLevel = 'aal1' | 'aal2' | 'aal3';
+export type AuthAalLevel = "aal1" | "aal2" | "aal3";
 
-export type AuthCodeChallengeMethod = 'plain' | 's256';
+export type AuthCodeChallengeMethod = "plain" | "s256";
 
-export type AuthFactorStatus = 'unverified' | 'verified';
+export type AuthFactorStatus = "unverified" | "verified";
 
-export type AuthFactorType = 'phone' | 'totp' | 'webauthn';
+export type AuthFactorType = "phone" | "totp" | "webauthn";
 
-export type AuthOauthAuthorizationStatus = 'approved' | 'denied' | 'expired' | 'pending';
+export type AuthOauthAuthorizationStatus = "approved" | "denied" | "expired" | "pending";
 
-export type AuthOauthClientType = 'confidential' | 'public';
+export type AuthOauthClientType = "confidential" | "public";
 
-export type AuthOauthRegistrationType = 'dynamic' | 'manual';
+export type AuthOauthRegistrationType = "dynamic" | "manual";
 
-export type AuthOauthResponseType = 'code';
+export type AuthOauthResponseType = "code";
 
-export type AuthOneTimeTokenType =
-  | 'confirmation_token'
-  | 'email_change_token_current'
-  | 'email_change_token_new'
-  | 'phone_change_token'
-  | 'reauthentication_token'
-  | 'recovery_token';
+export type AuthOneTimeTokenType = "confirmation_token" | "email_change_token_current" | "email_change_token_new" | "phone_change_token" | "reauthentication_token" | "recovery_token";
 
-export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
@@ -50,9 +43,34 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Numeric = ColumnType<string, number | string, number | string>;
 
-export type StorageBuckettype = 'ANALYTICS' | 'STANDARD' | 'VECTOR';
+export type StorageBuckettype = "ANALYTICS" | "STANDARD" | "VECTOR";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export interface Account {
+  accountCreatedTime: Generated<Timestamp>;
+  accountDeletedTime: Timestamp | null;
+  accountId: Generated<string>;
+  accountProvider: string;
+  accountProviderUserId: string;
+  accountType: string;
+  accountUpdatedTime: Generated<Timestamp | null>;
+  accountUserId: string;
+}
+
+export interface Attachment {
+  attachmentCreatedTime: Generated<Timestamp>;
+  attachmentDeletedTime: Timestamp | null;
+  attachmentHeight: Int8 | null;
+  attachmentId: Generated<string>;
+  attachmentMimetype: string;
+  attachmentName: string;
+  attachmentOwnerId: string | null;
+  attachmentPath: string;
+  attachmentSize: Int8;
+  attachmentUpdatedTime: Generated<Timestamp | null>;
+  attachmentWidth: Int8 | null;
+}
 
 export interface AuthAuditLogEntries {
   createdAt: Timestamp | null;
@@ -398,6 +416,15 @@ export interface RealtimeSubscription {
   subscriptionId: string;
 }
 
+export interface Role {
+  roleCreatedTime: Generated<Timestamp>;
+  roleDeletedTime: Timestamp | null;
+  roleId: Generated<string>;
+  roleName: string;
+  roleRank: Int8;
+  roleUpdatedTime: Timestamp | null;
+}
+
 export interface StorageBuckets {
   allowedMimeTypes: string[] | null;
   avifAutodetection: Generated<boolean | null>;
@@ -504,12 +531,27 @@ export interface StorageVectorIndexes {
 }
 
 export interface User {
-  createdTime: Generated<Timestamp>;
-  deletedTime: Timestamp | null;
-  displayName: string;
-  email: string;
-  id: Generated<string>;
-  updatedTime: Generated<Timestamp>;
+  userAvatarUrl: string;
+  userCreatedTime: Generated<Timestamp>;
+  userDeletedTime: Timestamp | null;
+  userDisplayName: string;
+  userDisplayNameTsv: string | null;
+  userEmail: string;
+  userId: Generated<string>;
+  userLastSignedTime: Timestamp;
+  userPasswordHash: string;
+  userRoleId: string | null;
+  userUpdatedTime: Generated<Timestamp | null>;
+}
+
+export interface UserToken {
+  userTokenCreatedTime: Generated<Timestamp>;
+  userTokenExpiredTime: Timestamp;
+  userTokenId: Generated<string>;
+  userTokenTokenHash: string;
+  userTokenType: string;
+  userTokenUsedTime: Timestamp | null;
+  userTokenUserId: string;
 }
 
 export interface VaultDecryptedSecrets {
@@ -536,40 +578,44 @@ export interface VaultSecrets {
 }
 
 export interface DB {
-  'auth.auditLogEntries': AuthAuditLogEntries;
-  'auth.flowState': AuthFlowState;
-  'auth.identities': AuthIdentities;
-  'auth.instances': AuthInstances;
-  'auth.mfaAmrClaims': AuthMfaAmrClaims;
-  'auth.mfaChallenges': AuthMfaChallenges;
-  'auth.mfaFactors': AuthMfaFactors;
-  'auth.oauthAuthorizations': AuthOauthAuthorizations;
-  'auth.oauthClients': AuthOauthClients;
-  'auth.oauthConsents': AuthOauthConsents;
-  'auth.oneTimeTokens': AuthOneTimeTokens;
-  'auth.refreshTokens': AuthRefreshTokens;
-  'auth.samlProviders': AuthSamlProviders;
-  'auth.samlRelayStates': AuthSamlRelayStates;
-  'auth.schemaMigrations': AuthSchemaMigrations;
-  'auth.sessions': AuthSessions;
-  'auth.ssoDomains': AuthSsoDomains;
-  'auth.ssoProviders': AuthSsoProviders;
-  'auth.users': AuthUsers;
-  'extensions.pgStatStatements': ExtensionsPgStatStatements;
-  'extensions.pgStatStatementsInfo': ExtensionsPgStatStatementsInfo;
-  'realtime.messages': RealtimeMessages;
-  'realtime.schemaMigrations': RealtimeSchemaMigrations;
-  'realtime.subscription': RealtimeSubscription;
-  'storage.buckets': StorageBuckets;
-  'storage.bucketsAnalytics': StorageBucketsAnalytics;
-  'storage.bucketsVectors': StorageBucketsVectors;
-  'storage.migrations': StorageMigrations;
-  'storage.objects': StorageObjects;
-  'storage.prefixes': StoragePrefixes;
-  'storage.s3MultipartUploads': StorageS3MultipartUploads;
-  'storage.s3MultipartUploadsParts': StorageS3MultipartUploadsParts;
-  'storage.vectorIndexes': StorageVectorIndexes;
+  account: Account;
+  attachment: Attachment;
+  "auth.auditLogEntries": AuthAuditLogEntries;
+  "auth.flowState": AuthFlowState;
+  "auth.identities": AuthIdentities;
+  "auth.instances": AuthInstances;
+  "auth.mfaAmrClaims": AuthMfaAmrClaims;
+  "auth.mfaChallenges": AuthMfaChallenges;
+  "auth.mfaFactors": AuthMfaFactors;
+  "auth.oauthAuthorizations": AuthOauthAuthorizations;
+  "auth.oauthClients": AuthOauthClients;
+  "auth.oauthConsents": AuthOauthConsents;
+  "auth.oneTimeTokens": AuthOneTimeTokens;
+  "auth.refreshTokens": AuthRefreshTokens;
+  "auth.samlProviders": AuthSamlProviders;
+  "auth.samlRelayStates": AuthSamlRelayStates;
+  "auth.schemaMigrations": AuthSchemaMigrations;
+  "auth.sessions": AuthSessions;
+  "auth.ssoDomains": AuthSsoDomains;
+  "auth.ssoProviders": AuthSsoProviders;
+  "auth.users": AuthUsers;
+  "extensions.pgStatStatements": ExtensionsPgStatStatements;
+  "extensions.pgStatStatementsInfo": ExtensionsPgStatStatementsInfo;
+  "realtime.messages": RealtimeMessages;
+  "realtime.schemaMigrations": RealtimeSchemaMigrations;
+  "realtime.subscription": RealtimeSubscription;
+  role: Role;
+  "storage.buckets": StorageBuckets;
+  "storage.bucketsAnalytics": StorageBucketsAnalytics;
+  "storage.bucketsVectors": StorageBucketsVectors;
+  "storage.migrations": StorageMigrations;
+  "storage.objects": StorageObjects;
+  "storage.prefixes": StoragePrefixes;
+  "storage.s3MultipartUploads": StorageS3MultipartUploads;
+  "storage.s3MultipartUploadsParts": StorageS3MultipartUploadsParts;
+  "storage.vectorIndexes": StorageVectorIndexes;
   user: User;
-  'vault.decryptedSecrets': VaultDecryptedSecrets;
-  'vault.secrets': VaultSecrets;
+  userToken: UserToken;
+  "vault.decryptedSecrets": VaultDecryptedSecrets;
+  "vault.secrets": VaultSecrets;
 }

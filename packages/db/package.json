@@ -25,16 +25,20 @@
     "migration:codegen": "kysely-codegen"
   },
   "dependencies": {
+    "@nestjs/common": "^11.0.0",
     "@peernest/config": "workspace:*",
+    "@peernest/core": "workspace:*",
     "@swc/helpers": "~0.5.11",
+    "csv-writer": "^1.6.0",
+    "csvtojson": "2.0.14",
     "kysely": "^0.28.8",
     "kysely-migration-cli": "^0.4.2",
     "pg": "^8.16.3",
-    "@nestjs/common": "^11.0.0",
     "sql-formatter": "15.6.10"
   },
   "devDependencies": {
     "@types/pg": "^8.15.6",
+    "csvtojson": "^2.0.14",
     "kysely-codegen": "^0.19.0",
     "sql-formatter": "^15.6.10"
   }

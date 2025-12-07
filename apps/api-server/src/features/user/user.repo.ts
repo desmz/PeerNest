@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { generateUserId, HttpErrorCode } from '@peernest/core';
-import {
-  dbOrTx,
-  KyselyService,
-  TInsertableUser,
-  TKyselyTransaction,
-  TSelectableUser,
-} from '@peernest/db';
+import { dbOrTx, KyselyService, TInsertableUser, TKyselyTransaction } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -16,19 +10,18 @@ export class UserRepository {
 
   constructor(private readonly kyselyService: KyselyService) {}
 
-  async createUser(userObj: TInsertableUser, tx?: TKyselyTransaction): Promise<TSelectableUser> {
+  async createUser(userObj: TInsertableUser, tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const now = userObj.createdTime ? userObj.createdTime : new Date();
+      const now = userObj.userCreatedTime ? userObj.userCreatedTime : new Date();
 
       const user = await db
         .insertInto('user')
         .values({
           ...userObj,
-          id: userObj.id ? userObj.id : generateUserId(),
-          createdTime: now,
-          updatedTime: now,
+          userId: userObj.userId ? userObj.userId : generateUserId(),
+          userCreatedTime: now,
         })
         .returningAll()
         .executeTakeFirst();
@@ -43,18 +36,18 @@ export class UserRepository {
     }
   }
 
-  async findUserById(
-    id: string,
-    options?: { includedDeleted?: boolean },
-    tx?: TKyselyTransaction
-  ): Promise<TSelectableUser | undefined> {
+  async findUserById(id: string, options?: { includedDeleted?: boolean }, tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      let query = db.selectFrom('user').selectAll().where('id', '=', id);
+      let query = db
+        .selectFrom('user')
+        .innerJoin('role', 'role.roleId', 'user.userRoleId')
+        .selectAll(['user', 'role'])
+        .where('userId', '=', id);
 
       if (!options?.includedDeleted) {
-        query = query.where('deletedTime', 'is', null);
+        query = query.where('userDeletedTime', 'is', null);
       }
 
       const user = await query.executeTakeFirst();
@@ -73,14 +66,18 @@ export class UserRepository {
     email: string,
     options?: { includedDeleted?: boolean },
     tx?: TKyselyTransaction
-  ): Promise<TSelectableUser | undefined> {
+  ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      let query = db.selectFrom('user').selectAll().where('email', '=', email);
+      let query = db
+        .selectFrom('user')
+        .innerJoin('role', 'role.roleId', 'user.userRoleId')
+        .selectAll(['user', 'role'])
+        .where('userEmail', '=', email);
 
       if (!options?.includedDeleted) {
-        query = query.where('deletedTime', 'is', null);
+        query = query.where('userDeletedTime', 'is', null);
       }
 
       const user = await query.executeTakeFirst();

@@ -1,21 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { TSignInRo, TSignUpRo } from '@peernest/contract';
-import { HttpErrorCode } from '@peernest/core';
+import {
+  AccountProvider,
+  AccountType,
+  encodePassword,
+  generateAccountId,
+  generateUserId,
+  HttpErrorCode,
+  UserRole,
+} from '@peernest/core';
+import { executeTx, KyselyService } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
+import { AttachmentRepository } from '@/features/attachment/attachment.repo';
+import { RoleRepository } from '@/features/user/role.repo';
 import { UserRepository } from '@/features/user/user.repo';
+import { UserService } from '@/features/user/user.service';
 
+import { AccountRepository } from './account.repo';
 import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly kyselyService: KyselyService,
+
+    private readonly attachmentRepository: AttachmentRepository,
+    private readonly accountRepository: AccountRepository,
+    private readonly roleRepository: RoleRepository,
     private readonly userRepository: UserRepository,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly userService: UserService
   ) {}
 
   async signup(signUpRo: TSignUpRo): Promise<{ accessToken: string }> {
-    const { email } = signUpRo;
+    const { email, displayName, password } = signUpRo;
 
     const existingEmail = await this.userRepository.findUserByEmail(email, {
       includedDeleted: true,
@@ -27,8 +46,60 @@ export class AuthService {
       );
     }
 
-    const { password, ...otherSignUpRo } = signUpRo;
-    const user = await this.userRepository.createUser(otherSignUpRo);
+    const passwordHash = await encodePassword(password);
+    const userId = generateUserId();
+
+    const avatarObj = await this.userService.generateDefaultAvatar(userId);
+
+    const role = await this.roleRepository.findRoleByName(UserRole.User);
+
+    if (!role) {
+      throw new CustomHttpException(
+        `${UserRole.User} role does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const user = await executeTx(this.kyselyService.db, async (tx) => {
+      const now = new Date();
+
+      const user = await this.userRepository.createUser(
+        {
+          userId: userId,
+          userDisplayName: displayName,
+          userPasswordHash: passwordHash,
+          userRoleId: role.roleId,
+          userEmail: email,
+          userAvatarUrl: avatarObj.attachmentPath,
+          userCreatedTime: now,
+          userLastSignedTime: now,
+        },
+        tx
+      );
+
+      await this.accountRepository.createAccount(
+        {
+          accountId: generateAccountId(),
+          accountUserId: user.userId,
+          accountType: AccountType.Local,
+          accountProvider: AccountProvider.Password,
+          accountProviderUserId: passwordHash,
+          accountCreatedTime: now,
+        },
+        tx
+      );
+
+      await this.attachmentRepository.createAttachment(
+        {
+          ...avatarObj,
+          attachmentOwnerId: userId,
+          attachmentCreatedTime: now,
+        },
+        tx
+      );
+
+      return user;
+    });
 
     return { accessToken: await this.tokenService.generateAccessToken(user) };
   }
@@ -44,7 +115,7 @@ export class AuthService {
       );
     }
 
-    if (user.deletedTime) {
+    if (user.userDeletedTime) {
       throw new CustomHttpException(
         `User ${email} is disabled or deleted`,
         HttpErrorCode.FREEZE_ACCOUNT

@@ -4,15 +4,17 @@ import { type Request } from 'express';
 
 import { Public } from '@/features/auth/decorators/public.decorator';
 
+import { UserService } from './user.service';
+
 @Controller('api/users')
 export class UserController {
-  // constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Public()
   @Get()
   @HttpCode(HttpStatus.OK)
   async testing() {
-    return { testing: 'Hello world' };
+    this.userService.testing();
   }
 
   @Get('/me')
