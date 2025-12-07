@@ -88,20 +88,6 @@ export class UserService {
       );
     }
 
-    // await this.attachmentRepository.createAttachment({
-    //   attachmentId: generateAttachmentId(),
-    //   attachmentOwnerId: hashValue,
-    //   attachmentPath: path,
-    //   attachmentName: hashValue,
-    //   attachmentSize: avatarBuffer.length,
-    //   attachmentMimetype: mimetype,
-    //   attachmentWidth: avatarSideLength,
-    //   attachmentHeight: avatarSideLength,
-    //   attachmentCreatedTime: new Date(),
-    // });
-
-    // return path;
-
     return {
       attachmentId: generateAttachmentId(),
       attachmentPath: path,
