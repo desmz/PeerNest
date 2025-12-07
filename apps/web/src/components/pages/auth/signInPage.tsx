@@ -11,7 +11,8 @@ export default function SignInPage() {
 
   const signInData: TSignInRo = {
     email: 'lee.desmond2016@gmail.com',
-    password: 'fdsf!l0289A',
+    // password: 'fdsf!l0289A',
+    password: '!JIA1015hee',
   };
 
   const signUpData: TSignUpRo = {

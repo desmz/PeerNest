@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { generateUserId, HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TInsertableUser, TKyselyTransaction } from '@peernest/db';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableUser,
+  TKyselyTransaction,
+  TUpdatableUser,
+} from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -36,6 +42,32 @@ export class UserRepository {
     }
   }
 
+  async updateUserById(userPayload: TUpdatableUser, id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = userPayload.userUpdatedTime ? userPayload.userUpdatedTime : new Date();
+
+      const user = await db
+        .updateTable('user')
+        .set({
+          ...userPayload,
+          userUpdatedTime: now,
+        })
+        .where('userId', '=', id)
+        .returningAll()
+        .execute();
+
+      return user!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserRepository.repoName}] | Fail to update user by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userPayload, id }
+      );
+    }
+  }
+
   async findUserById(id: string, options?: { includedDeleted?: boolean }, tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
@@ -57,7 +89,7 @@ export class UserRepository {
       throw new CustomHttpException(
         `[${UserRepository.repoName}] | Fail to find user by id`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, id }
+        { error, id, options }
       );
     }
   }
@@ -87,7 +119,7 @@ export class UserRepository {
       throw new CustomHttpException(
         `[${UserRepository.repoName}] | Fail to find user by email`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, email }
+        { error, email, options }
       );
     }
   }

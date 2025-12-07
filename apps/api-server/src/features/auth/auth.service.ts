@@ -3,6 +3,7 @@ import { TSignInRo, TSignUpRo } from '@peernest/contract';
 import {
   AccountProvider,
   AccountType,
+  comparePassword,
   encodePassword,
   generateAccountId,
   generateUserId,
@@ -105,7 +106,7 @@ export class AuthService {
   }
 
   async signIn(signInRo: TSignInRo) {
-    const { email } = signInRo;
+    const { email, password } = signInRo;
     const user = await this.userRepository.findUserByEmail(email, { includedDeleted: true });
 
     if (!user) {
@@ -115,12 +116,32 @@ export class AuthService {
       );
     }
 
+    if (user && !user.userPasswordHash) {
+      throw new CustomHttpException(
+        `User ${email} is not registered with password`,
+        HttpErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    const isPasswordValid = await comparePassword(password, user.userPasswordHash);
+
+    if (!isPasswordValid) {
+      throw new CustomHttpException('Invalid password', HttpErrorCode.INVALID_CREDENTIALS);
+    }
+
     if (user.userDeletedTime) {
       throw new CustomHttpException(
         `User ${email} is disabled or deleted`,
         HttpErrorCode.FREEZE_ACCOUNT
       );
     }
+
+    await this.userRepository.updateUserById(
+      {
+        userLastSignedTime: new Date(),
+      },
+      user.userId
+    );
 
     return { accessToken: await this.tokenService.generateAccessToken(user) };
   }
