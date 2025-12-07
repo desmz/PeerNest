@@ -76,10 +76,16 @@ export class UserService {
     const path = `${join(StorageAdapter.getDir(UploadType.Avatar), hashValue)}.png`;
     const bucket = StorageAdapter.getBucket(UploadType.Avatar);
 
-    const { hash } = await this.storageAdapter.uploadFile(bucket, path, avatarBuffer, {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Type': mimetype,
-    });
+    const { hash } = await this.storageAdapter.uploadFile(
+      bucket,
+      path,
+      avatarBuffer,
+      {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'Content-Type': mimetype,
+      },
+      true
+    );
 
     if (!hash) {
       throw new CustomHttpException(

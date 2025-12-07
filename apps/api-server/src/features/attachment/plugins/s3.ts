@@ -1,4 +1,5 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { ObjectCannedACL, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { Injectable } from '@nestjs/common';
 import { HttpErrorCode } from '@peernest/core';
 import fse from 'fs-extra';
@@ -58,7 +59,8 @@ export class S3Storage implements StorageAdapter {
     bucket: string,
     path: string,
     filePath: string,
-    metadata: Record<string, unknown>
+    metadata: Record<string, unknown>,
+    isPublic?: boolean
   ): Promise<{ hash: string; path: string }> {
     const readStream = fse.createReadStream(filePath);
     const command = new PutObjectCommand({
@@ -70,6 +72,7 @@ export class S3Storage implements StorageAdapter {
       ContentDisposition: metadata['Content-Disposition'] as string,
       ContentLanguage: metadata['Content-Language'] as string,
       ContentMD5: metadata['Content-MD5'] as string,
+      ACL: isPublic ? ObjectCannedACL.public_read : undefined,
     });
 
     return this.s3Client
@@ -88,20 +91,25 @@ export class S3Storage implements StorageAdapter {
     bucket: string,
     path: string,
     stream: Buffer | ReadableStream | string,
-    metadata?: Record<string, unknown>
+    metadata?: Record<string, unknown>,
+    isPublic?: boolean
   ): Promise<{ hash: string; path: string }> {
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: path,
-      Body: stream,
-      ContentType: metadata?.['Content-Type'] as string,
-      ContentLength: metadata?.['Content-Length'] as number,
-      ContentDisposition: metadata?.['Content-Disposition'] as string,
-      ContentLanguage: metadata?.['Content-Language'] as string,
-      ContentMD5: metadata?.['Content-MD5'] as string,
+    const upload = new Upload({
+      client: this.s3Client,
+      params: {
+        Bucket: bucket,
+        Key: path,
+        Body: stream,
+        ContentType: metadata?.['Content-Type'] as string,
+        ContentLength: metadata?.['Content-Length'] as number,
+        ContentDisposition: metadata?.['Content-Disposition'] as string,
+        ContentLanguage: metadata?.['Content-Language'] as string,
+        ContentMD5: metadata?.['Content-MD5'] as string,
+        ACL: isPublic ? ObjectCannedACL.public_read : undefined,
+      },
     });
 
-    return this.s3Client.send(command).then((res) => ({
+    return upload.done().then((res) => ({
       hash: res.ETag!,
       path,
     }));

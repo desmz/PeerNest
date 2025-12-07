@@ -44,12 +44,14 @@ export default abstract class StorageAdapter {
    * @param path path name
    * @param filePath file path
    * @param metadata metadata of the object
+   * @param isPublic object public accessibility flag
    */
   abstract uploadFileWithPath(
     bucket: string,
     path: string,
     filePath: string,
-    metadata: Record<string, unknown>
+    metadata: Record<string, unknown>,
+    isPublic?: boolean
   ): Promise<{ hash: string; path: string }>;
 
   /**
@@ -58,11 +60,13 @@ export default abstract class StorageAdapter {
    * @param path path name
    * @param stream file stream or string
    * @param metadata metadata of the object
+   * @param isPublic object public accessibility flag
    */
   abstract uploadFile(
     bucket: string,
     path: string,
     stream: Buffer | ReadableStream | string,
-    metadata?: Record<string, unknown>
+    metadata?: Record<string, unknown>,
+    isPublic?: boolean
   ): Promise<{ hash: string; path: string }>;
 }
