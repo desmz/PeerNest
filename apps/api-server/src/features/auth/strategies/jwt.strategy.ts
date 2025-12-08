@@ -43,6 +43,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
       );
     }
 
+    // todo: add ban check
+
     // set to cls
 
     return pickUserMe(user);

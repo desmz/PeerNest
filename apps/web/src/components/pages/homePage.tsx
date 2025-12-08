@@ -31,7 +31,7 @@ export default function HomePage() {
 
         {currentUser?.avatarUrl && (
           <img
-            src={currentUser.avatarUrl}
+            src={`${currentUser.avatarUrl}?v=${currentUser.lastSignedTime}`}
             width={40}
             height={40}
             alt='avatar url'

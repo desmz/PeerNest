@@ -26,7 +26,7 @@ export class AccountRepository {
         .returningAll()
         .executeTakeFirst();
 
-      return account!;
+      return account;
     } catch (error) {
       throw new CustomHttpException(
         `[${AccountRepository.repoName}] | Fail to create account`,
@@ -36,33 +36,24 @@ export class AccountRepository {
     }
   }
 
-  // async findAccountById(
-  //   id: string,
-  //   options?: { includedDeleted?: boolean },
-  //   tx?: TKyselyTransaction
-  // ) {
-  //   try {
-  //     const db = dbOrTx(this.kyselyService.db, tx);
+  async findAccountsByUserId(id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
 
-  //     let query = db
-  //       .selectFrom('user')
-  //       .innerJoin('role', 'role.roleId', 'user.userRoleId')
-  //       .selectAll(['user', 'role'])
-  //       .where('userId', '=', id);
+      const accounts = db
+        .selectFrom('account')
+        .selectAll()
+        .where('accountUserId', '=', id)
+        .where('accountDeletedTime', 'is', null)
+        .execute();
 
-  //     if (!options?.includedDeleted) {
-  //       query = query.where('userDeletedTime', 'is', null);
-  //     }
-
-  //     const user = await query.executeTakeFirst();
-
-  //     return user;
-  //   } catch (error) {
-  //     throw new CustomHttpException(
-  //       `[${AccountRepository.repoName}] | Fail to find user by id`,
-  //       HttpErrorCode.INTERNAL_SERVER_ERROR,
-  //       { error, id }
-  //     );
-  //   }
-  // }
+      return accounts;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${AccountRepository.repoName}] | Fail to find accounts by user id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id }
+      );
+    }
+  }
 }

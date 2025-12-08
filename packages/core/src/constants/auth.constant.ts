@@ -1,4 +1,5 @@
 export const ACCESS_TOKEN_STRATEGY_NAME = 'jwt';
+export const GOOGLE_OAUTH_STRATEGY_NAME = 'google';
 
 export const ACCESS_TOKEN_LOCAL_STORAGE = 'access_token';
 

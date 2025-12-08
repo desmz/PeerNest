@@ -18,7 +18,7 @@ user [color: blue] {
   id varchar pk
   display_name varchar
   display_name_tsv tsvector
-  password_hash varchar
+  password_hash varchar?
   role_id varchar fk
   email varchar
   avatar_url text
@@ -91,8 +91,6 @@ university [color: blue] {
   deleted_time timestamptz?
 }
 
-university.id - user_info.university_id
-
 domain [color: blue] {
   id varchar pk
   name varchar
@@ -100,8 +98,6 @@ domain [color: blue] {
   updated_time timestamptz?
   deleted_time timestamptz?
 }
-
-domain.id - user_info.domain_id
 
 user_info [color: blue] {
   id varchar pk
@@ -118,6 +114,8 @@ user_info [color: blue] {
 
 user.id - user_info.user_id
 pronoun.id - user_info.pronoun_id
+university.id - user_info.university_id
+domain.id - user_info.domain_id
 
 interest [color: blue] {
   id varchar pk
@@ -298,8 +296,8 @@ ban_request [color: blue] {
   id varchar pk
   requester_id varchar fk
   banned_user_id varchar fk
-  status varchar // pending, approved, rejected
-  reasons text
+  status varchar // pending, approved, rejected, suppressed (when multiple requesters, one is approved and others are suppressed)
+  reason text
   proof_reference_raw text
   created_time timestamptz
   resolver_id varchar? fk
@@ -381,6 +379,7 @@ conversation [color: blue] {
 message [color: blue] {
   id varchar pk
   author_id varchar fk
+  conversation_id varchar fk
   content text
   content_tsv tsvector
   created_time timestamptz
@@ -389,6 +388,7 @@ message [color: blue] {
 }
 
 user.id < message.author_id
+conversation.id < message.conversation_id
 
 message_attachment [color: green] {
   id varchar pk
@@ -440,8 +440,8 @@ wellness_symptom_category [color: blue] {
 
 wellness_symptom [color: blue] {
   id varchar pk
-  name varchar
   wellness_symptom_category_id varchar fk
+  name varchar
   position numeric // numeric(20, 10)
   created_time timestamptz
   updated_time timestamptz?
@@ -563,7 +563,7 @@ user.id < role_application.applicant_id
 role.id < role_application.applied_role_id
 user.id < role_application.processed_by
 
-role_attachment [color: green] {
+role_application_attachment [color: green] {
   id varchar pk
   role_application_id varchar fk
   attachment_id varchar fk
@@ -571,8 +571,8 @@ role_attachment [color: green] {
   // unique(role_application_id, attachment_id)
 }
 
-role_application.id < role_attachment.role_application_id
-attachment.id < role_attachment.attachment_id
+role_application.id < role_application_attachment.role_application_id
+attachment.id < role_application_attachment.attachment_id
 
 role_change_action [color: blue] {
   id varchar pk

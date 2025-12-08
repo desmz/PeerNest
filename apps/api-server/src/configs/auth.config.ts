@@ -15,6 +15,12 @@ export const authConfig = registerAs('auth', () => ({
     name: AUTH_COOKIE_NAME,
     maxAge: ms(AUTH_COOKIE_MAX_AGE ?? '10m'),
   },
+  socialProviders: envObj.SOCIAL_AUTH_PROVIDERS,
+  google: {
+    clientId: envObj.BACKEND_GOOGLE_CLIENT_ID,
+    clientSecret: envObj.BACKEND_GOOGLE_CLIENT_SECRET,
+    callbackUrl: envObj.BACKEND_GOOGLE_CALLBACK_URL,
+  },
   // resetPasswordToken: {
   //   secret:
   //     envObj.GENERAL_TOKEN_SECRET ??

@@ -55,6 +55,10 @@ export function setAuthCookie(res: Response, token: string) {
   });
 }
 
+export function clearCookie(res: Response) {
+  res.clearCookie(authConfig().cookie.name);
+}
+
 export function pickUserMe(user: TSelectableUser & TSelectableRole): TMeVo {
   return {
     displayName: user.userDisplayName,

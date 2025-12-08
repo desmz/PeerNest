@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { generateAttachmentId, HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TInsertableAttachment, TKyselyTransaction } from '@peernest/db';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableAttachment,
+  TKyselyTransaction,
+  TUpdatableAttachment,
+} from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -36,6 +42,38 @@ export class AttachmentRepository {
         `[${AttachmentRepository.repoName}] | Fail to create attachment`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, attachmentObj }
+      );
+    }
+  }
+
+  async updateAttachmentByOwnerId(
+    attachmentPayload: TUpdatableAttachment,
+    ownerId: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = attachmentPayload.attachmentUpdatedTime
+        ? attachmentPayload.attachmentUpdatedTime
+        : new Date();
+
+      const attachment = await db
+        .updateTable('attachment')
+        .set({
+          ...attachmentPayload,
+          attachmentUpdatedTime: now,
+        })
+        .where('attachmentOwnerId', '=', ownerId)
+        .returningAll()
+        .executeTakeFirst();
+
+      return attachment!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${AttachmentRepository.repoName}] | Fail to update attachment by owner id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, attachmentPayload, ownerId }
       );
     }
   }

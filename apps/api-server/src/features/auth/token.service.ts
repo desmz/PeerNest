@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HttpErrorCode } from '@peernest/core';
-import { TSelectableUser } from '@peernest/db';
 
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { CustomHttpException } from '@/custom.exception';
 
-import { TJwtPayload, JwtType } from './types/jwt-payload.type';
+import { TJwtPayload, JwtType, TJwtRawPayload } from './types/jwt-payload.type';
 
 @Injectable()
 export class TokenService {
@@ -15,7 +14,7 @@ export class TokenService {
     @AuthConfig() private readonly authConfig: TAuthConfig
   ) {}
 
-  async generateAccessToken(user: TSelectableUser) {
+  async generateAccessToken(user: TJwtRawPayload) {
     const payload: TJwtPayload = {
       sub: user.userId,
       email: user.userEmail,

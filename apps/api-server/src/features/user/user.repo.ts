@@ -56,7 +56,7 @@ export class UserRepository {
         })
         .where('userId', '=', id)
         .returningAll()
-        .execute();
+        .executeTakeFirst();
 
       return user!;
     } catch (error) {
