@@ -33,3 +33,9 @@ export enum AccountProvider {
   Google = 'google',
   Password = 'password',
 }
+
+export enum UserTokenType {
+  ForgetPassword = 'forget-password',
+}
+
+export const FORGET_TOKEN_HASH_LENGTH = 16;

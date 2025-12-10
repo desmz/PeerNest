@@ -18,7 +18,7 @@ export class TokenService {
     const payload: TJwtPayload = {
       sub: user.userId,
       email: user.userEmail,
-      type: JwtType.ACCESS,
+      type: JwtType.Access,
     };
 
     return this.jwtService.sign(payload);

@@ -11,9 +11,13 @@ export const signInFields = {
   password: 'Password',
 } as const;
 
+export function loosePasswordSchema(field: string) {
+  return z.string(zString(field)).nonempty(zNonEmpty(field));
+}
+
 export const signInRoSchema = z.object({
   email: emailSchema,
-  password: z.string(zString(signInFields.password)).nonempty(zNonEmpty(signInFields.password)),
+  password: loosePasswordSchema(signInFields.password),
 });
 
 export type TSignInRo = z.infer<typeof signInRoSchema>;

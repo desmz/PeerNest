@@ -24,10 +24,10 @@
       "name": "contract",
       "path": "./packages/contract",
     },
-    // {
-    //   "name": "transactional",
-    //   "path": "./packages/transactional",
-    // },
+    {
+      "name": "transactional",
+      "path": "./packages/transactional",
+    },
     // {
     //   "name": "ui-lib",
     //   "path": "./packages/ui-lib",
@@ -63,7 +63,7 @@
       "./packages/core",
       "./packages/db",
       "./packages/contract",
-      // "./packages/transactional",
+      "./packages/transactional",
       // "./packages/ui-lib",
       // "./packages/eslint-config-bases",
     ],

@@ -17,7 +17,7 @@ export class UserController {
     this.userService.testing();
   }
 
-  @Get('/me')
+  @Get('me')
   @HttpCode(HttpStatus.OK)
   async getCurrentUser(@Req() req: Request): Promise<TMeVo> {
     return req.user as TMeVo;

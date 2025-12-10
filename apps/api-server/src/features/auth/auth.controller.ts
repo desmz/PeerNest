@@ -9,7 +9,16 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { signInRoSchema, signUpRoSchema, type TSignInRo, type TSignUpRo } from '@peernest/contract';
+import {
+  forgetPasswordRoSchema,
+  resetPasswordRoSchema,
+  signInRoSchema,
+  signUpRoSchema,
+  type TResetPasswordRo,
+  type TForgetPasswordRo,
+  type TSignInRo,
+  type TSignUpRo,
+} from '@peernest/contract';
 import { type Request, type Response } from 'express';
 
 import { AppConfig, type TAppConfig } from '@/configs/app.config';
@@ -43,7 +52,7 @@ export class AuthController {
 
   @Public()
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('/signin')
+  @Post('signin')
   async signIn(
     @Body(new ZodValidationPipe(signInRoSchema)) userRo: TSignInRo,
     @Res({ passthrough: true }) res: Response
@@ -54,14 +63,14 @@ export class AuthController {
   }
 
   @Public()
-  @Get('/google')
+  @Get('google')
   @UseGuards(GoogleGuard)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async googleAuthenticate() {}
 
   @Public()
   @HttpCode(HttpStatus.OK)
-  @Get('/google/callback')
+  @Get('google/callback')
   @UseGuards(GoogleGuard)
   async googleCallback(@Req() req: Request, @Res() res: Response) {
     const { accessToken } = await this.authService.googleAuthenticateCallback(
@@ -77,5 +86,26 @@ export class AuthController {
   @Post('signout')
   async signout(@Res({ passthrough: true }) res: Response): Promise<void> {
     clearCookie(res);
+  }
+
+  @Public()
+  @Post('forget-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async forgetPassword(
+    @Body(new ZodValidationPipe(forgetPasswordRoSchema)) forgetPasswordRo: TForgetPasswordRo
+  ): Promise<void> {
+    await this.authService.forgetPassword(forgetPasswordRo);
+  }
+
+  @Public()
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(
+    @Body(new ZodValidationPipe(resetPasswordRoSchema)) resetPasswordRo: TResetPasswordRo,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<void> {
+    const { accessToken } = await this.authService.resetPassword(resetPasswordRo);
+
+    setAuthCookie(res, accessToken);
   }
 }

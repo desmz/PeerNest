@@ -6,7 +6,7 @@ import { Strategy } from 'passport-jwt';
 
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { CustomHttpException } from '@/custom.exception';
-import { UserRepository } from '@/features/user/user.repo';
+import { UserRepository } from '@/features/user/repos/user.repo';
 
 import { TJwtPayload, JwtType } from '../types/jwt-payload.type';
 import { fromCookie, pickUserMe } from '../utils';
@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
   async validate(payload: TJwtPayload): Promise<TMeVo> {
     const { sub: userId, type } = payload;
 
-    if (type !== JwtType.ACCESS) {
+    if (type !== JwtType.Access) {
       throw new UnauthorizedException('Must use access token type');
     }
 

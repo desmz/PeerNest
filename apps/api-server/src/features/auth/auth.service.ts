@@ -1,32 +1,41 @@
 import { join } from 'path';
 
 import { Injectable } from '@nestjs/common';
-import { TSignInRo, TSignUpRo } from '@peernest/contract';
+import { TForgetPasswordRo, TResetPasswordRo, TSignInRo, TSignUpRo } from '@peernest/contract';
 import {
   AccountProvider,
   AccountType,
   comparePassword,
   encodePassword,
+  FORGET_TOKEN_HASH_LENGTH,
   generateAccountId,
   generateAttachmentId,
   generateUserId,
+  generateUserTokenId,
+  getRandomString,
   HttpErrorCode,
   UploadType,
   UserRole,
+  UserTokenType,
 } from '@peernest/core';
 import { executeTx, KyselyService, TInsertableAttachment } from '@peernest/db';
 import axios from 'axios';
 import jdenticon, { toPng } from 'jdenticon';
 import { Jimp } from 'jimp';
+import ms from 'ms';
 
+import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
+import { MailConfig, type TMailConfig } from '@/configs/mail.config';
 import { CustomHttpException } from '@/custom.exception';
-import { AttachmentRepository } from '@/features/attachment/attachment.repo';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
-import { RoleRepository } from '@/features/user/role.repo';
-import { UserRepository } from '@/features/user/user.repo';
+import { AttachmentRepository } from '@/features/attachment/repos/attachment.repo';
+import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
+import { RoleRepository } from '@/features/user/repos/role.repo';
+import { UserTokenRepository } from '@/features/user/repos/user-token.repo';
+import { UserRepository } from '@/features/user/repos/user.repo';
 
-import { AccountRepository } from './account.repo';
+import { AccountRepository } from './repos/account.repo';
 import { TokenService } from './token.service';
 import { TJwtRawPayload } from './types/jwt-payload.type';
 import { TGoogleAuthRo } from './types/social-auth.type';
@@ -36,11 +45,15 @@ export class AuthService {
   constructor(
     @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     private readonly kyselyService: KyselyService,
+    @AuthConfig() private readonly authConfig: TAuthConfig,
+    @MailConfig() private readonly mailConfig: TMailConfig,
 
     private readonly attachmentRepository: AttachmentRepository,
     private readonly accountRepository: AccountRepository,
     private readonly roleRepository: RoleRepository,
     private readonly userRepository: UserRepository,
+    private readonly userTokenRepository: UserTokenRepository,
+    private readonly mailSenderService: MailSenderService,
     private readonly tokenService: TokenService
   ) {}
 
@@ -411,5 +424,104 @@ export class AuthService {
       attachmentWidth: svgSize[0],
       attachmentHeight: svgSize[1],
     };
+  }
+
+  async forgetPassword(forgetPasswordRo: TForgetPasswordRo) {
+    const { email } = forgetPasswordRo;
+
+    const user = await this.userRepository.findUserByEmail(email);
+
+    if (!user || (user && !user.userPasswordHash)) {
+      throw new CustomHttpException(
+        `User ${email} has not registered yet or the account is deleted`,
+        HttpErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    const token = getRandomString(FORGET_TOKEN_HASH_LENGTH);
+    const now = new Date();
+
+    await this.userTokenRepository.createUserToken({
+      userTokenId: generateUserTokenId(),
+      userTokenUserId: user.userId,
+      userTokenType: UserTokenType.ForgetPassword,
+      userTokenTokenHash: token,
+      userTokenCreatedTime: now,
+      userTokenExpiredTime: new Date(now.getTime() + ms(this.authConfig.generalToken.expiresIn)),
+    });
+
+    const resetPasswordUrl = `${this.mailConfig.publicOrigin}/reset-password?code=${token}`;
+    const resetPasswordOptions = await this.mailSenderService.resetPasswordEmailOption({
+      resetPasswordUrl,
+      userDisplayName: user.userDisplayName,
+    });
+
+    await this.mailSenderService.sendMail({ ...resetPasswordOptions, to: user.userEmail });
+  }
+
+  async resetPassword(resetPasswordRo: TResetPasswordRo) {
+    const { code, newPassword } = resetPasswordRo;
+
+    // find user token
+    const userToken = await this.userTokenRepository.findUserTokenByTokenHash(code);
+
+    // throw error
+    if (!userToken || userToken.userTokenType !== UserTokenType.ForgetPassword) {
+      throw new CustomHttpException('Invalid token', HttpErrorCode.NOT_FOUND);
+    }
+
+    const now = new Date();
+    if (userToken.userTokenExpiredTime < now) {
+      throw new CustomHttpException('Token is expired', HttpErrorCode.VALIDATION_ERROR);
+    }
+
+    // find the user
+    const user = await this.userRepository.findUserById(userToken.userTokenUserId);
+
+    // throw error
+    if (!user || (user && !user.userPasswordHash)) {
+      throw new CustomHttpException(
+        `User ${user?.userEmail} has not registered yet or the account is deleted`,
+        HttpErrorCode.INVALID_CREDENTIALS
+      );
+    }
+
+    if (user.userDeletedTime) {
+      throw new CustomHttpException(
+        `User ${user.userEmail} is disabled or deleted`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
+    }
+
+    // todo: add ban check
+
+    const passwordHash = await encodePassword(newPassword);
+
+    // update the user
+    await executeTx(this.kyselyService.db, async (tx) => {
+      await this.userTokenRepository.updateUserTokenById(
+        {
+          userTokenUsedTime: now,
+        },
+        userToken.userTokenId,
+        tx
+      );
+
+      await this.userRepository.updateUserById(
+        {
+          userPasswordHash: passwordHash,
+          userLastSignedTime: now,
+        },
+        user.userId,
+        tx
+      );
+    });
+
+    const resetPasswordEmailOption = await this.mailSenderService.resetPasswordSuccessEmailOption({
+      userDisplayName: user.userDisplayName,
+    });
+    await this.mailSenderService.sendMail({ ...resetPasswordEmailOption, to: user.userEmail });
+
+    return { accessToken: await this.tokenService.generateAccessToken(user) };
   }
 }

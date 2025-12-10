@@ -1,0 +1,33 @@
+{
+  "$schema": "https://www.schemastore.org/package.json",
+  "name": "@peernest/transactional",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@peernest/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "email:dev": "email dev --port 4040 --dir src/emails"
+  },
+  "dependencies": {
+    "@peernest/config": "workspace:*",
+    "@react-email/components": "^1.0.1",
+    "@react-email/render": "^2.0.0",
+    "@swc/helpers": "~0.5.11",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@react-email/preview-server": "5.0.6",
+    "react-email": "^5.0.6"
+  }
+}

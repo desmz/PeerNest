@@ -1,5 +1,5 @@
 export enum JwtType {
-  ACCESS = 'access',
+  Access = 'access',
 }
 
 export type TJwtRawPayload = {

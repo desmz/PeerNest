@@ -1,0 +1,38 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  "jsc": {
+    "target": "es2017",
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true,
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "transform": {
+      "decoratorMetadata": true,
+      "legacyDecorator": true,
+      "react": {
+        "runtime": "automatic", // or "classic"
+        "importSource": "react", // default, change if using emotion, preact, etc.
+        "useBuiltins": true,
+        "development": false,
+        "refresh": false
+      }
+    },
+    "keepClassNames": true,
+    "externalHelpers": true,
+    "loose": true
+  },
+  "module": {
+    "type": "es6"
+  },
+  "sourceMaps": true,
+  "exclude": [
+    "jest.config.[ct]s",
+    ".*\\.spec.tsx?$",
+    ".*\\.test.tsx?$",
+    "./src/jest-setup.ts$",
+    "./**/jest-setup.ts$",
+    ".*.js$"
+  ]
+}

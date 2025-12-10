@@ -14,7 +14,8 @@
       "@peernest/config/*": ["../../packages/config/src/*"],
       "@peernest/core/*": ["../../packages/core/src/*"],
       "@peernest/db/*": ["../../packages/db/src/*"],
-      "@peernest/contract/*": ["../../packages/contract/src/*"]
+      "@peernest/contract/*": ["../../packages/contract/src/*"],
+      "@peernest/transactional/*": ["../../packages/transactional/src/*"]
     }
   },
   "include": ["src/**/*.ts"],
@@ -31,6 +32,9 @@
     },
     {
       "path": "../../packages/contract/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/transactional/tsconfig.lib.json"
     }
   ]
 }

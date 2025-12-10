@@ -5,6 +5,7 @@
   "license": "MIT",
   "packageManager": "pnpm@10.4.0",
   "scripts": {
+    "email:dev": "pnpm --filter transactional email:dev",
     "lint-staged-files": "lint-staged --allow-empty",
     "many:serve": "pnpx nx run-many -t serve",
     "many:lint": "pnpx nx run-many -t lint --all",
@@ -48,8 +49,9 @@
     "@vitest/ui": "^4.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "2.31.0",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "6.10.1",
+    "eslint-plugin-perfectionist": "^4.15.1",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "5.0.0",

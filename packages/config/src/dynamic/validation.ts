@@ -38,6 +38,7 @@ export const envValidationSchema = z.object({
   PG_SSL_ENABLED: zBoolString,
 
   // Auth
+  GENERAL_TOKEN_EXPIRES_IN: z.string().nonempty(), // e.g. "5m", "1h"
   SOCIAL_AUTH_PROVIDERS: z.string().transform((str) =>
     str
       .split(',')

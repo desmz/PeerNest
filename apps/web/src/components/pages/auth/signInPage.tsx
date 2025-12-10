@@ -10,14 +10,14 @@ export default function SignInPage() {
   useRedirectIfAuthenticated();
 
   const signInData: TSignInRo = {
-    email: 'lee.desmond2016@gmail.com',
-    password: 'fdsf!l0289A',
+    email: 'lalelilolu7729@gmail.com',
+    password: 'PeerNest!6214',
   };
 
   const signUpData: TSignUpRo = {
     ...signInData,
-    displayName: 'Lee Jia Hee',
-    confirmPassword: 'fdsf!l0289A',
+    displayName: 'Alex Bob',
+    confirmPassword: 'PeerNest!6214',
   };
 
   async function onSignUpClick() {
@@ -36,7 +36,7 @@ export default function SignInPage() {
     <>
       <Helmet>
         <title>
-          {'Login'} - {envObj.BRAND_NAME}
+          {'Sign In'} - {envObj.BRAND_NAME}
         </title>
       </Helmet>
       <div>

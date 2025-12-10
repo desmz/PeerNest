@@ -6,12 +6,14 @@ import { ConfigModule } from '@/configs/config.module';
 import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { AuthModule } from '@/features/auth/auth.module';
 import { JwtAuthGuard } from '@/features/auth/guards/jwt.guard';
+import { MailSenderModule } from '@/features/mail-sender/mail-sender.module';
 import { UserModule } from '@/features/user/user.module';
 
 export const AppModules = {
   imports: [
     ConfigModule.register(),
     KyselyModule.forRoot({ formatted: true }),
+    MailSenderModule.register({ global: true }),
     UserModule,
     AuthModule,
     AttachmentModule,
