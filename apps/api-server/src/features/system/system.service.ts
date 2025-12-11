@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   TGetDomainsVo,
   TGetInterestsVo,
+  TGetPersonalGoalsVo,
   TGetPronounsVo,
   TGetUniversityVo,
 } from '@peernest/contract';
@@ -11,6 +12,7 @@ import { CustomHttpException } from '@/custom.exception';
 
 import { DomainRepository } from './repos/domain.repo';
 import { InterestRepository } from './repos/interest.repo';
+import { PersonalGoalRepository } from './repos/personal-goal.repo';
 import { PronounRepository } from './repos/pronoun.repo';
 import { UniversityRepository } from './repos/university.repo';
 
@@ -19,6 +21,7 @@ export class SystemService {
   constructor(
     private readonly domainRepository: DomainRepository,
     private readonly interestRepository: InterestRepository,
+    private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly pronounRepository: PronounRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
@@ -80,5 +83,34 @@ export class SystemService {
       interestName,
       interestPosition,
     }));
+  }
+
+  async getPersonalGoals(): Promise<TGetPersonalGoalsVo> {
+    const personalGoals = await this.personalGoalRepository.findPersonalGoals({
+      orderBy: 'personalGoalPosition',
+    });
+
+    if (!personalGoals) {
+      throw new CustomHttpException(
+        'Personal goal is not available',
+        HttpErrorCode.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    return personalGoals.map(
+      ({
+        personalGoalId,
+        personalGoalTitle,
+        personalGoalName,
+        personalGoalDescription,
+        personalGoalPosition,
+      }) => ({
+        personalGoalId,
+        personalGoalTitle,
+        personalGoalName,
+        personalGoalDescription,
+        personalGoalPosition,
+      })
+    );
   }
 }

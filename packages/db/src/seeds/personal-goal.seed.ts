@@ -17,8 +17,8 @@ async function main() {
 
   const headers = [
     'personal_goal_id',
-    'personal_goal_name',
     'personal_goal_title',
+    'personal_goal_name',
     'personal_goal_description',
   ];
   const includeRegex = new RegExp(headers.join('|'));

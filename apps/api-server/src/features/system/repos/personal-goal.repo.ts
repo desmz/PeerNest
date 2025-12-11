@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TKyselyTransaction, TSelectableInterest } from '@peernest/db';
+import { dbOrTx, KyselyService, TKyselyTransaction, TSelectablePersonalGoal } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
 @Injectable()
-export class InterestRepository {
-  private static repoName = 'INTEREST_REPOSITORY';
+export class PersonalGoalRepository {
+  private static repoName = 'PERSONAL_GOAL_REPOSITORY';
 
   constructor(private readonly kyselyService: KyselyService) {}
 
-  async findInterests(
+  async findPersonalGoals(
     options?: {
-      orderBy?: keyof TSelectableInterest | undefined;
+      orderBy?: keyof TSelectablePersonalGoal | undefined;
       ordering?: 'asc' | 'desc' | undefined;
     },
     tx?: TKyselyTransaction
@@ -21,18 +21,18 @@ export class InterestRepository {
       const { orderBy, ordering } = options || {};
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      let query = db.selectFrom('interest').selectAll();
+      let query = db.selectFrom('personalGoal').selectAll();
 
       if (orderBy) {
         query = query.orderBy(orderBy, ordering || 'asc');
       }
 
-      const interests = await query.execute();
+      const personalGoals = await query.execute();
 
-      return interests;
+      return personalGoals;
     } catch (error) {
       throw new CustomHttpException(
-        `[${InterestRepository.repoName}] | Fail to find interests`,
+        `[${PersonalGoalRepository.repoName}] | Fail to find personal goals`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
       );
