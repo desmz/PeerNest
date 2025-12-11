@@ -1,5 +1,10 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { TGetDomainsVo, TGetPronounsVo, TGetUniversityVo } from '@peernest/contract';
+import {
+  TGetDomainsVo,
+  TGetInterestsVo,
+  TGetPronounsVo,
+  TGetUniversityVo,
+} from '@peernest/contract';
 
 import { SystemService } from './system.service';
 
@@ -23,5 +28,11 @@ export class SystemController {
   @HttpCode(HttpStatus.OK)
   async getDomains(): Promise<TGetDomainsVo> {
     return this.systemService.getDomains();
+  }
+
+  @Get('interests')
+  @HttpCode(HttpStatus.OK)
+  async getInterests(): Promise<TGetInterestsVo> {
+    return this.systemService.getInterests();
   }
 }

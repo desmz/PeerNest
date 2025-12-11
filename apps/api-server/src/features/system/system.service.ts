@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { TGetDomainsVo, TGetPronounsVo, TGetUniversityVo } from '@peernest/contract';
+import {
+  TGetDomainsVo,
+  TGetInterestsVo,
+  TGetPronounsVo,
+  TGetUniversityVo,
+} from '@peernest/contract';
 import { HttpErrorCode } from '@peernest/core';
 
 import { CustomHttpException } from '@/custom.exception';
 
 import { DomainRepository } from './repos/domain.repo';
+import { InterestRepository } from './repos/interest.repo';
 import { PronounRepository } from './repos/pronoun.repo';
 import { UniversityRepository } from './repos/university.repo';
 
@@ -12,6 +18,7 @@ import { UniversityRepository } from './repos/university.repo';
 export class SystemService {
   constructor(
     private readonly domainRepository: DomainRepository,
+    private readonly interestRepository: InterestRepository,
     private readonly pronounRepository: PronounRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
@@ -56,5 +63,22 @@ export class SystemService {
     }
 
     return domains.map(({ domainId, domainName }) => ({ domainId, domainName }));
+  }
+
+  async getInterests(): Promise<TGetInterestsVo> {
+    const domains = await this.interestRepository.findInterests({ orderBy: 'interestPosition' });
+
+    if (!domains) {
+      throw new CustomHttpException(
+        'Interests is not available',
+        HttpErrorCode.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    return domains.map(({ interestId, interestName, interestPosition }) => ({
+      interestId,
+      interestName,
+      interestPosition,
+    }));
   }
 }
