@@ -21,14 +21,6 @@ List and describe the data models involved in this feature.
 Include ERD references, attributes, relationships, constraints.
 -->
 
-## 📚 Related APIs
-<!-- A list of the child API issues included under this API Set -->
-
-- [ ] API: Sign In
-- [ ] API: Sign Up
-- [ ] API: Verify Email  
-<!-- use checkboxes for tracking -->
-
 ## 🏗 Architecture / Flow (Optional)
 <!-- Describe the flow or architecture if needed. Sequence diagrams, logic, etc. -->
 
