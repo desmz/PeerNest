@@ -3,7 +3,7 @@ import z from 'zod';
 
 import { displayNameSchema, emailSchema } from '../auth/signup';
 
-export const ME = '/users/me';
+export const ME = '/me';
 
 export const userIdSchema = z.string().startsWith(IdPrefix.User);
 

@@ -14,6 +14,14 @@ export enum IdPrefix {
   Account = 'acc',
   Attachment = 'atm',
   UserToken = 'utk',
+  Pronoun = 'pn',
+  University = 'unvst',
+  Domain = 'dm',
+  UserInfo = 'usif',
+  Interest = 'itr',
+  PersonalGoal = 'psng',
+  UserInfoInterest = 'usifitr',
+  UserInfoPersonalGoal = 'usifpsng',
 }
 
 export function generateUuid() {
@@ -38,4 +46,36 @@ export function generateAttachmentId() {
 
 export function generateUserTokenId() {
   return IdPrefix.UserToken + '-' + generateUuid();
+}
+
+export function generatePronounId() {
+  return IdPrefix.Pronoun + '-' + generateUuid();
+}
+
+export function generateUniversityId() {
+  return IdPrefix.University + '-' + generateUuid();
+}
+
+export function generateDomainId() {
+  return IdPrefix.Domain + '-' + generateUuid();
+}
+
+export function generateUserInfoId() {
+  return IdPrefix.UserInfo + '-' + generateUuid();
+}
+
+export function generateInterestId() {
+  return IdPrefix.Interest + '-' + generateUuid();
+}
+
+export function generatePersonalGoalId() {
+  return IdPrefix.PersonalGoal + '-' + generateUuid();
+}
+
+export function generateUserInfoInterestId() {
+  return IdPrefix.UserInfoInterest + '-' + generateUuid();
+}
+
+export function generateUserInfoPersonalGoalId() {
+  return IdPrefix.UserInfoPersonalGoal + '-' + generateUuid();
 }

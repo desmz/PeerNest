@@ -11,6 +11,7 @@ import {
   generateAccountId,
   generateAttachmentId,
   generateUserId,
+  generateUserInfoId,
   generateUserTokenId,
   getRandomString,
   HttpErrorCode,
@@ -35,6 +36,8 @@ import { RoleRepository } from '@/features/user/repos/role.repo';
 import { UserTokenRepository } from '@/features/user/repos/user-token.repo';
 import { UserRepository } from '@/features/user/repos/user.repo';
 
+import { UserInfoRepository } from '../user/repos/user-info.repo';
+
 import { AccountRepository } from './repos/account.repo';
 import { TokenService } from './token.service';
 import { TJwtRawPayload } from './types/jwt-payload.type';
@@ -52,6 +55,7 @@ export class AuthService {
     private readonly accountRepository: AccountRepository,
     private readonly roleRepository: RoleRepository,
     private readonly userRepository: UserRepository,
+    private readonly userInfoRepository: UserInfoRepository,
     private readonly userTokenRepository: UserTokenRepository,
     private readonly mailSenderService: MailSenderService,
     private readonly tokenService: TokenService
@@ -118,6 +122,15 @@ export class AuthService {
           ...avatarObj,
           attachmentOwnerId: userId,
           attachmentCreatedTime: now,
+        },
+        tx
+      );
+
+      await this.userInfoRepository.createUserInfo(
+        {
+          userInfoId: generateUserInfoId(),
+          userInfoUserId: user.userId,
+          userInfoCreatedTime: now,
         },
         tx
       );
@@ -277,6 +290,15 @@ export class AuthService {
             ...avatarObj,
             attachmentOwnerId: userId,
             attachmentCreatedTime: now,
+          },
+          tx
+        );
+
+        await this.userInfoRepository.createUserInfo(
+          {
+            userInfoId: generateUserInfoId(),
+            userInfoUserId: user.userId,
+            userInfoCreatedTime: now,
           },
           tx
         );
