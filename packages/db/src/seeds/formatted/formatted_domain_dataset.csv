@@ -1,0 +1,174 @@
+domain_id,domain_name
+dm-019b0c5c-949e-7a61-a07f-be0e507a4c11,food science
+dm-019b0c5c-949f-7375-8df3-7626f8aea600,agriculture production & management
+dm-019b0c5c-949f-7375-8df3-7627b8fb4cc9,general agriculture
+dm-019b0c5c-949f-7375-8df3-7628a42bd5a6,agricultural economics
+dm-019b0c5c-949f-7375-8df3-76299162c2b3,natural resources management
+dm-019b0c5c-949f-7375-8df3-762a950b0de2,forestry
+dm-019b0c5c-949f-7375-8df3-762b3d8f4871,soil science
+dm-019b0c5c-949f-7375-8df3-762cbf365ad6,plant science & agronomy
+dm-019b0c5c-949f-7375-8df3-762d8ec9a4e8,animal sciences
+dm-019b0c5c-949f-7375-8df3-762ea07ab341,miscellaneous agriculture
+dm-019b0c5c-949f-7375-8df3-762f84fd2aaf,miscellaneous fine arts
+dm-019b0c5c-949f-7375-8df3-76303aedc5d8,commercial art & graphic design
+dm-019b0c5c-949f-7375-8df3-76313f556ebb,film video & photographic arts
+dm-019b0c5c-949f-7375-8df3-76320d42b9fb,music
+dm-019b0c5c-949f-7375-8df3-7633d8c3f412,fine arts
+dm-019b0c5c-949f-7375-8df3-7634ad577770,visual & performing arts
+dm-019b0c5c-949f-7375-8df3-7635dd5dd835,studio arts
+dm-019b0c5c-949f-7375-8df3-7636644e17d8,drama & theater arts
+dm-019b0c5c-949f-7375-8df3-763709796abe,pharmacology
+dm-019b0c5c-949f-7375-8df3-76386f80a939,cognitive science & biopsychology
+dm-019b0c5c-949f-7375-8df3-7639bc0bb7c0,molecular biology
+dm-019b0c5c-949f-7375-8df3-763af74f9c49,genetics
+dm-019b0c5c-949f-7375-8df3-763b9382e013,microbiology
+dm-019b0c5c-949f-7375-8df3-763cc8c7ff63,biochemical sciences
+dm-019b0c5c-949f-7375-8df3-763d2128573f,botany
+dm-019b0c5c-949f-7375-8df3-763e81ec5eef,environmental science
+dm-019b0c5c-949f-7375-8df3-763f798af884,physiology
+dm-019b0c5c-949f-7375-8df3-76401f8ea2d7,neuroscience
+dm-019b0c5c-949f-7375-8df3-76412578f3b1,miscellaneous biology
+dm-019b0c5c-94a0-725a-a78b-2a7573994276,biology
+dm-019b0c5c-94a0-725a-a78b-2a763603ae4a,ecology
+dm-019b0c5c-94a0-725a-a78b-2a770c892226,zoology
+dm-019b0c5c-94a0-725a-a78b-2a787feccad5,actuarial science
+dm-019b0c5c-94a0-725a-a78b-2a79c8630f6c,management information systems & statistics
+dm-019b0c5c-94a0-725a-a78b-2a7aadac3801,operations logistics & e-commerce
+dm-019b0c5c-94a0-725a-a78b-2a7b39f40c4b,finance
+dm-019b0c5c-94a0-725a-a78b-2a7cc44871d6,business economics
+dm-019b0c5c-94a0-725a-a78b-2a7da6e0c632,accounting
+dm-019b0c5c-94a0-725a-a78b-2a7ecdb76ccb,general business
+dm-019b0c5c-94a0-725a-a78b-2a7f39fa4b44,international business
+dm-019b0c5c-94a0-725a-a78b-2a808b18f377,miscellaneous business & medical administration
+dm-019b0c5c-94a0-725a-a78b-2a811f99eb1d,business management & administration
+dm-019b0c5c-94a0-725a-a78b-2a82bd9bd1c9,marketing & marketing research
+dm-019b0c5c-94a0-725a-a78b-2a8315530329,human resources & personnel management
+dm-019b0c5c-94a0-725a-a78b-2a8404911522,hospitality management
+dm-019b0c5c-94a0-725a-a78b-2a85cc31369f,communications
+dm-019b0c5c-94a0-725a-a78b-2a86b6d9cc70,journalism
+dm-019b0c5c-94a0-725a-a78b-2a8704e2d636,advertising & public relations
+dm-019b0c5c-94a0-725a-a78b-2a885327d857,mass media
+dm-019b0c5c-94a0-725a-a78b-2a890071e969,computer science
+dm-019b0c5c-94a0-725a-a78b-2a8a168fed72,mathematics
+dm-019b0c5c-94a0-725a-a78b-2a8b5c21681e,computer & information systems
+dm-019b0c5c-94a0-725a-a78b-2a8ca0b180e0,information sciences
+dm-019b0c5c-94a0-725a-a78b-2a8dbbab2e6d,statistics & decision science
+dm-019b0c5c-94a0-725a-a78b-2a8ee5fa82b9,applied mathematics
+dm-019b0c5c-94a0-725a-a78b-2a8f0b82b947,mathematics & computer science
+dm-019b0c5c-94a0-725a-a78b-2a907ae41370,computer programming & data processing
+dm-019b0c5c-94a0-725a-a78b-2a91e2cf8207,computer administration management & security
+dm-019b0c5c-94a0-725a-a78b-2a9266100508,computer networking & telecommunications
+dm-019b0c5c-94a0-725a-a78b-2a937c25db2e,communication technologies
+dm-019b0c5c-94a0-725a-a78b-2a94f2be1550,school student counseling
+dm-019b0c5c-94a0-725a-a78b-2a95073fba9d,special needs education
+dm-019b0c5c-94a0-725a-a78b-2a96b4bf0edb,general education
+dm-019b0c5c-94a0-725a-a78b-2a97a5bbf16e,social science or history teacher education
+dm-019b0c5c-94a0-725a-a78b-2a98a96c1406,mathematics teacher education
+dm-019b0c5c-94a0-725a-a78b-2a99d2626b8c,educational administration & supervision
+dm-019b0c5c-94a0-725a-a78b-2a9a772cb511,language & drama education
+dm-019b0c5c-94a0-725a-a78b-2a9bdfd8b89e,miscellaneous education
+dm-019b0c5c-94a0-725a-a78b-2a9ca3cb6a19,secondary teacher education
+dm-019b0c5c-94a0-725a-a78b-2a9d16d09130,art & music education
+dm-019b0c5c-94a0-725a-a78b-2a9e57beb16d,elementary education
+dm-019b0c5c-94a0-725a-a78b-2a9f0d626a5d,science & computer teacher education
+dm-019b0c5c-94a0-725a-a78b-2aa0b5984254,physical & health education teaching
+dm-019b0c5c-94a0-725a-a78b-2aa16839175b,teacher education: multiple levels
+dm-019b0c5c-94a0-725a-a78b-2aa2d808f2d5,early childhood education
+dm-019b0c5c-94a0-725a-a78b-2aa38f079585,library science
+dm-019b0c5c-94a0-725a-a78b-2aa4c875b5d9,petroleum engineering
+dm-019b0c5c-94a0-725a-a78b-2aa505acc235,mining & mineral engineering
+dm-019b0c5c-94a0-725a-a78b-2aa64f145732,metallurgical engineering
+dm-019b0c5c-94a0-725a-a78b-2aa702cad33c,naval architecture & marine engineering
+dm-019b0c5c-94a0-725a-a78b-2aa8b8e48359,chemical engineering
+dm-019b0c5c-94a0-725a-a78b-2aa94a86bad9,nuclear engineering
+dm-019b0c5c-94a0-725a-a78b-2aaa929bf815,mechanical engineering
+dm-019b0c5c-94a0-725a-a78b-2aab19612d89,electrical engineering
+dm-019b0c5c-94a0-725a-a78b-2aac790ef446,computer engineering
+dm-019b0c5c-94a0-725a-a78b-2aadfafea360,aerospace engineering
+dm-019b0c5c-94a0-725a-a78b-2aae017f266e,biomedical engineering
+dm-019b0c5c-94a0-725a-a78b-2aaf74d04aa3,materials science
+dm-019b0c5c-94a0-725a-a78b-2ab005791937,engineering mechanics physics & science
+dm-019b0c5c-94a0-725a-a78b-2ab1b9d31fed,biological engineering
+dm-019b0c5c-94a0-725a-a78b-2ab2bf81e5cb,industrial & manufacturing engineering
+dm-019b0c5c-94a0-725a-a78b-2ab3b7cdd964,general engineering
+dm-019b0c5c-94a0-725a-a78b-2ab4ae7cdeb9,architectural engineering
+dm-019b0c5c-94a0-725a-a78b-2ab5a0a78ecd,electrical engineering technology
+dm-019b0c5c-94a0-725a-a78b-2ab6146fbeef,materials engineering & materials science
+dm-019b0c5c-94a0-725a-a78b-2ab7d9ba876d,civil engineering
+dm-019b0c5c-94a0-725a-a78b-2ab8548f9c7a,miscellaneous engineering
+dm-019b0c5c-94a0-725a-a78b-2ab90883217b,environmental engineering
+dm-019b0c5c-94a0-725a-a78b-2aba035cffca,engineering technologies
+dm-019b0c5c-94a0-725a-a78b-2abb0e4ed402,geological & geophysical engineering
+dm-019b0c5c-94a0-725a-a78b-2abc60d2bf1d,industrial production technologies
+dm-019b0c5c-94a0-725a-a78b-2abdcc51fca3,engineering & industrial management
+dm-019b0c5c-94a0-725a-a78b-2abecd277a7e,architecture
+dm-019b0c5c-94a0-725a-a78b-2abf6e99d2a3,miscellaneous engineering technologies
+dm-019b0c5c-94a0-725a-a78b-2ac08adb7f14,mechanical engineering related technologies
+dm-019b0c5c-94a0-725a-a78b-2ac11b3cd624,nursing
+dm-019b0c5c-94a0-725a-a78b-2ac29944592e,medical technologies technicians
+dm-019b0c5c-94a0-725a-a78b-2ac36a501341,medical assisting services
+dm-019b0c5c-94a0-725a-a78b-2ac40a04233c,pharmacy pharmaceutical sciences & administration
+dm-019b0c5c-94a0-725a-a78b-2ac5f07a8d98,miscellaneous health medical professions
+dm-019b0c5c-94a0-725a-a78b-2ac6dc0770e0,nutrition sciences
+dm-019b0c5c-94a0-725a-a78b-2ac753d0ea8e,health & medical administrative services
+dm-019b0c5c-94a0-725a-a78b-2ac8368b0652,community & public health
+dm-019b0c5c-94a0-725a-a78b-2ac949c0a204,health & medical preparatory programs
+dm-019b0c5c-94a0-725a-a78b-2aca5872c062,treatment therapy professions
+dm-019b0c5c-94a0-725a-a78b-2acb8da734e0,general medical & health services
+dm-019b0c5c-94a0-725a-a78b-2accf53da3f4,communication disorders sciences & services
+dm-019b0c5c-94a0-725a-a78b-2acdc0c00bb7,united states history
+dm-019b0c5c-94a0-725a-a78b-2aced12ef913,area ethnic & civilization studies
+dm-019b0c5c-94a0-725a-a78b-2acfd7159a2a,history
+dm-019b0c5c-94a0-725a-a78b-2ad0ec158fae,french german latin & other common foreign language studies
+dm-019b0c5c-94a0-725a-a78b-2ad1026d0990,intercultural & international studies
+dm-019b0c5c-94a0-725a-a78b-2ad277567642,linguistics & comparative language & literature
+dm-019b0c5c-94a0-725a-a78b-2ad388b2c975,philosophy & religious studies
+dm-019b0c5c-94a0-725a-a78b-2ad42322582d,english language & literature
+dm-019b0c5c-94a0-725a-a78b-2ad56384f1ff,liberal arts
+dm-019b0c5c-94a0-725a-a78b-2ad60df29c60,art history & criticism
+dm-019b0c5c-94a0-725a-a78b-2ad7530762b2,humanities
+dm-019b0c5c-94a0-725a-a78b-2ad86825ab49,theology & religious vocations
+dm-019b0c5c-94a0-725a-a78b-2ad90f41cd39,anthropology & archeology
+dm-019b0c5c-94a0-725a-a78b-2adabc13f28e,other foreign languages
+dm-019b0c5c-94a0-725a-a78b-2adb3f2563b7,composition & rhetoric
+dm-019b0c5c-94a0-725a-a78b-2adc6d000b1f,construction services
+dm-019b0c5c-94a0-725a-a78b-2add048367c8,military technologies
+dm-019b0c5c-94a0-725a-a78b-2ade3b68debe,"electrical, mechanical, & precision technologies & production"
+dm-019b0c5c-94a0-725a-a78b-2adf5f5cedee,transportation sciences & technologies
+dm-019b0c5c-94a0-725a-a78b-2ae029bd19bb,physical fitness parks recreation & leisure
+dm-019b0c5c-94a0-725a-a78b-2ae1113b11dd,family & consumer sciences
+dm-019b0c5c-94a0-725a-a78b-2ae2f3b56e34,cosmetology services & culinary arts
+dm-019b0c5c-94a0-725a-a78b-2ae317d7a202,multi/interdisciplinary studies
+dm-019b0c5c-94a0-725a-a78b-2ae4afec9fb1,court reporting
+dm-019b0c5c-94a0-725a-a78b-2ae55df41522,public policy
+dm-019b0c5c-94a0-725a-a78b-2ae6d27912f3,pre-law & legal studies
+dm-019b0c5c-94a0-725a-a78b-2ae7ea7251a8,public administration
+dm-019b0c5c-94a0-725a-a78b-2ae88a1cf2c9,criminal justice & fire protection
+dm-019b0c5c-94a0-725a-a78b-2ae934ea291c,astronomy & astrophysics
+dm-019b0c5c-94a0-725a-a78b-2aea14001a40,"nuclear, industrial radiology, & biological technologies"
+dm-019b0c5c-94a0-725a-a78b-2aeb8bcbdbb4,physics
+dm-019b0c5c-94a0-725a-a78b-2aec20ad1bb1,oceanography
+dm-019b0c5c-94a0-725a-a78b-2aedb1523900,physical sciences
+dm-019b0c5c-94a0-725a-a78b-2aee750609f6,chemistry
+dm-019b0c5c-94a0-725a-a78b-2aef69b65cf5,geology & earth science
+dm-019b0c5c-94a0-725a-a78b-2af0b3f1f902,geosciences
+dm-019b0c5c-94a0-725a-a78b-2af18085b54b,multi-disciplinary or general science
+dm-019b0c5c-94a0-725a-a78b-2af2eb39dbe5,atmospheric sciences & meteorology
+dm-019b0c5c-94a0-725a-a78b-2af39f1d4126,industrial & organizational psychology
+dm-019b0c5c-94a0-725a-a78b-2af455a4372d,social psychology
+dm-019b0c5c-94a0-725a-a78b-2af5f7585da0,psychology
+dm-019b0c5c-94a0-725a-a78b-2af69bc7197c,social work
+dm-019b0c5c-94a0-725a-a78b-2af707cee64d,miscellaneous psychology
+dm-019b0c5c-94a0-725a-a78b-2af8109a5a83,human services & community organization
+dm-019b0c5c-94a0-725a-a78b-2af96246d3dd,educational psychology
+dm-019b0c5c-94a0-725a-a78b-2afa212cb6ea,clinical psychology
+dm-019b0c5c-94a0-725a-a78b-2afb7cbc59ee,counseling psychology
+dm-019b0c5c-94a0-725a-a78b-2afc6b8f364b,economics
+dm-019b0c5c-94a0-725a-a78b-2afd05a8d010,international relations
+dm-019b0c5c-94a0-725a-a78b-2afe9d0596fb,miscellaneous social sciences
+dm-019b0c5c-94a0-725a-a78b-2affe607d54e,political science & government
+dm-019b0c5c-94a0-725a-a78b-2b0046569945,geography
+dm-019b0c5c-94a0-725a-a78b-2b01816d38a7,criminology
+dm-019b0c5c-94a0-725a-a78b-2b02f34eab13,sociology
+dm-019b0c5c-94a0-725a-a78b-2b0333d2c6a7,interdisciplinary social sciences
+dm-019b0c5c-94a0-725a-a78b-2b04b857fd30,general social sciences
