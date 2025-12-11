@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const GET_UNIVERSITIES = '/system/universities';
+export const GET_UNIVERSITIES = '/sys/universities';
 
 export const getUniversityVoSchema = z.array(
   z.object({

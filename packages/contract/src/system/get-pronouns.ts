@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const GET_PRONOUNS = '/system/pronouns';
+export const GET_PRONOUNS = '/sys/pronouns';
 
 export const getPronounsVoSchema = z.array(
   z.object({

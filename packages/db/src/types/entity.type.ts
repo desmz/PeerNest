@@ -1,5 +1,3 @@
-import { Domain } from 'domain';
-
 import { Insertable, Selectable, Updateable } from 'kysely';
 
 import {
@@ -14,6 +12,7 @@ import {
   UserInfo,
   UserInfoInterest,
   UserInfoPersonalGoal,
+  Domain,
   UserToken,
 } from './db';
 
