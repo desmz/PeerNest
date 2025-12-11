@@ -13,6 +13,7 @@ assignees: ''
 **Endpoint Name:**  
 **Route Path:**  
 **Method:** `GET | POST | PUT | PATCH | DELETE`
+**Status Code:** `200 | 204`
 
 **Belongs to API Set:**  
 <!-- Link to the API set issue -->
