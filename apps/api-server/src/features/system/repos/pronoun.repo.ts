@@ -12,16 +12,21 @@ export class PronounRepository {
 
   async findPronouns(
     options?: {
+      includedDeleted?: boolean;
       orderBy?: keyof TSelectablePronoun | undefined;
       ordering?: 'asc' | 'desc' | undefined;
     },
     tx?: TKyselyTransaction
   ) {
     try {
-      const { orderBy, ordering } = options || {};
+      const { includedDeleted, orderBy, ordering } = options || {};
       const db = dbOrTx(this.kyselyService.db, tx);
 
       let query = db.selectFrom('pronoun').selectAll();
+
+      if (!includedDeleted) {
+        query = query.where('pronounDeletedTime', 'is', null);
+      }
 
       if (orderBy) {
         query = query.orderBy(orderBy, ordering || 'asc');

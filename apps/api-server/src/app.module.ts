@@ -1,6 +1,7 @@
 import { DynamicModule, Global, Module, ModuleMetadata } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { KyselyModule } from '@peernest/db';
+import { ClsModule } from 'nestjs-cls';
 
 import { ConfigModule } from '@/configs/config.module';
 import { AttachmentModule } from '@/features/attachment/attachment.module';
@@ -13,6 +14,12 @@ import { UserModule } from '@/features/user/user.module';
 export const AppModules = {
   imports: [
     ConfigModule.register(),
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        mount: true,
+      },
+    }),
     KyselyModule.forRoot({ formatted: true }),
     MailSenderModule.register({ global: true }),
     SystemModule,

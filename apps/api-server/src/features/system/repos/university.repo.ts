@@ -12,16 +12,21 @@ export class UniversityRepository {
 
   async findUniversities(
     options?: {
+      includedDeleted?: boolean;
       orderBy?: keyof TSelectableUniversity | undefined;
       ordering?: 'asc' | 'desc' | undefined;
     },
     tx?: TKyselyTransaction
   ) {
     try {
-      const { orderBy, ordering } = options || {};
+      const { includedDeleted, orderBy, ordering } = options || {};
       const db = dbOrTx(this.kyselyService.db, tx);
 
       let query = db.selectFrom('university').selectAll();
+
+      if (!includedDeleted) {
+        query = query.where('universityDeletedTime', 'is', null);
+      }
 
       if (orderBy) {
         query = query.orderBy(orderBy, ordering || 'asc');

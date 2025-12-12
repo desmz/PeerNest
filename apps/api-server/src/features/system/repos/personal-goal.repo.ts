@@ -12,16 +12,21 @@ export class PersonalGoalRepository {
 
   async findPersonalGoals(
     options?: {
+      includedDeleted?: boolean;
       orderBy?: keyof TSelectablePersonalGoal | undefined;
       ordering?: 'asc' | 'desc' | undefined;
     },
     tx?: TKyselyTransaction
   ) {
     try {
-      const { orderBy, ordering } = options || {};
+      const { includedDeleted, orderBy, ordering } = options || {};
       const db = dbOrTx(this.kyselyService.db, tx);
 
       let query = db.selectFrom('personalGoal').selectAll();
+
+      if (!includedDeleted) {
+        query = query.where('personalGoalDeletedTime', 'is', null);
+      }
 
       if (orderBy) {
         query = query.orderBy(orderBy, ordering || 'asc');
