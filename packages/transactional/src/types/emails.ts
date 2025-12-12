@@ -13,3 +13,8 @@ export type TResetPasswordOptions = {
 export type TResetPasswordSuccessOptions = {
   userDisplayName: string;
 };
+
+export type TChangeEmailOptions = {
+  userDisplayName: string;
+  changeEmailUrl: string;
+};

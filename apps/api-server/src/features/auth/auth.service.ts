@@ -7,7 +7,7 @@ import {
   AccountType,
   comparePassword,
   encodePassword,
-  FORGET_TOKEN_HASH_LENGTH,
+  FORGET_PASSWORD_TOKEN_HASH_LENGTH,
   generateAccountId,
   generateAttachmentId,
   generateUserId,
@@ -32,13 +32,12 @@ import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { AttachmentRepository } from '@/features/attachment/repos/attachment.repo';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
+import { AccountRepository } from '@/features/user/repos/account.repo';
 import { RoleRepository } from '@/features/user/repos/role.repo';
+import { UserInfoRepository } from '@/features/user/repos/user-info.repo';
 import { UserTokenRepository } from '@/features/user/repos/user-token.repo';
 import { UserRepository } from '@/features/user/repos/user.repo';
 
-import { UserInfoRepository } from '../user/repos/user-info.repo';
-
-import { AccountRepository } from './repos/account.repo';
 import { TokenService } from './token.service';
 import { TJwtRawPayload } from './types/jwt-payload.type';
 import { TGoogleAuthRo } from './types/social-auth.type';
@@ -64,10 +63,10 @@ export class AuthService {
   async signup(signUpRo: TSignUpRo): Promise<{ accessToken: string }> {
     const { email, displayName, password } = signUpRo;
 
-    const existingEmail = await this.userRepository.findUserByEmail(email, {
+    const existingUser = await this.userRepository.findUserByEmail(email, {
       includedDeleted: true,
     });
-    if (existingEmail) {
+    if (existingUser) {
       throw new CustomHttpException(
         `User ${email} is already registered or the account is deleted`,
         HttpErrorCode.CONFLICT
@@ -357,7 +356,12 @@ export class AuthService {
             );
           }
 
-          await this.accountRepository.createAccount(
+          // * special case
+          // The user that has both local and social accounts change the email.
+          // All social accounts are unlinked by soft-deleting.
+          // Then, the user change back the email to the email address that have been linked with the email.
+          // In this case, we do need update operation.
+          await this.accountRepository.upsertAccount(
             {
               accountId: generateAccountId(),
               accountUserId: existingUser.userId,
@@ -365,6 +369,10 @@ export class AuthService {
               accountProvider: AccountProvider.Google,
               accountProviderUserId: providerId,
               accountCreatedTime: now,
+            },
+            {
+              accountUpdatedTime: now,
+              accountDeletedTime: null,
             },
             tx
           );
@@ -460,7 +468,7 @@ export class AuthService {
       );
     }
 
-    const token = getRandomString(FORGET_TOKEN_HASH_LENGTH);
+    const token = getRandomString(FORGET_PASSWORD_TOKEN_HASH_LENGTH);
     const now = new Date();
 
     await this.userTokenRepository.createUserToken({

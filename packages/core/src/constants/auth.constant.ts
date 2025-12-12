@@ -3,7 +3,7 @@ export const GOOGLE_OAUTH_STRATEGY_NAME = 'google';
 
 export const ACCESS_TOKEN_LOCAL_STORAGE = 'access_token';
 
-export const AUTH_COOKIE_MAX_AGE = '5m';
+export const AUTH_COOKIE_MAX_AGE = '30d';
 export const AUTH_COOKIE_NAME = 'authToken';
 
 export const MIN_PASSWORD_LEN = 6;
@@ -36,6 +36,8 @@ export enum AccountProvider {
 
 export enum UserTokenType {
   ForgetPassword = 'forget-password',
+  ChangeEmail = 'change-email',
 }
 
-export const FORGET_TOKEN_HASH_LENGTH = 16;
+export const FORGET_PASSWORD_TOKEN_HASH_LENGTH = 16;
+export const CHANGE_EMAIL_TOKEN_HASH_LENGTH = 16;
