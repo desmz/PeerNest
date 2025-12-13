@@ -1,5 +1,3 @@
-import { isEmptyObject } from '@peernest/core';
-import { type ZodRawShape, type ZodObject } from 'zod';
 import { CheckTypeParams } from 'zod/v4/core';
 
 // utils functions
@@ -41,16 +39,3 @@ export const zEmail = (field: string): CheckTypeParams => ({
 export const zEnum = (field: string): CheckTypeParams => ({
   message: `${field} is not a valid enum`,
 });
-
-export const zNonEmptyObject = <T extends ZodRawShape>(objectSchema: ZodObject<T>) =>
-  objectSchema.superRefine((obj, ctx) => {
-    // const keys = Object.keys(obj).filter((key) => Boolean(obj[key as keyof typeof obj]));
-    // keys.length === 0
-
-    if (isEmptyObject(obj)) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Object cannot be empty',
-      });
-    }
-  });

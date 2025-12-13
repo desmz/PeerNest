@@ -1,11 +1,8 @@
-import { IdPrefix } from '@peernest/core';
 import z from 'zod';
 
 import { displayNameSchema, emailSchema } from '../auth/signup';
 
 export const ME = '/me';
-
-export const userIdSchema = z.string().startsWith(IdPrefix.User);
 
 export const meVoSchema = z.object({
   displayName: displayNameSchema,

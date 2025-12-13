@@ -258,6 +258,9 @@ importers:
       jimp:
         specifier: ^1.6.0
         version: 1.6.0
+      kysely:
+        specifier: ^0.28.8
+        version: 0.28.8
       ms:
         specifier: ^2.1.3
         version: 2.1.3
