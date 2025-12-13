@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { Injectable } from '@nestjs/common';
 import {
   TChangeEmailRo,
@@ -14,6 +16,7 @@ import {
   generateUserTokenId,
   getRandomString,
   HttpErrorCode,
+  UploadType,
   UserTokenType,
 } from '@peernest/core';
 import {
@@ -24,12 +27,16 @@ import {
   TUpdatableUserInfoInterest,
   TUpdatableUserInfoPersonalGoal,
 } from '@peernest/db';
+import { Jimp } from 'jimp';
 import ms from 'ms';
 import { ClsService } from 'nestjs-cls';
 
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { MailConfig, type TMailConfig } from '@/configs/mail.config';
 import { CustomHttpException } from '@/custom.exception';
+import StorageAdapter from '@/features/attachment/plugins/adapter';
+import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
+import { AttachmentRepository } from '@/features/attachment/repos/attachment.repo';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
 import { InterestRepository } from '@/features/system/repos/interest.repo';
 import { PersonalGoalRepository } from '@/features/system/repos/personal-goal.repo';
@@ -45,11 +52,13 @@ import { UserRepository } from './repos/user.repo';
 @Injectable()
 export class UserService {
   constructor(
+    @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     @AuthConfig() private readonly authConfig: TAuthConfig,
     @MailConfig() private readonly mailConfig: TMailConfig,
     private readonly clsService: ClsService<IClsStore>,
     private readonly kyselyService: KyselyService,
 
+    private readonly attachmentRepository: AttachmentRepository,
     private readonly accountRepository: AccountRepository,
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
@@ -351,5 +360,51 @@ export class UserService {
       ...userInfoAgg,
       userDisplayName: user.userDisplayName,
     };
+  }
+
+  async updateAvatar(avatarFile: Express.Multer.File) {
+    const userId = this.clsService.get('user.id');
+
+    const path = `${join(StorageAdapter.getDir(UploadType.Avatar), userId)}.png`;
+    const bucket = StorageAdapter.getBucket(UploadType.Avatar);
+
+    const svgSize = [256, 256];
+    const mimetype = 'image/png';
+
+    const image = await Jimp.fromBuffer(avatarFile.buffer, {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'image/jpeg': { maxMemoryUsageInMB: 1024 }, // 1GB
+    });
+    image.resize({ h: svgSize[0], w: svgSize[1] });
+    const avatarBuffer = await image.getBuffer(mimetype);
+
+    const { hash } = await this.storageAdapter.uploadFile(
+      bucket,
+      path,
+      avatarBuffer,
+      {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'Content-Type': mimetype,
+      },
+      true
+    );
+
+    if (!hash) {
+      throw new CustomHttpException('Fail to upload avatar', HttpErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    const now = new Date();
+    await this.attachmentRepository.updateAttachmentByOwnerId(
+      {
+        attachmentMimetype: mimetype,
+        attachmentPath: path,
+        attachmentName: userId,
+        attachmentSize: avatarBuffer.length,
+        attachmentWidth: svgSize[0],
+        attachmentHeight: svgSize[1],
+        attachmentUpdatedTime: now,
+      },
+      userId
+    );
   }
 }

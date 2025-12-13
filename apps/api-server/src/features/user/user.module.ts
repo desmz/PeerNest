@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { StorageModule } from '@/features/attachment/plugins/storage.module';
 import { SystemModule } from '@/features/system/system.module';
 
@@ -14,7 +15,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [StorageModule, SystemModule],
+  imports: [StorageModule, SystemModule, AttachmentModule],
   controllers: [UserController],
   providers: [
     AccountRepository,
