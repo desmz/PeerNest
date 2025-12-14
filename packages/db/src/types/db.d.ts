@@ -197,6 +197,13 @@ export interface AuthOauthClients {
   updatedAt: Generated<Timestamp>;
 }
 
+export interface AuthOauthClientStates {
+  codeVerifier: string | null;
+  createdAt: Timestamp;
+  id: string;
+  providerType: string;
+}
+
 export interface AuthOauthConsents {
   clientId: string;
   grantedAt: Generated<Timestamp>;
@@ -342,6 +349,21 @@ export interface AuthUsers {
   updatedAt: Timestamp | null;
 }
 
+export interface Conversation {
+  conversationCreatedTime: Generated<Timestamp>;
+  conversationId: Generated<string>;
+  conversationType: string;
+  conversationUpdatedTime: Timestamp | null;
+}
+
+export interface ConversationParticipant {
+  conversationParticipantConversationId: string;
+  conversationParticipantId: Generated<string>;
+  conversationParticipantJoinedTime: Generated<Timestamp>;
+  conversationParticipantParticipantId: string;
+  conversationParticipantRole: string;
+}
+
 export interface Domain {
   domainCreatedTime: Generated<Timestamp>;
   domainDeletedTime: Timestamp | null;
@@ -407,6 +429,16 @@ export interface ExtensionsPgStatStatementsInfo {
   statsReset: Timestamp | null;
 }
 
+export interface FriendRequest {
+  friendRequestCreatedTime: Generated<Timestamp>;
+  friendRequestFromId: string;
+  friendRequestId: Generated<string>;
+  friendRequestMatchedBySystem: Generated<boolean>;
+  friendRequestResolvedTime: Timestamp | null;
+  friendRequestStatus: string;
+  friendRequestToId: string;
+}
+
 export interface Interest {
   interestCreatedTime: Generated<Timestamp>;
   interestDeletedTime: Timestamp | null;
@@ -459,6 +491,14 @@ export interface RealtimeSubscription {
   filters: Generated<string[]>;
   id: Generated<Int8>;
   subscriptionId: string;
+}
+
+export interface Relationship {
+  relationshipCreatedTime: Generated<Timestamp>;
+  relationshipId: Generated<string>;
+  relationshipType: string;
+  relationshipUserIdA: string;
+  relationshipUserIdB: string;
 }
 
 export interface Role {
@@ -674,6 +714,7 @@ export interface DB {
   'auth.mfaFactors': AuthMfaFactors;
   'auth.oauthAuthorizations': AuthOauthAuthorizations;
   'auth.oauthClients': AuthOauthClients;
+  'auth.oauthClientStates': AuthOauthClientStates;
   'auth.oauthConsents': AuthOauthConsents;
   'auth.oneTimeTokens': AuthOneTimeTokens;
   'auth.refreshTokens': AuthRefreshTokens;
@@ -684,15 +725,19 @@ export interface DB {
   'auth.ssoDomains': AuthSsoDomains;
   'auth.ssoProviders': AuthSsoProviders;
   'auth.users': AuthUsers;
+  conversation: Conversation;
+  conversationParticipant: ConversationParticipant;
   domain: Domain;
   'extensions.pgStatStatements': ExtensionsPgStatStatements;
   'extensions.pgStatStatementsInfo': ExtensionsPgStatStatementsInfo;
+  friendRequest: FriendRequest;
   interest: Interest;
   personalGoal: PersonalGoal;
   pronoun: Pronoun;
   'realtime.messages': RealtimeMessages;
   'realtime.schemaMigrations': RealtimeSchemaMigrations;
   'realtime.subscription': RealtimeSubscription;
+  relationship: Relationship;
   role: Role;
   'storage.buckets': StorageBuckets;
   'storage.bucketsAnalytics': StorageBucketsAnalytics;
