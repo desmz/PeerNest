@@ -82,6 +82,7 @@
       "varchar",
       "tsvector",
       "timestamptz",
+      "aggs",
     ],
     "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#48658c",
@@ -101,7 +102,7 @@
       "titleBar.activeBackground": "#374d6a",
       "titleBar.activeForeground": "#e7e7e7",
       "titleBar.inactiveBackground": "#374d6a99",
-      "titleBar.inactiveForeground": "#e7e7e799"
+      "titleBar.inactiveForeground": "#e7e7e799",
     },
     "peacock.remoteColor": "#374d6a",
     "github.copilot.enable": {

@@ -1,19 +1,28 @@
 import { DynamicModule, Global, Module, ModuleMetadata } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { KyselyModule } from '@peernest/db';
+import { ClsModule } from 'nestjs-cls';
 
 import { ConfigModule } from '@/configs/config.module';
 import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { AuthModule } from '@/features/auth/auth.module';
 import { JwtAuthGuard } from '@/features/auth/guards/jwt.guard';
 import { MailSenderModule } from '@/features/mail-sender/mail-sender.module';
+import { SystemModule } from '@/features/system/system.module';
 import { UserModule } from '@/features/user/user.module';
 
 export const AppModules = {
   imports: [
     ConfigModule.register(),
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        mount: true,
+      },
+    }),
     KyselyModule.forRoot({ formatted: true }),
     MailSenderModule.register({ global: true }),
+    SystemModule,
     UserModule,
     AuthModule,
     AttachmentModule,

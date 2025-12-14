@@ -16,6 +16,7 @@
     }
   },
   "scripts": {
+    "db:seed": "./scripts/run-seed.sh",
     "migration:create": "tsx src/migrate.ts create",
     "migration:up": "tsx src/migrate.ts up",
     "migration:down": "tsx src/migrate.ts down",
@@ -29,6 +30,7 @@
     "@peernest/config": "workspace:*",
     "@peernest/core": "workspace:*",
     "@swc/helpers": "~0.5.11",
+    "axios": "^1.6.0",
     "csv-writer": "^1.6.0",
     "csvtojson": "2.0.14",
     "kysely": "^0.28.8",

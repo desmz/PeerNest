@@ -63,6 +63,7 @@ export class AuthController {
   }
 
   @Public()
+  @HttpCode(HttpStatus.OK)
   @Get('google')
   @UseGuards(GoogleGuard)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -99,7 +100,7 @@ export class AuthController {
 
   @Public()
   @Post('reset-password')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async resetPassword(
     @Body(new ZodValidationPipe(resetPasswordRoSchema)) resetPasswordRo: TResetPasswordRo,
     @Res({ passthrough: true }) res: Response

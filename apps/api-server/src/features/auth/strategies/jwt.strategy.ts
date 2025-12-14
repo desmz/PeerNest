@@ -1,12 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { type TMeVo } from '@peernest/contract';
-import { ACCESS_TOKEN_STRATEGY_NAME, HttpErrorCode } from '@peernest/core';
+import { ACCESS_TOKEN_STRATEGY_NAME, HttpErrorCode, UserRole } from '@peernest/core';
+import { ClsService } from 'nestjs-cls';
 import { Strategy } from 'passport-jwt';
 
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { CustomHttpException } from '@/custom.exception';
 import { UserRepository } from '@/features/user/repos/user.repo';
+import { IClsStore } from '@/types/cls';
 
 import { TJwtPayload, JwtType } from '../types/jwt-payload.type';
 import { fromCookie, pickUserMe } from '../utils';
@@ -15,6 +17,8 @@ import { fromCookie, pickUserMe } from '../utils';
 export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEGY_NAME) {
   constructor(
     @AuthConfig() authConfig: TAuthConfig,
+    private readonly clsService: ClsService<IClsStore>,
+
     private readonly userRepository: UserRepository
   ) {
     super({
@@ -45,7 +49,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
 
     // todo: add ban check
 
-    // set to cls
+    this.clsService.set('user.email', user.userEmail);
+    this.clsService.set('user.id', user.userId);
+    this.clsService.set('user.role', user.roleName as UserRole);
 
     return pickUserMe(user);
   }

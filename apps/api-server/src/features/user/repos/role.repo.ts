@@ -10,15 +10,25 @@ export class RoleRepository {
 
   constructor(private readonly kyselyService: KyselyService) {}
 
-  async findRoleByName(name: string, tx?: TKyselyTransaction) {
+  async findRoleByName(
+    name: string,
+    option?: {
+      includedDeleted?: boolean;
+    },
+    tx?: TKyselyTransaction
+  ) {
     try {
+      const { includedDeleted } = option || {};
+
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const role = await db
-        .selectFrom('role')
-        .selectAll()
-        .where('roleName', '=', name)
-        .executeTakeFirst();
+      let query = db.selectFrom('role').selectAll().where('roleName', '=', name);
+
+      if (!includedDeleted) {
+        query = query.where('roleDeletedTime', 'is', null);
+      }
+
+      const role = await query.executeTakeFirst();
 
       return role;
     } catch (error) {

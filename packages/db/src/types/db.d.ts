@@ -172,6 +172,7 @@ export interface AuthOauthAuthorizations {
   createdAt: Generated<Timestamp>;
   expiresAt: Generated<Timestamp>;
   id: string;
+  nonce: string | null;
   redirectUri: string;
   resource: string | null;
   responseType: Generated<AuthOauthResponseType>;
@@ -274,6 +275,7 @@ export interface AuthSessions {
    * Holds a HMAC-SHA256 key used to sign refresh tokens for this session.
    */
   refreshTokenHmacKey: string | null;
+  scopes: string | null;
   tag: string | null;
   updatedAt: Timestamp | null;
   userAgent: string | null;
@@ -340,6 +342,14 @@ export interface AuthUsers {
   updatedAt: Timestamp | null;
 }
 
+export interface Domain {
+  domainCreatedTime: Generated<Timestamp>;
+  domainDeletedTime: Timestamp | null;
+  domainId: Generated<string>;
+  domainName: string;
+  domainUpdatedTime: Timestamp | null;
+}
+
 export interface ExtensionsPgStatStatements {
   calls: Int8 | null;
   dbid: number | null;
@@ -395,6 +405,34 @@ export interface ExtensionsPgStatStatements {
 export interface ExtensionsPgStatStatementsInfo {
   dealloc: Int8 | null;
   statsReset: Timestamp | null;
+}
+
+export interface Interest {
+  interestCreatedTime: Generated<Timestamp>;
+  interestDeletedTime: Timestamp | null;
+  interestId: Generated<string>;
+  interestName: string;
+  interestPosition: Numeric;
+  interestUpdatedTime: Timestamp | null;
+}
+
+export interface PersonalGoal {
+  personalGoalCreatedTime: Generated<Timestamp>;
+  personalGoalDeletedTime: Timestamp | null;
+  personalGoalDescription: string | null;
+  personalGoalId: Generated<string>;
+  personalGoalName: string;
+  personalGoalPosition: Numeric;
+  personalGoalTitle: string;
+  personalGoalUpdatedTime: Timestamp | null;
+}
+
+export interface Pronoun {
+  pronounCreatedTime: Generated<Timestamp>;
+  pronounDeletedTime: Timestamp | null;
+  pronounId: Generated<string>;
+  pronounName: string;
+  pronounUpdatedTime: Timestamp | null;
 }
 
 export interface RealtimeMessages {
@@ -537,6 +575,15 @@ export interface StorageVectorIndexes {
   updatedAt: Generated<Timestamp>;
 }
 
+export interface University {
+  universityCountry: string;
+  universityCreatedTime: Generated<Timestamp>;
+  universityDeletedTime: Timestamp | null;
+  universityId: Generated<string>;
+  universityName: string;
+  universityUpdatedTime: Timestamp | null;
+}
+
 export interface User {
   userAvatarUrl: string;
   userCreatedTime: Generated<Timestamp>;
@@ -549,6 +596,37 @@ export interface User {
   userPasswordHash: string | null;
   userRoleId: string | null;
   userUpdatedTime: Timestamp | null;
+}
+
+export interface UserInfo {
+  userInfoBio: string | null;
+  userInfoCreatedTime: Generated<Timestamp>;
+  userInfoDeletedTime: Timestamp | null;
+  userInfoDomainId: string | null;
+  userInfoId: Generated<string>;
+  userInfoLookingFor: string | null;
+  userInfoPronounId: string | null;
+  userInfoUniversityId: string | null;
+  userInfoUpdatedTime: Timestamp | null;
+  userInfoUserId: string;
+}
+
+export interface UserInfoInterest {
+  userInfoInterestCreatedTime: Generated<Timestamp>;
+  userInfoInterestId: Generated<string>;
+  userInfoInterestInterestId: string;
+  userInfoInterestPosition: Numeric;
+  userInfoInterestUpdatedTime: Timestamp | null;
+  userInfoInterestUserInfoId: string;
+}
+
+export interface UserInfoPersonalGoal {
+  userInfoPersonalGoalCreatedTime: Generated<Timestamp>;
+  userInfoPersonalGoalId: Generated<string>;
+  userInfoPersonalGoalPersonalGoalId: string;
+  userInfoPersonalGoalPosition: Numeric;
+  userInfoPersonalGoalUpdatedTime: Timestamp | null;
+  userInfoPersonalGoalUserInfoId: string;
 }
 
 export interface UserToken {
@@ -606,8 +684,12 @@ export interface DB {
   'auth.ssoDomains': AuthSsoDomains;
   'auth.ssoProviders': AuthSsoProviders;
   'auth.users': AuthUsers;
+  domain: Domain;
   'extensions.pgStatStatements': ExtensionsPgStatStatements;
   'extensions.pgStatStatementsInfo': ExtensionsPgStatStatementsInfo;
+  interest: Interest;
+  personalGoal: PersonalGoal;
+  pronoun: Pronoun;
   'realtime.messages': RealtimeMessages;
   'realtime.schemaMigrations': RealtimeSchemaMigrations;
   'realtime.subscription': RealtimeSubscription;
@@ -621,7 +703,11 @@ export interface DB {
   'storage.s3MultipartUploads': StorageS3MultipartUploads;
   'storage.s3MultipartUploadsParts': StorageS3MultipartUploadsParts;
   'storage.vectorIndexes': StorageVectorIndexes;
+  university: University;
   user: User;
+  userInfo: UserInfo;
+  userInfoInterest: UserInfoInterest;
+  userInfoPersonalGoal: UserInfoPersonalGoal;
   userToken: UserToken;
   'vault.decryptedSecrets': VaultDecryptedSecrets;
   'vault.secrets': VaultSecrets;

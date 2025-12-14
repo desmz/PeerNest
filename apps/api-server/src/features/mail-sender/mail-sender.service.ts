@@ -1,8 +1,10 @@
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  renderChangeEmailPage,
   renderResetPasswordPage,
   renderResetPasswordSuccessPage,
+  TChangeEmailOptions,
   TResetPasswordOptions,
   TResetPasswordSuccessOptions,
 } from '@peernest/transactional';
@@ -46,6 +48,13 @@ export class MailSenderService {
     return {
       subject: `${this.appConfig.brandName} Password Changed`,
       html: await renderResetPasswordSuccessPage(info),
+    };
+  }
+
+  async changeEmailEmailOption(info: TChangeEmailOptions) {
+    return {
+      subject: `Email Verification Request for ${this.appConfig.brandName}`,
+      html: await renderChangeEmailPage(info),
     };
   }
 }
