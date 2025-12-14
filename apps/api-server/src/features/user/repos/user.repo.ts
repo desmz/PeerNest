@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { TFindUsersQueryParams } from '@peernest/contract';
 import { generateUserId, HttpErrorCode } from '@peernest/core';
 import {
   dbOrTx,
@@ -7,8 +8,18 @@ import {
   TKyselyTransaction,
   TUpdatableUser,
 } from '@peernest/db';
+import { Expression, sql, SqlBool } from 'kysely';
+import tsquery from 'pg-tsquery';
 
 import { CustomHttpException } from '@/custom.exception';
+
+import {
+  withDomain,
+  withInterests,
+  withPersonalGoals,
+  withPronoun,
+  withUniversity,
+} from './selects.util';
 
 @Injectable()
 export class UserRepository {
@@ -120,6 +131,138 @@ export class UserRepository {
         `[${UserRepository.repoName}] | Fail to find user by email`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, email, options }
+      );
+    }
+  }
+
+  async findUsers(
+    options?: TFindUsersQueryParams & { includedDeleted?: boolean; excludedUserIds?: string[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const {
+        q = '',
+        interestIds,
+        goalIds,
+        limit,
+        offset,
+        includedDeleted,
+        excludedUserIds,
+      } = options || {};
+
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const displayNameQuery = tsquery()(q.trim() + '*');
+
+      let query = db
+        .selectFrom('userInfo')
+        .innerJoin('user', 'user.userId', 'userInfo.userInfoUserId')
+        .innerJoin('role', 'role.roleId', 'user.userRoleId')
+        .select(['user.userDisplayName', 'userInfo.userInfoLookingFor'])
+        .select(['role.roleName'])
+        .select((eb) => withPronoun(eb))
+        .select((eb) => withUniversity(eb))
+        .select((eb) => withDomain(eb))
+        .select((eb) => withInterests(eb))
+        .select((eb) => withPersonalGoals(eb))
+        .$if(Boolean(displayNameQuery), (eb) =>
+          eb.select(
+            sql<number>`
+          ts_rank(
+            user_display_name_tsv,
+            to_tsquery('english', f_unaccent(${displayNameQuery}))
+          )
+        `.as('rank')
+          )
+        )
+        .$if(Boolean(displayNameQuery), (eb) =>
+          eb.select(
+            sql<string>`
+              ts_headline(
+                'english',
+                user_display_name,
+                to_tsquery(
+                  'english',
+                  f_unaccent(${displayNameQuery})
+                ),
+                'StartSel=<b>, StopSel=</b>, MinWords=1, MaxWords=2, MaxFragments=1'
+              )
+          `.as('highlight')
+          )
+        );
+
+      if (!includedDeleted) {
+        query = query.where('user.userDeletedTime', 'is', null);
+      }
+
+      if (excludedUserIds && excludedUserIds.length > 0) {
+        query = query.where('user.userId', 'not in', excludedUserIds);
+      }
+
+      if (displayNameQuery) {
+        query = query.where(
+          'user.userDisplayNameTsv',
+          '@@',
+          sql<string>`to_tsquery('english', f_unaccent(${displayNameQuery}))`
+        );
+      }
+
+      query = query.where(({ or, exists, eb }) => {
+        const ors: Expression<SqlBool>[] = [];
+
+        if (interestIds && interestIds.length > 0) {
+          ors.push(
+            exists(
+              eb
+                .selectFrom('userInfoInterest')
+                .select('userInfoInterest.userInfoInterestId')
+                .whereRef('userInfo.userInfoId', '=', 'userInfoInterest.userInfoInterestUserInfoId')
+                .where('userInfoInterest.userInfoInterestInterestId', 'in', interestIds)
+            )
+          );
+        }
+
+        if (goalIds && goalIds.length > 0) {
+          ors.push(
+            exists(
+              eb
+                .selectFrom('userInfoPersonalGoal')
+                .select('userInfoPersonalGoal.userInfoPersonalGoalPersonalGoalId')
+                .whereRef(
+                  'userInfo.userInfoId',
+                  '=',
+                  'userInfoPersonalGoal.userInfoPersonalGoalUserInfoId'
+                )
+                .where('userInfoPersonalGoal.userInfoPersonalGoalPersonalGoalId', 'in', goalIds)
+            )
+          );
+        }
+
+        return ors.length > 0 ? or(ors) : sql`true`;
+      });
+
+      if (displayNameQuery) {
+        query = query.orderBy('rank', 'desc');
+      } else {
+        query = query.orderBy('user.userLastSignedTime', 'desc');
+      }
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      if (offset) {
+        query = query.offset(offset);
+      }
+
+      const users = await query.execute();
+
+      return users;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserRepository.repoName}] | Fail to find users `,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
       );
     }
   }

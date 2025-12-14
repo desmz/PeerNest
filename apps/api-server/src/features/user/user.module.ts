@@ -4,6 +4,8 @@ import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { StorageModule } from '@/features/attachment/plugins/storage.module';
 import { SystemModule } from '@/features/system/system.module';
 
+import { MeController } from './me.controller';
+import { MeService } from './me.service';
 import { AccountRepository } from './repos/account.repo';
 import { RoleRepository } from './repos/role.repo';
 import { UserInfoInterestRepository } from './repos/user-info-interest.repo';
@@ -16,7 +18,7 @@ import { UserService } from './user.service';
 
 @Module({
   imports: [StorageModule, SystemModule, AttachmentModule],
-  controllers: [UserController],
+  controllers: [MeController, UserController],
   providers: [
     AccountRepository,
     UserRepository,
@@ -25,6 +27,7 @@ import { UserService } from './user.service';
     UserInfoRepository,
     UserInfoInterestRepository,
     UserInfoPersonalGoalRepository,
+    MeService,
     UserService,
   ],
   exports: [
@@ -35,6 +38,7 @@ import { UserService } from './user.service';
     UserInfoRepository,
     UserInfoInterestRepository,
     UserInfoPersonalGoalRepository,
+    MeService,
     UserService,
   ],
 })

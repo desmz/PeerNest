@@ -41,7 +41,7 @@ export const userInfoLookingForSchema = z
 
 export const updateMeProfileRoSchema = zNonEmptyObject(
   z.object({
-    userDisplayName: displayNameSchema,
+    userDisplayName: displayNameSchema.nullable(),
     userInfoPronounId: pronounIdSchema.nullable(),
     userInfoUniversityId: universityIdSchema.nullable(),
     userInfoDomainId: domainIdSchema.nullable(),

@@ -83,6 +83,7 @@
       "tsvector",
       "timestamptz",
       "aggs",
+      "unaccent",
     ],
     "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#48658c",

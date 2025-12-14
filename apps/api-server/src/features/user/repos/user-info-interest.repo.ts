@@ -65,17 +65,17 @@ export class UserInfoInterestRepository {
       await db
         .deleteFrom('userInfoInterest')
         .where(({ and, eb }) => {
-          const ors: Expression<SqlBool>[] = [];
+          const ands: Expression<SqlBool>[] = [];
 
-          ors.push(eb('userInfoInterestUserInfoId', '=', userInfoInterestUserInfoId));
+          ands.push(eb('userInfoInterestUserInfoId', '=', userInfoInterestUserInfoId));
 
           if (isExcludeInterestIds) {
-            ors.push(eb('userInfoInterestInterestId', 'not in', userInfoInterestInterestIds));
+            ands.push(eb('userInfoInterestInterestId', 'not in', userInfoInterestInterestIds));
           } else {
-            ors.push(eb('userInfoInterestInterestId', 'in', userInfoInterestInterestIds));
+            ands.push(eb('userInfoInterestInterestId', 'in', userInfoInterestInterestIds));
           }
 
-          return and(ors);
+          return and(ands);
         })
         .execute();
     } catch (error) {

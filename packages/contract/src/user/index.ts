@@ -1,5 +1,6 @@
 export * from './change-email';
 export * from './change-password';
+export * from './find-users';
 export * from './get-me-profile';
 export * from './me';
 export * from './update-avatar';

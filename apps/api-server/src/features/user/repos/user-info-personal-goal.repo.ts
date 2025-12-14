@@ -69,12 +69,12 @@ export class UserInfoPersonalGoalRepository {
       await db
         .deleteFrom('userInfoPersonalGoal')
         .where(({ and, eb }) => {
-          const ors: Expression<SqlBool>[] = [];
+          const ands: Expression<SqlBool>[] = [];
 
-          ors.push(eb('userInfoPersonalGoalUserInfoId', '=', userInfoPersonalGoalUserInfoId));
+          ands.push(eb('userInfoPersonalGoalUserInfoId', '=', userInfoPersonalGoalUserInfoId));
 
           if (isExcludePersonalGoalIds) {
-            ors.push(
+            ands.push(
               eb(
                 'userInfoPersonalGoalPersonalGoalId',
                 'not in',
@@ -82,12 +82,12 @@ export class UserInfoPersonalGoalRepository {
               )
             );
           } else {
-            ors.push(
+            ands.push(
               eb('userInfoPersonalGoalPersonalGoalId', 'in', userInfoPersonalGoalPersonalGoalIds)
             );
           }
 
-          return and(ors);
+          return and(ands);
         })
         .execute();
     } catch (error) {
