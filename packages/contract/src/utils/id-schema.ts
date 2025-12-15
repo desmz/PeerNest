@@ -38,3 +38,9 @@ export const conversationIdSchema = (field = 'Conversation Id') => {
     .string(zString(field))
     .startsWith(IdPrefix.Conversation, zStartWith(field, IdPrefix.Conversation));
 };
+
+export const friendRequestIdSchema = (field = 'Friend Request Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.FriendRequest, zStartWith(field, IdPrefix.FriendRequest));
+};

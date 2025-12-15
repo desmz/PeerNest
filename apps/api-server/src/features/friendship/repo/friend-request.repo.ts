@@ -92,6 +92,34 @@ export class FriendRequestRepository {
     }
   }
 
+  async findFriendRequestById(
+    id: string,
+    options?: { status?: FriendRequestStatus },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { status } = options || {};
+
+      let query = db.selectFrom('friendRequest').selectAll().where('friendRequestId', '=', id);
+
+      if (status) {
+        query = query.where('friendRequestStatus', '=', status);
+      }
+
+      const friendRequest = await query.executeTakeFirst();
+
+      return friendRequest;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${FriendRequestRepository.repoName}] | Fail to find friend request by userIds`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id }
+      );
+    }
+  }
+
   async findFriendRequestByUserIds(
     userIds: {
       fromId: string;

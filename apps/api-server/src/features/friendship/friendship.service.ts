@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { TSendFriendRequestRo, TSendFriendRequestVo } from '@peernest/contract';
+import {
+  TAcceptFriendRequestParams,
+  TAcceptFriendRequestVo,
+  TSendFriendRequestRo,
+  TSendFriendRequestVo,
+} from '@peernest/contract';
 import {
   ConversationParticipantRole,
   ConversationType,
@@ -127,6 +132,38 @@ export class FriendShipService {
       isAutoMatch: false,
       conversationId: null,
     };
+  }
+
+  async acceptFriendRequest(
+    acceptFriendRequestParams: TAcceptFriendRequestParams
+  ): Promise<TAcceptFriendRequestVo> {
+    const { requestId } = acceptFriendRequestParams;
+
+    const friendRequest = await this.friendRequestRepository.findFriendRequestById(requestId, {
+      status: FriendRequestStatus.Pending,
+    });
+
+    if (!friendRequest) {
+      throw new CustomHttpException(
+        `Pending friend request ${requestId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const userId = this.clsService.get('user.id');
+    const { friendRequestFromId: fromId, friendRequestToId: toId } = friendRequest;
+    if (toId !== userId) {
+      throw new CustomHttpException('Invalid friend request', HttpErrorCode.INVALID_CREDENTIALS, {
+        currentUserId: userId,
+        toId,
+      });
+    }
+
+    const conversationId = await this.processCreateFriendShip({ fromId, toId });
+
+    // todo: send notification to fromUser (requester)
+
+    return { conversationId };
   }
 
   private async processCreateFriendShip(
