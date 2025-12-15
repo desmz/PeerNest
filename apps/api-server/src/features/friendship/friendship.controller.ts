@@ -5,6 +5,7 @@ import {
   TAcceptFriendRequestVo,
   TSendFriendRequestVo,
   type TSendFriendRequestRo,
+  type TRejectFriendRequestParams,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -30,5 +31,13 @@ export class FriendShipController {
     @Param() acceptFriendRequestParams: TAcceptFriendRequestParams
   ): Promise<TAcceptFriendRequestVo> {
     return this.friendshipService.acceptFriendRequest(acceptFriendRequestParams);
+  }
+
+  @Post('friend-requests/:requestId/reject')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async rejectFriendRequest(
+    @Param() rejectFriendRequestParams: TRejectFriendRequestParams
+  ): Promise<void> {
+    return this.friendshipService.rejectFriendRequest(rejectFriendRequestParams);
   }
 }
