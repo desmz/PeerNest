@@ -24,6 +24,10 @@ export const zNonEmpty = (field: string): CheckTypeParams => ({
   message: `${field} must not be empty`,
 });
 
+export const zStartWith = (field: string, prefix: string): CheckTypeParams => ({
+  message: `${field} must start with "${prefix}"`,
+});
+
 export const zMin = (field: string, min: number): CheckTypeParams => ({
   message: `${field} must be at least ${min} characters`,
 });

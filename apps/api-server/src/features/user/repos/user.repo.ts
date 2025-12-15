@@ -159,6 +159,7 @@ export class UserRepository {
         .innerJoin('user', 'user.userId', 'userInfo.userInfoUserId')
         .innerJoin('role', 'role.roleId', 'user.userRoleId')
         .select([
+          'user.userId',
           'user.userDisplayName',
           'user.userAvatarUrl',
           'userInfo.userInfoLookingFor',

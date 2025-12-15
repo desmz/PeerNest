@@ -8,7 +8,7 @@ import {
   pronounSchema,
   universitySchema,
 } from '../system';
-import { interestIdSchema, personalGoalIdSchema, zNonEmptyString } from '../utils';
+import { interestIdSchema, personalGoalIdSchema, userIdSchema, zNonEmptyString } from '../utils';
 
 export const FIND_USERS = '/users';
 
@@ -24,8 +24,8 @@ export const findUsersQueryParamsSchema = z.object({
   q: zNonEmptyString(findUsersQueryParams.q)
     .transform((val) => val?.trim())
     .nullish(),
-  interestIds: z.array(interestIdSchema).nullish(),
-  goalIds: z.array(personalGoalIdSchema).nullish(),
+  interestIds: z.array(interestIdSchema()).nullish(),
+  goalIds: z.array(personalGoalIdSchema()).nullish(),
   limit: z.int().positive().nullish(),
   offset: z.int().positive().nullish(),
 });
@@ -33,6 +33,7 @@ export const findUsersQueryParamsSchema = z.object({
 export type TFindUsersQueryParams = z.infer<typeof findUsersQueryParamsSchema>;
 
 export const findUserSchema = z.object({
+  userId: userIdSchema(),
   userDisplayName: displayNameSchema,
   userAvatarUrl: z.string().nonempty(),
   roleName: z.string().nonempty().nullable(),
