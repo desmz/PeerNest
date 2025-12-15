@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TFindUsersQueryParams, TFindUsersVo } from '@peernest/contract';
 import { ClsService } from 'nestjs-cls';
 
+import { getFullStorageUrl } from '@/features/attachment/utils';
 import { IClsStore } from '@/types/cls';
 
 import { UserRepository } from './repos/user.repo';
@@ -22,7 +23,10 @@ export class UserService {
 
     return {
       count: users.length,
-      users,
+      users: users.map((user) => ({
+        ...user,
+        userAvatarUrl: getFullStorageUrl(user.userAvatarUrl),
+      })),
     };
   }
 }

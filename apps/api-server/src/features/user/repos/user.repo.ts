@@ -152,14 +152,18 @@ export class UserRepository {
 
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const displayNameQuery = tsquery()(q.trim() + '*');
+      const displayNameQuery = q ? tsquery()(q.trim() + '*') : null;
 
       let query = db
         .selectFrom('userInfo')
         .innerJoin('user', 'user.userId', 'userInfo.userInfoUserId')
         .innerJoin('role', 'role.roleId', 'user.userRoleId')
-        .select(['user.userDisplayName', 'userInfo.userInfoLookingFor'])
-        .select(['role.roleName'])
+        .select([
+          'user.userDisplayName',
+          'user.userAvatarUrl',
+          'userInfo.userInfoLookingFor',
+          'role.roleName',
+        ])
         .select((eb) => withPronoun(eb))
         .select((eb) => withUniversity(eb))
         .select((eb) => withDomain(eb))

@@ -357,6 +357,7 @@ export interface Conversation {
 }
 
 export interface ConversationParticipant {
+  conversationParticipantClosedTime: Timestamp | null;
   conversationParticipantConversationId: string;
   conversationParticipantId: Generated<string>;
   conversationParticipantJoinedTime: Generated<Timestamp>;

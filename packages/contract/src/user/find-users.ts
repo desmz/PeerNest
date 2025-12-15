@@ -22,8 +22,8 @@ export const findUsersQueryParams = {
 
 export const findUsersQueryParamsSchema = z.object({
   q: zNonEmptyString(findUsersQueryParams.q)
-    .nullish()
-    .transform((val) => val?.trim()),
+    .transform((val) => val?.trim())
+    .nullish(),
   interestIds: z.array(interestIdSchema).nullish(),
   goalIds: z.array(personalGoalIdSchema).nullish(),
   limit: z.int().positive().nullish(),
@@ -34,6 +34,7 @@ export type TFindUsersQueryParams = z.infer<typeof findUsersQueryParamsSchema>;
 
 export const findUserSchema = z.object({
   userDisplayName: displayNameSchema,
+  userAvatarUrl: z.string().nonempty(),
   roleName: z.string().nonempty().nullable(),
   pronoun: pronounSchema.nullable(),
   university: universitySchema.nullable(),
