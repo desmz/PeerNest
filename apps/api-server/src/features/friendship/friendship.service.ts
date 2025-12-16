@@ -5,6 +5,7 @@ import {
   TGetFriendRequest,
   TGetFriendRequestQueryParams,
   TGetFriendRequestVo,
+  TGetMyFriendsVo,
   TRejectFriendRequestParams,
   TSendFriendRequestRo,
   TSendFriendRequestVo,
@@ -411,5 +412,22 @@ export class FriendShipService {
         tx
       );
     });
+  }
+
+  async getMyFriends(): Promise<TGetMyFriendsVo> {
+    const userId = this.clsService.get('user.id');
+
+    const friends = await this.relationshipRepository.getMyFriendsByUserId(userId);
+
+    const formattedFriends = friends.map((friend) => ({
+      ...friend,
+      userAvatarUrl: getFullStorageUrl(friend.userAvatarUrl),
+      friendedTime: friend.relationshipCreatedTime,
+    }));
+
+    return {
+      count: formattedFriends.length,
+      friends: formattedFriends,
+    };
   }
 }

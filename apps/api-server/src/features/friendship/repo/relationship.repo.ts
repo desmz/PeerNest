@@ -119,4 +119,48 @@ export class RelationshipRepository {
       );
     }
   }
+
+  // special case
+  async getMyFriendsByUserId(userId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const friends = await db
+        .selectFrom('relationship')
+        .innerJoin('user', (join) =>
+          join.on('user.userId', '=', (eb) =>
+            eb
+              .case()
+              .when('relationship.relationshipUserIdA', '=', userId)
+              .then(eb.ref('relationship.relationshipUserIdB'))
+              .else(eb.ref('relationship.relationshipUserIdA'))
+              .end()
+          )
+        )
+        .select([
+          'user.userId',
+          'user.userDisplayName',
+          'user.userAvatarUrl',
+          'user.userLastSignedTime',
+          'relationship.relationshipCreatedTime',
+        ])
+        .where('relationship.relationshipType', '=', RelationshipType.Friend)
+        .where(({ or, eb }) =>
+          or([
+            eb('relationship.relationshipUserIdA', '=', userId),
+            eb('relationship.relationshipUserIdB', '=', userId),
+          ])
+        )
+        .orderBy('relationship.relationshipCreatedTime', 'desc')
+        .execute();
+
+      return friends;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${RelationshipRepository.repoName}] | Fail to get my friends by user id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId }
+      );
+    }
+  }
 }

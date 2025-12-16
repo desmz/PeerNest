@@ -20,6 +20,7 @@ import {
   type TGetFriendRequestQueryParams,
   TGetFriendRequestVo,
   type TUnfriendParams,
+  TGetMyFriendsVo,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -68,5 +69,11 @@ export class FriendShipController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async unfriend(@Param() unfriendParams: TUnfriendParams): Promise<void> {
     await this.friendshipService.unfriend(unfriendParams);
+  }
+
+  @Get('me/friends')
+  @HttpCode(HttpStatus.OK)
+  async getMyFriends(): Promise<TGetMyFriendsVo> {
+    return this.friendshipService.getMyFriends();
   }
 }
