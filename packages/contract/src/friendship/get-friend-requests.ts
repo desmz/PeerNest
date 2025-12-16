@@ -1,4 +1,4 @@
-import { FriendRequestStatus, GetFriendRequestsType } from '@peernest/core';
+import { FriendRequestStatus, FriendRequestType } from '@peernest/core';
 import z from 'zod';
 
 import { getMyFriendSchema } from './get-my-friends';
@@ -7,7 +7,7 @@ export const GET_FRIEND_REQUESTS = '/friend-requests';
 
 export const getFriendRequestsQueryParamsSchema = z.object({
   status: z.enum(FriendRequestStatus).nullish(),
-  type: z.enum(GetFriendRequestsType).nullish(),
+  type: z.enum(FriendRequestType).nullish(),
 });
 
 export type TGetFriendRequestQueryParams = z.infer<typeof getFriendRequestsQueryParamsSchema>;

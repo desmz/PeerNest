@@ -4,7 +4,7 @@ export enum FriendRequestStatus {
   Reject = 'rejected',
 }
 
-export enum GetFriendRequestsType {
+export enum FriendRequestType {
   In = 'in',
   Out = 'out',
 }

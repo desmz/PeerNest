@@ -52,6 +52,36 @@ export class RelationshipRepository {
     }
   }
 
+  async findRelationshipsByUserIds(
+    userIds: {
+      userIdA: string;
+      userIdB: string;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const [userIdA, userIdB] = orderIdPair(userIds.userIdA, userIds.userIdB);
+
+      const relationship = db
+        .selectFrom('relationship')
+        .selectAll()
+        .where('relationshipUserIdA', '=', userIdA)
+        .where('relationshipUserIdB', '=', userIdB)
+        .orderBy('relationshipCreatedTime', 'desc')
+        .execute();
+
+      return relationship;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${RelationshipRepository.repoName}] | Fail to find relationships by userIds`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userIds }
+      );
+    }
+  }
+
   async findRelationshipByUserIds(
     userIds: {
       userIdA: string;
@@ -85,7 +115,7 @@ export class RelationshipRepository {
       throw new CustomHttpException(
         `[${RelationshipRepository.repoName}] | Fail to find relationship by userIds`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userIds }
+        { error, userIds, options }
       );
     }
   }
@@ -115,7 +145,7 @@ export class RelationshipRepository {
       throw new CustomHttpException(
         `[${RelationshipRepository.repoName}] | Fail to delete relationship by userIds`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userIds }
+        { error, userIds, options }
       );
     }
   }

@@ -123,29 +123,45 @@ export class FriendRequestRepository {
     }
   }
 
+  //* return the latest friend requests by user ids
   async findFriendRequestByUserIds(
     userIds: {
       fromId: string;
       toId: string;
     },
-    options?: { status?: FriendRequestStatus },
+    options?: { status?: FriendRequestStatus; isBothDirections?: boolean },
     tx?: TKyselyTransaction
   ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
       const { fromId, toId } = userIds;
-      const { status } = options || {};
+      const { status, isBothDirections } = options || {};
 
       let query = db
         .selectFrom('friendRequest')
         .selectAll()
-        .where('friendRequestFromId', '=', fromId)
-        .where('friendRequestToId', '=', toId);
+        .where(({ and, or, eb }) => {
+          const ors: Expression<SqlBool>[] = [];
+
+          ors.push(
+            and([eb('friendRequestFromId', '=', fromId), eb('friendRequestToId', '=', toId)])
+          );
+
+          if (isBothDirections) {
+            ors.push(
+              and([eb('friendRequestFromId', '=', toId), eb('friendRequestToId', '=', fromId)])
+            );
+          }
+
+          return or(ors);
+        });
 
       if (status) {
         query = query.where('friendRequestStatus', '=', status);
       }
+
+      query = query.orderBy('friendRequestCreatedTime', 'desc').limit(1);
 
       const friendRequest = await query.executeTakeFirst();
 
@@ -154,7 +170,7 @@ export class FriendRequestRepository {
       throw new CustomHttpException(
         `[${FriendRequestRepository.repoName}] | Fail to find friend request by userIds`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userIds }
+        { error, userIds, options }
       );
     }
   }
@@ -219,7 +235,7 @@ export class FriendRequestRepository {
       throw new CustomHttpException(
         `[${FriendRequestRepository.repoName}] | Fail to get friend requests by userId`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userId }
+        { error, userId, options }
       );
     }
   }

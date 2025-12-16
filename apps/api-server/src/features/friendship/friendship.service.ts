@@ -19,7 +19,7 @@ import {
   generateConversationParticipantId,
   generateFriendRequestId,
   generateRelationshipId,
-  GetFriendRequestsType,
+  FriendRequestType,
   HttpErrorCode,
   RelationshipType,
 } from '@peernest/core';
@@ -338,9 +338,9 @@ export class FriendShipService {
     }
 
     if (type) {
-      if (type === GetFriendRequestsType.In) {
+      if (type === FriendRequestType.In) {
         options.friendRequestToId = userId;
-      } else if (type === GetFriendRequestsType.Out) {
+      } else if (type === FriendRequestType.Out) {
         options.friendRequestFromId = userId;
       }
     } else {
