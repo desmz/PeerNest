@@ -14,6 +14,10 @@ import {
   UserInfoPersonalGoal,
   Domain,
   UserToken,
+  FriendRequest,
+  Relationship,
+  Conversation,
+  ConversationParticipant,
 } from './db';
 
 // role
@@ -80,3 +84,23 @@ export type TUpdatableUserInfoInterest = Updateable<Omit<UserInfoInterest, 'id'>
 export type TSelectableUserInfoPersonalGoal = Selectable<UserInfoPersonalGoal>;
 export type TInsertableUserInfoPersonalGoal = Insertable<UserInfoPersonalGoal>;
 export type TUpdatableUserInfoPersonalGoal = Updateable<Omit<UserInfoPersonalGoal, 'id'>>;
+
+// friend_request
+export type TSelectableFriendRequest = Selectable<FriendRequest>;
+export type TInsertableFriendRequest = Insertable<FriendRequest>;
+export type TUpdatableFriendRequest = Updateable<Omit<FriendRequest, 'id'>>;
+
+// relationship
+export type TSelectableRelationship = Selectable<Relationship>;
+export type TInsertableRelationship = Insertable<Relationship>;
+export type TUpdatableRelationship = Updateable<Omit<Relationship, 'id'>>;
+
+// conversation
+export type TSelectableConversation = Selectable<Conversation>;
+export type TInsertableConversation = Insertable<Conversation>;
+export type TUpdatableConversation = Updateable<Omit<Conversation, 'id'>>;
+
+// conversation_participant
+export type TSelectableConversationParticipant = Selectable<ConversationParticipant>;
+export type TInsertableConversationParticipant = Insertable<ConversationParticipant>;
+export type TUpdatableConversationParticipant = Updateable<Omit<ConversationParticipant, 'id'>>;

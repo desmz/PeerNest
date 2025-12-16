@@ -41,14 +41,14 @@ export const userInfoLookingForSchema = z
 
 export const updateMeProfileRoSchema = zNonEmptyObject(
   z.object({
-    userDisplayName: displayNameSchema,
-    userInfoPronounId: pronounIdSchema.nullable(),
-    userInfoUniversityId: universityIdSchema.nullable(),
-    userInfoDomainId: domainIdSchema.nullable(),
+    userDisplayName: displayNameSchema.nullable(),
+    userInfoPronounId: pronounIdSchema().nullable(),
+    userInfoUniversityId: universityIdSchema().nullable(),
+    userInfoDomainId: domainIdSchema().nullable(),
     userInfoBio: userInfoBioSchema.nullable(),
     userInfoLookingFor: userInfoLookingForSchema.nullable(),
-    interestIds: z.array(interestIdSchema).nullable(),
-    personalGoalIds: z.array(personalGoalIdSchema).nullable(),
+    interestIds: z.array(interestIdSchema()).nullable(),
+    personalGoalIds: z.array(personalGoalIdSchema()).nullable(),
   })
 );
 

@@ -22,6 +22,10 @@ export enum IdPrefix {
   PersonalGoal = 'psng',
   UserInfoInterest = 'usifitr',
   UserInfoPersonalGoal = 'usifpsng',
+  FriendRequest = 'frq',
+  Relationship = 'rlts',
+  Conversation = 'cvst',
+  ConversationParticipant = 'cvstptcp',
 }
 
 export function generateUuid() {
@@ -78,4 +82,20 @@ export function generateUserInfoInterestId() {
 
 export function generateUserInfoPersonalGoalId() {
   return IdPrefix.UserInfoPersonalGoal + '-' + generateUuid();
+}
+
+export function generateFriendRequestId() {
+  return IdPrefix.FriendRequest + '-' + generateUuid();
+}
+
+export function generateRelationshipId() {
+  return IdPrefix.Relationship + '-' + generateUuid();
+}
+
+export function generateConversationId() {
+  return IdPrefix.Conversation + '-' + generateUuid();
+}
+
+export function generateConversationParticipantId() {
+  return IdPrefix.ConversationParticipant + '-' + generateUuid();
 }

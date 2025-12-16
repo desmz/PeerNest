@@ -7,11 +7,17 @@ import {
   TKyselyTransaction,
   TUpdatableUserInfo,
 } from '@peernest/db';
-import { DB, UserInfo } from '@peernest/db/types/db';
-import { ExpressionBuilder } from 'kysely';
-import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
+import { UserInfo } from '@peernest/db/types/db';
 
 import { CustomHttpException } from '@/custom.exception';
+
+import {
+  withDomain,
+  withInterests,
+  withPersonalGoals,
+  withPronoun,
+  withUniversity,
+} from './selects.util';
 
 export type TUpdateUserInfoPayload = Pick<
   UserInfo,
@@ -122,11 +128,11 @@ export class UserInfoRepository {
       const userInfoAggs = await db
         .selectFrom('userInfo')
         .select(['userInfo.userInfoBio', 'userInfo.userInfoLookingFor'])
-        .select((eb) => this.withPronoun(eb))
-        .select((eb) => this.withUniversity(eb))
-        .select((eb) => this.withDomain(eb))
-        .select((eb) => this.withInterests(eb))
-        .select((eb) => this.withPersonalGoals(eb))
+        .select((eb) => withPronoun(eb))
+        .select((eb) => withUniversity(eb))
+        .select((eb) => withDomain(eb))
+        .select((eb) => withInterests(eb))
+        .select((eb) => withPersonalGoals(eb))
         .where('userInfoId', '=', userInfoId)
         .executeTakeFirst();
 
@@ -138,74 +144,5 @@ export class UserInfoRepository {
         { error, userInfoId }
       );
     }
-  }
-
-  private withPronoun(eb: ExpressionBuilder<DB, 'userInfo'>) {
-    return jsonObjectFrom(
-      eb
-        .selectFrom('pronoun')
-        .select(['pronoun.pronounId', 'pronoun.pronounName'])
-        .whereRef('pronoun.pronounId', '=', 'userInfo.userInfoPronounId')
-    ).as('pronoun');
-  }
-
-  private withUniversity(eb: ExpressionBuilder<DB, 'userInfo'>) {
-    return jsonObjectFrom(
-      eb
-        .selectFrom('university')
-        .select([
-          'university.universityId',
-          'university.universityName',
-          'university.universityCountry',
-        ])
-        .whereRef('university.universityId', '=', 'userInfo.userInfoUniversityId')
-    ).as('university');
-  }
-
-  private withDomain(eb: ExpressionBuilder<DB, 'userInfo'>) {
-    return jsonObjectFrom(
-      eb
-        .selectFrom('domain')
-        .select(['domain.domainId', 'domain.domainName'])
-        .whereRef('domain.domainId', '=', 'userInfo.userInfoDomainId')
-    ).as('domain');
-  }
-
-  private withInterests(eb: ExpressionBuilder<DB, 'userInfo'>) {
-    return jsonArrayFrom(
-      eb
-        .selectFrom('userInfoInterest')
-        .innerJoin('interest', 'interest.interestId', 'userInfoInterest.userInfoInterestInterestId')
-        .select([
-          'interest.interestId',
-          'interest.interestName',
-          'userInfoInterest.userInfoInterestPosition as interestPosition',
-        ])
-        .whereRef('interest.interestId', '=', 'userInfoInterest.userInfoInterestInterestId')
-    ).as('interests');
-  }
-
-  private withPersonalGoals(eb: ExpressionBuilder<DB, 'userInfo'>) {
-    return jsonArrayFrom(
-      eb
-        .selectFrom('userInfoPersonalGoal')
-        .innerJoin(
-          'personalGoal',
-          'personalGoal.personalGoalId',
-          'userInfoPersonalGoal.userInfoPersonalGoalPersonalGoalId'
-        )
-        .select([
-          'personalGoal.personalGoalId',
-          'personalGoal.personalGoalTitle',
-          'personalGoal.personalGoalName',
-          'personalGoal.personalGoalDescription',
-          'userInfoPersonalGoal.userInfoPersonalGoalPosition as personalGoalPosition',
-        ])
-        .whereRef(
-          'personalGoal.personalGoalId',
-          '=',
-          'userInfoPersonalGoal.userInfoPersonalGoalPersonalGoalId'
-        )
-    ).as('personalGoals');
   }
 }

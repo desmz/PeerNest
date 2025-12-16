@@ -1,11 +1,8 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
-import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { StorageModule } from '@/features/attachment/plugins/storage.module';
-import { UserModule } from '@/features/user/user.module';
-
-import { AccountRepository } from '../user/repos/account.repo';
+import { PersistenceModule } from '@/persistence/persistence.module';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -14,9 +11,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { TokenModule } from './token.module';
 
 @Module({
-  imports: [PassportModule, TokenModule, UserModule, StorageModule, AttachmentModule],
+  imports: [PassportModule, TokenModule, StorageModule, PersistenceModule],
   controllers: [AuthController],
-  providers: [JwtStrategy, GoogleStrategy, AccountRepository, AuthService],
-  exports: [AccountRepository],
+  providers: [JwtStrategy, GoogleStrategy, AuthService],
+  exports: [],
 })
 export class AuthModule {}

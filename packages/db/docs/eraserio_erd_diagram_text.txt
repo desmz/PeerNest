@@ -373,7 +373,7 @@ user.id < relationship.user_id_b
 
 conversation [color: blue] {
   id varchar pk
-  type varchar // direct
+  type varchar // direct, moderation
   created_time timestamptz
   updated_time timestamptz?
 }
@@ -408,6 +408,7 @@ conversation_participant [color: green] {
   role varchar // member, mod, admin, counselor
   last_read_message_id varchar? fk
   joined_time timestamptz
+  closed_time timestamptz?
 
   // unique(conversation_id, participant_id)
 }
