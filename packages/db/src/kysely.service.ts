@@ -1,6 +1,13 @@
 import { Injectable, Logger as NestLogger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { envObj } from '@peernest/config/dynamic';
-import { CamelCasePlugin, Kysely, LogEvent, PostgresDialect, sql } from 'kysely';
+import {
+  CamelCasePlugin,
+  DeduplicateJoinsPlugin,
+  Kysely,
+  LogEvent,
+  PostgresDialect,
+  sql,
+} from 'kysely';
 import { Pool, types } from 'pg';
 import { format, type FormatOptionsWithLanguage } from 'sql-formatter';
 
@@ -65,7 +72,7 @@ export class KyselyService implements OnModuleInit, OnModuleDestroy {
       dialect: new PostgresDialect({
         pool: this.pool,
       }),
-      plugins: [new CamelCasePlugin()],
+      plugins: [new CamelCasePlugin(), new DeduplicateJoinsPlugin()],
       log: (event: LogEvent) => {
         if (envObj.NODE_ENV !== 'development') return;
 

@@ -7,8 +7,11 @@ import {
   TKyselyTransaction,
   TUpdatableFriendRequest,
 } from '@peernest/db';
+import { Expression, SqlBool } from 'kysely';
 
 import { CustomHttpException } from '@/custom.exception';
+
+import { TGetFriendRequestsByUserIdOptions } from '../types';
 
 @Injectable()
 export class FriendRequestRepository {
@@ -152,6 +155,71 @@ export class FriendRequestRepository {
         `[${FriendRequestRepository.repoName}] | Fail to find friend request by userIds`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, userIds }
+      );
+    }
+  }
+
+  // Special Case
+  async getFriendRequestsByUserId(
+    userId: string,
+    options?: TGetFriendRequestsByUserIdOptions,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { friendRequestFromId, friendRequestToId, friendRequestStatus } = options || {};
+
+      let query = db
+        .selectFrom('friendRequest')
+        .innerJoin('user', (join) =>
+          join.on('user.userId', '=', (eb) =>
+            eb
+              .case()
+              .when('friendRequest.friendRequestFromId', '=', userId)
+              .then(eb.ref('friendRequest.friendRequestToId'))
+              .else(eb.ref('friendRequest.friendRequestFromId'))
+              .end()
+          )
+        )
+        .select([
+          'user.userId',
+          'user.userDisplayName',
+          'user.userAvatarUrl',
+          'user.userLastSignedTime',
+          'friendRequest.friendRequestStatus',
+          'friendRequest.friendRequestCreatedTime',
+          'friendRequest.friendRequestResolvedTime',
+        ]);
+
+      query = query.where(({ or, eb }) => {
+        const ors: Expression<SqlBool>[] = [];
+
+        if (friendRequestFromId) {
+          ors.push(eb('friendRequest.friendRequestFromId', '=', friendRequestFromId));
+        }
+
+        if (friendRequestToId) {
+          ors.push(eb('friendRequest.friendRequestToId', '=', friendRequestToId));
+        }
+
+        return or(ors);
+      });
+
+      if (friendRequestStatus) {
+        query = query.where('friendRequest.friendRequestStatus', '=', friendRequestStatus);
+      }
+
+      query = query.orderBy('friendRequest.friendRequestCreatedTime', 'desc');
+
+      const friendRequests = await query.execute();
+
+      return friendRequests;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${FriendRequestRepository.repoName}] | Fail to get friend requests by userId`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId }
       );
     }
   }

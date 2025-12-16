@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import {
   sendFriendRequestRoSchema,
   type TAcceptFriendRequestParams,
@@ -6,6 +6,9 @@ import {
   TSendFriendRequestVo,
   type TSendFriendRequestRo,
   type TRejectFriendRequestParams,
+  getFriendRequestsQueryParamsSchema,
+  type TGetFriendRequestQueryParams,
+  TGetFriendRequestVo,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -39,5 +42,14 @@ export class FriendShipController {
     @Param() rejectFriendRequestParams: TRejectFriendRequestParams
   ): Promise<void> {
     return this.friendshipService.rejectFriendRequest(rejectFriendRequestParams);
+  }
+
+  @Get('friend-requests')
+  @HttpCode(HttpStatus.OK)
+  async getFriendRequests(
+    @Query(new ZodValidationPipe(getFriendRequestsQueryParamsSchema))
+    getFriendRequestQueryParams: TGetFriendRequestQueryParams
+  ): Promise<TGetFriendRequestVo> {
+    return this.friendshipService.getFriendRequests(getFriendRequestQueryParams);
   }
 }

@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import {
   TAcceptFriendRequestParams,
   TAcceptFriendRequestVo,
+  TGetFriendRequest,
+  TGetFriendRequestQueryParams,
+  TGetFriendRequestVo,
   TRejectFriendRequestParams,
   TSendFriendRequestRo,
   TSendFriendRequestVo,
@@ -14,6 +17,7 @@ import {
   generateConversationParticipantId,
   generateFriendRequestId,
   generateRelationshipId,
+  GetFriendRequestsType,
   HttpErrorCode,
   RelationshipType,
 } from '@peernest/core';
@@ -32,8 +36,11 @@ import { ConversationRepository } from '@/features/conversation/repo/conversatio
 import { UserRepository } from '@/features/user/repos/user.repo';
 import { IClsStore } from '@/types/cls';
 
+import { getFullStorageUrl } from '../attachment/utils';
+
 import { FriendRequestRepository } from './repo/friend-request.repo';
 import { RelationshipRepository } from './repo/relationship.repo';
+import { TGetFriendRequestsByUserIdOptions } from './types';
 
 @Injectable()
 export class FriendShipService {
@@ -315,5 +322,47 @@ export class FriendShipService {
     );
 
     // todo: send notification to toUser
+  }
+
+  async getFriendRequests(
+    getFriendRequestQueryParams: TGetFriendRequestQueryParams
+  ): Promise<TGetFriendRequestVo> {
+    const { status, type } = getFriendRequestQueryParams;
+    const userId = this.clsService.get('user.id');
+
+    const options: TGetFriendRequestsByUserIdOptions = {};
+
+    if (status) {
+      options.friendRequestStatus = status;
+    }
+
+    if (type) {
+      if (type === GetFriendRequestsType.In) {
+        options.friendRequestToId = userId;
+      } else if (type === GetFriendRequestsType.Out) {
+        options.friendRequestFromId = userId;
+      }
+    } else {
+      options.friendRequestFromId = userId;
+      options.friendRequestToId = userId;
+    }
+
+    const friendRequests = await this.friendRequestRepository.getFriendRequestsByUserId(
+      userId,
+      options
+    );
+
+    const formattedFriendRequests: TGetFriendRequest[] = friendRequests.map((friendRequest) => ({
+      ...friendRequest,
+      userAvatarUrl: getFullStorageUrl(friendRequest.userAvatarUrl),
+      friendRequestStatus: friendRequest.friendRequestStatus as FriendRequestStatus,
+      sendFriendRequestTime: friendRequest.friendRequestCreatedTime,
+      friendedTime: friendRequest.friendRequestResolvedTime,
+    }));
+
+    return {
+      count: formattedFriendRequests.length,
+      friendRequests: formattedFriendRequests,
+    };
   }
 }
