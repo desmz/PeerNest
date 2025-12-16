@@ -11,7 +11,7 @@ import { Expression, SqlBool } from 'kysely';
 
 import { CustomHttpException } from '@/custom.exception';
 
-import { TGetFriendRequestsByUserIdOptions } from '../types';
+import { TGetFriendRequestsByUserIdOptions } from '../../../features/friendship/types';
 
 @Injectable()
 export class FriendRequestRepository {

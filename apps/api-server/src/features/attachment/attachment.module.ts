@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { AttachmentRepository } from './repos/attachment.repo';
-
 @Module({
-  providers: [AttachmentRepository],
-  exports: [AttachmentRepository],
+  providers: [],
+  exports: [],
 })
 export class AttachmentModule {}

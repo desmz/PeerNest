@@ -3,9 +3,8 @@ import { TFindUsersQueryParams, TFindUsersVo } from '@peernest/contract';
 import { ClsService } from 'nestjs-cls';
 
 import { getFullStorageUrl } from '@/features/attachment/utils';
+import { UserRepository } from '@/persistence/repos/user/user.repo';
 import { IClsStore } from '@/types/cls';
-
-import { UserRepository } from './repos/user.repo';
 
 @Injectable()
 export class UserService {

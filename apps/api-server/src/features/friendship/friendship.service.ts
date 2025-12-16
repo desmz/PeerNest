@@ -33,15 +33,14 @@ import {
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
-import { ConversationParticipantRepository } from '@/features/conversation/repo/conversation-participant.repo';
-import { ConversationRepository } from '@/features/conversation/repo/conversation.repo';
-import { UserRepository } from '@/features/user/repos/user.repo';
+import { getFullStorageUrl } from '@/features/attachment/utils';
+import { ConversationParticipantRepository } from '@/persistence/repos/conversation/conversation-participant.repo';
+import { ConversationRepository } from '@/persistence/repos/conversation/conversation.repo';
+import { FriendRequestRepository } from '@/persistence/repos/friendship/friend-request.repo';
+import { RelationshipRepository } from '@/persistence/repos/friendship/relationship.repo';
+import { UserRepository } from '@/persistence/repos/user/user.repo';
 import { IClsStore } from '@/types/cls';
 
-import { getFullStorageUrl } from '../attachment/utils';
-
-import { FriendRequestRepository } from './repo/friend-request.repo';
-import { RelationshipRepository } from './repo/relationship.repo';
 import { TGetFriendRequestsByUserIdOptions } from './types';
 
 @Injectable()

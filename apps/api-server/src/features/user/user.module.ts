@@ -1,45 +1,17 @@
 import { Module } from '@nestjs/common';
 
-import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { StorageModule } from '@/features/attachment/plugins/storage.module';
-import { SystemModule } from '@/features/system/system.module';
+import { PersistenceModule } from '@/persistence/persistence.module';
 
 import { MeController } from './me.controller';
 import { MeService } from './me.service';
-import { AccountRepository } from './repos/account.repo';
-import { RoleRepository } from './repos/role.repo';
-import { UserInfoInterestRepository } from './repos/user-info-interest.repo';
-import { UserInfoPersonalGoalRepository } from './repos/user-info-personal-goal.repo';
-import { UserInfoRepository } from './repos/user-info.repo';
-import { UserTokenRepository } from './repos/user-token.repo';
-import { UserRepository } from './repos/user.repo';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [StorageModule, SystemModule, AttachmentModule],
+  imports: [PersistenceModule, StorageModule],
   controllers: [MeController, UserController],
-  providers: [
-    AccountRepository,
-    UserRepository,
-    RoleRepository,
-    UserTokenRepository,
-    UserInfoRepository,
-    UserInfoInterestRepository,
-    UserInfoPersonalGoalRepository,
-    MeService,
-    UserService,
-  ],
-  exports: [
-    AccountRepository,
-    UserRepository,
-    RoleRepository,
-    UserTokenRepository,
-    UserInfoRepository,
-    UserInfoInterestRepository,
-    UserInfoPersonalGoalRepository,
-    MeService,
-    UserService,
-  ],
+  providers: [MeService, UserService],
+  exports: [MeService, UserService],
 })
 export class UserModule {}

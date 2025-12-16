@@ -36,18 +36,17 @@ import { MailConfig, type TMailConfig } from '@/configs/mail.config';
 import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
-import { AttachmentRepository } from '@/features/attachment/repos/attachment.repo';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
-import { InterestRepository } from '@/features/system/repos/interest.repo';
-import { PersonalGoalRepository } from '@/features/system/repos/personal-goal.repo';
-import { AccountRepository } from '@/features/user/repos/account.repo';
+import { AttachmentRepository } from '@/persistence/repos/attachment/attachment.repo';
+import { InterestRepository } from '@/persistence/repos/system/interest.repo';
+import { PersonalGoalRepository } from '@/persistence/repos/system/personal-goal.repo';
+import { AccountRepository } from '@/persistence/repos/user/account.repo';
+import { UserInfoInterestRepository } from '@/persistence/repos/user/user-info-interest.repo';
+import { UserInfoPersonalGoalRepository } from '@/persistence/repos/user/user-info-personal-goal.repo';
+import { UserInfoRepository } from '@/persistence/repos/user/user-info.repo';
+import { UserTokenRepository } from '@/persistence/repos/user/user-token.repo';
+import { UserRepository } from '@/persistence/repos/user/user.repo';
 import { IClsStore } from '@/types/cls';
-
-import { UserInfoInterestRepository } from './repos/user-info-interest.repo';
-import { UserInfoPersonalGoalRepository } from './repos/user-info-personal-goal.repo';
-import { UserInfoRepository } from './repos/user-info.repo';
-import { UserTokenRepository } from './repos/user-token.repo';
-import { UserRepository } from './repos/user.repo';
 
 @Injectable()
 export class MeService {
