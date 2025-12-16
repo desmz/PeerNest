@@ -8,6 +8,7 @@ import {
   TRejectFriendRequestParams,
   TSendFriendRequestRo,
   TSendFriendRequestVo,
+  TUnfriendParams,
 } from '@peernest/contract';
 import {
   ConversationParticipantRole,
@@ -364,5 +365,51 @@ export class FriendShipService {
       count: formattedFriendRequests.length,
       friendRequests: formattedFriendRequests,
     };
+  }
+
+  async unfriend(unfriendParams: TUnfriendParams): Promise<void> {
+    const { friendId } = unfriendParams;
+    const userId = this.clsService.get('user.id');
+
+    const relationship = await this.relationshipRepository.findRelationshipByUserIds(
+      { userIdA: userId, userIdB: friendId },
+      { relationshipType: RelationshipType.Friend }
+    );
+
+    if (!relationship) {
+      throw new CustomHttpException('Relationship does not exist', HttpErrorCode.NOT_FOUND);
+    }
+
+    const conversation = await this.conversationRepository.findConversationByParticipantIds(
+      [userId, friendId],
+      { conversationType: ConversationType.Direct }
+    );
+
+    if (!conversation) {
+      throw new CustomHttpException(
+        'Conversation not found, database is out of sync',
+        HttpErrorCode.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    const now = new Date();
+    await executeTx(this.kyselyService.db, async (tx) => {
+      await this.relationshipRepository.deleteRelationshipByUserIds(
+        {
+          userIdA: userId,
+          userIdB: friendId,
+        },
+        { relationshipType: RelationshipType.Friend },
+        tx
+      );
+
+      await this.conversationParticipantRepository.updateConversationParticipantByIds(
+        {
+          conversationParticipantClosedTime: now,
+        },
+        { conversationId: conversation.conversationId, participantId: userId },
+        tx
+      );
+    });
   }
 }

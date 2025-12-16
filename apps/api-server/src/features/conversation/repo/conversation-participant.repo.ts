@@ -51,9 +51,40 @@ export class ConversationParticipantRepository {
       return conversationParticipant!;
     } catch (error) {
       throw new CustomHttpException(
-        `[${ConversationParticipantRepository.repoName}] | Fail to upsert account`,
+        `[${ConversationParticipantRepository.repoName}] | Fail to upsert conversation participant`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, conversationParticipantObj, conversationParticipantPayload }
+      );
+    }
+  }
+
+  async updateConversationParticipantByIds(
+    conversationParticipantPayload: TUpdatableConversationParticipant,
+    ids: {
+      conversationId: string;
+      participantId: string;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { conversationId, participantId } = ids;
+
+      const conversationParticipant = await db
+        .updateTable('conversationParticipant')
+        .set(conversationParticipantPayload)
+        .where('conversationParticipantConversationId', '=', conversationId)
+        .where('conversationParticipantParticipantId', '=', participantId)
+        .returningAll()
+        .executeTakeFirst();
+
+      return conversationParticipant!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${ConversationParticipantRepository.repoName}] | Fail to update conversation participant by participant id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, conversationParticipantPayload, ids }
       );
     }
   }

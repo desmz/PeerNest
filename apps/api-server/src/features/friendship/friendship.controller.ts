@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   sendFriendRequestRoSchema,
   type TAcceptFriendRequestParams,
@@ -9,6 +19,7 @@ import {
   getFriendRequestsQueryParamsSchema,
   type TGetFriendRequestQueryParams,
   TGetFriendRequestVo,
+  type TUnfriendParams,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -51,5 +62,11 @@ export class FriendShipController {
     getFriendRequestQueryParams: TGetFriendRequestQueryParams
   ): Promise<TGetFriendRequestVo> {
     return this.friendshipService.getFriendRequests(getFriendRequestQueryParams);
+  }
+
+  @Delete('me/friends/:friendId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unfriend(@Param() unfriendParams: TUnfriendParams): Promise<void> {
+    await this.friendshipService.unfriend(unfriendParams);
   }
 }

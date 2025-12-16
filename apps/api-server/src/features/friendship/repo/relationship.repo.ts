@@ -89,4 +89,34 @@ export class RelationshipRepository {
       );
     }
   }
+
+  async deleteRelationshipByUserIds(
+    userIds: { userIdA: string; userIdB: string },
+    options?: { relationshipType: RelationshipType },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const [userIdA, userIdB] = orderIdPair(userIds.userIdA, userIds.userIdB);
+      const { relationshipType } = options || {};
+
+      let query = db
+        .deleteFrom('relationship')
+        .where('relationshipUserIdA', '=', userIdA)
+        .where('relationshipUserIdB', '=', userIdB);
+
+      if (relationshipType) {
+        query = query.where('relationshipType', '=', relationshipType);
+      }
+
+      await query.executeTakeFirst();
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${RelationshipRepository.repoName}] | Fail to delete relationship by userIds`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userIds }
+      );
+    }
+  }
 }
