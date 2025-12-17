@@ -1,4 +1,4 @@
-import { join } from 'path';
+import path from 'path';
 
 import { Injectable } from '@nestjs/common';
 import {
@@ -364,7 +364,7 @@ export class MeService {
   async updateAvatar(avatarFile: Express.Multer.File) {
     const userId = this.clsService.get('user.id');
 
-    const path = `${join(StorageAdapter.getDir(UploadType.Avatar), userId)}.png`;
+    const avatarPath = `${path.posix.join(StorageAdapter.getDir(UploadType.Avatar), userId)}.png`;
     const bucket = StorageAdapter.getBucket(UploadType.Avatar);
 
     const svgSize = [256, 256];
@@ -379,7 +379,7 @@ export class MeService {
 
     const { hash } = await this.storageAdapter.uploadFile(
       bucket,
-      path,
+      avatarPath,
       avatarBuffer,
       {
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -396,7 +396,7 @@ export class MeService {
     await this.attachmentRepository.updateAttachmentByOwnerId(
       {
         attachmentMimetype: mimetype,
-        attachmentPath: path,
+        attachmentPath: avatarPath,
         attachmentName: userId,
         attachmentSize: avatarBuffer.length,
         attachmentWidth: svgSize[0],

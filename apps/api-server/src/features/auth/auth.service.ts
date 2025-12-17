@@ -1,4 +1,4 @@
-import { join } from 'path';
+import path from 'path';
 
 import { Injectable } from '@nestjs/common';
 import { TForgetPasswordRo, TResetPasswordRo, TSignInRo, TSignUpRo } from '@peernest/contract';
@@ -158,12 +158,12 @@ export class AuthService {
     const mimetype = 'image/png';
     const avatarBuffer = toPng(hashValue, avatarSideLength);
 
-    const path = `${join(StorageAdapter.getDir(UploadType.Avatar), hashValue)}.png`;
+    const avatarPath = `${path.posix.join(StorageAdapter.getDir(UploadType.Avatar), hashValue)}.png`;
     const bucket = StorageAdapter.getBucket(UploadType.Avatar);
 
     const { hash } = await this.storageAdapter.uploadFile(
       bucket,
-      path,
+      avatarPath,
       avatarBuffer,
       {
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -178,7 +178,7 @@ export class AuthService {
 
     return {
       attachmentId: generateAttachmentId(),
-      attachmentPath: path,
+      attachmentPath: avatarPath,
       attachmentName: hashValue,
       attachmentSize: avatarBuffer.length,
       attachmentMimetype: mimetype,
@@ -427,12 +427,12 @@ export class AuthService {
     image.resize({ h: svgSize[0], w: svgSize[1] });
     const avatarBuffer = await image.getBuffer(mimetype);
 
-    const path = `${join(StorageAdapter.getDir(UploadType.Avatar), hashValue)}.png`;
+    const avatarPath = `${path.posix.join(StorageAdapter.getDir(UploadType.Avatar), hashValue)}.png`;
     const bucket = StorageAdapter.getBucket(UploadType.Avatar);
 
     const { hash } = await this.storageAdapter.uploadFile(
       bucket,
-      path,
+      avatarPath,
       avatarBuffer,
       {
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -447,7 +447,7 @@ export class AuthService {
 
     return {
       attachmentId: generateAttachmentId(),
-      attachmentPath: path,
+      attachmentPath: avatarPath,
       attachmentName: hashValue,
       attachmentSize: avatarBuffer.length,
       attachmentMimetype: mimetype,

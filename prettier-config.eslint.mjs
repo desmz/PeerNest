@@ -21,7 +21,7 @@ const prettierBaseConfig = {
   trailingComma: 'es5',
   bracketSameLine: true,
   useTabs: false,
-  endOfLine: 'lf',
+  endOfLine: 'auto',
   arrowParens: 'always',
   overrides: [],
 };
