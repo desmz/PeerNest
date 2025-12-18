@@ -2,6 +2,7 @@ import { Route, Routes, Navigate } from 'react-router';
 
 import Layout from '@/components/layout/layout';
 import LoginPage from '@/components/pages/auth/signInPage';
+import ErrorPage from '@/components/pages/error/errorPage';
 import HomePage from '@/components/pages/homePage';
 import { APP_ROUTE } from '@/lib/app-route';
 
@@ -24,6 +25,8 @@ export function App() {
       <Route element={<Layout />}>
         <Route path={APP_ROUTE.HOME} element={<HomePage />} />
       </Route>
+
+      <Route path='*' element={<ErrorPage />} />
     </Routes>
   );
 }
