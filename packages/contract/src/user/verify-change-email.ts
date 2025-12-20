@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { zEmail } from '../utils';
 
-export const VERIFY_CHANGE_EMAIL = '/me/email/verify-change';
+export const VERIFY_CHANGE_EMAIL_URL = '/me/email/verify-change';
 
 export const verifyChangeEmailFields = {
   newEmail: 'Email',

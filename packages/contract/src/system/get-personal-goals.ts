@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const GET_PERSONAL_GOALS = '/sys/personal-goals';
+export const GET_PERSONAL_GOALS_URL = '/sys/personal-goals';
 
 export const getPersonalGoalsVoSchema = z.array(
   z.object({

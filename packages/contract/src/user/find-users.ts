@@ -10,7 +10,7 @@ import {
 } from '../system';
 import { interestIdSchema, personalGoalIdSchema, userIdSchema, zNonEmptyString } from '../utils';
 
-export const FIND_USERS = '/users';
+export const FIND_USERS_URL = '/users';
 
 export const findUsersQueryParams = {
   q: 'Query param',

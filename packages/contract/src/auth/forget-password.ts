@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { loosePasswordSchema } from './signin';
 
-export const FORGET_PASSWORD = '/auth/forget-password';
+export const FORGET_PASSWORD_URL = '/auth/forget-password';
 
 export const forgetPasswordFields = {
   email: 'Email',

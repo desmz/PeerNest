@@ -16,7 +16,7 @@ import {
 
 import { getMeProfileVoSchema } from './get-me-profile';
 
-export const UPDATE_ME_PROFILE = '/me/profile';
+export const UPDATE_ME_PROFILE_URL = '/me/profile';
 
 export const updateMeProfileFields = {
   userDisplayName: 'Display name',

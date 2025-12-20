@@ -5,7 +5,7 @@ import { conversationIdSchema, userIdSchema } from '../utils';
 
 import { findUserSchema } from './find-users';
 
-export const GET_USER_PROFILE = '/users/{userId}/profile';
+export const GET_USER_PROFILE_URL = '/users/{userId}/profile';
 
 export const getUserProfileParamsSchema = z.object({
   userId: userIdSchema(),

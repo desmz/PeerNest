@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { displayNameSchema, emailSchema } from '../auth/signup';
 
-export const ME = '/me';
+export const ME_URL = '/me';
 
 export const meVoSchema = z.object({
   displayName: displayNameSchema,

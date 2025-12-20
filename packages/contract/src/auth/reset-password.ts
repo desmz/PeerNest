@@ -4,7 +4,7 @@ import { zNonEmpty, zString } from '../utils';
 
 import { passwordSchema } from './signup';
 
-export const RESET_PASSWORD = '/auth/reset-password';
+export const RESET_PASSWORD_URL = '/auth/reset-password';
 
 export const resetPasswordFields = {
   code: 'Code',

@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { zEmail, zMax, zMin, zNonEmpty, zString } from '../utils/schema';
 
-export const SIGN_UP = '/auth/signup';
+export const SIGN_UP_URL = '/auth/signup';
 
 export const signUpFields = {
   email: 'Email ',
