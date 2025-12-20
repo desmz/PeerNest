@@ -350,6 +350,17 @@ export interface AuthUsers {
   updatedAt: Timestamp | null;
 }
 
+export interface Comment {
+  commentAuthorId: string;
+  commentContent: string;
+  commentCreatedTime: Generated<Timestamp>;
+  commentDeletedTime: Timestamp | null;
+  commentDiscussionId: string;
+  commentId: Generated<string>;
+  commentParentCommentId: string | null;
+  commentUpdatedTime: Timestamp | null;
+}
+
 export interface Conversation {
   conversationCreatedTime: Generated<Timestamp>;
   conversationId: Generated<string>;
@@ -364,6 +375,40 @@ export interface ConversationParticipant {
   conversationParticipantJoinedTime: Generated<Timestamp>;
   conversationParticipantParticipantId: string;
   conversationParticipantRole: string;
+}
+
+export interface Discussion {
+  discussionArchivedBy: string | null;
+  discussionArchivedTime: Timestamp | null;
+  discussionAuthorId: string;
+  discussionContent: string;
+  discussionCreatedTime: Generated<Timestamp>;
+  discussionDeletedTime: Timestamp | null;
+  discussionId: Generated<string>;
+  discussionSearchTsv: string;
+  discussionStatus: string;
+  discussionTitle: string;
+  discussionUpdatedTime: Timestamp | null;
+}
+
+export interface DiscussionAttachment {
+  discussionAttachmentAttachmentId: string;
+  discussionAttachmentDiscussionId: string;
+  discussionAttachmentId: Generated<string>;
+}
+
+export interface DiscussionInterest {
+  discussionInterestDiscussionId: string;
+  discussionInterestId: Generated<string>;
+  discussionInterestInterestId: string;
+  discussionInterestPosition: Numeric;
+}
+
+export interface DiscussionPersonalGoal {
+  discussionPersonalGoalDiscussionId: string;
+  discussionPersonalGoalId: Generated<string>;
+  discussionPersonalGoalPersonalGoalId: string;
+  discussionPersonalGoalPosition: Numeric;
 }
 
 export interface Domain {
@@ -640,6 +685,40 @@ export interface User {
   userUpdatedTime: Timestamp | null;
 }
 
+export interface UserCommentLike {
+  userCommentLikeCommentId: string;
+  userCommentLikeCreatedTime: Generated<Timestamp>;
+  userCommentLikeId: Generated<string>;
+  userCommentLikeUserId: string;
+}
+
+export interface UserCommentReport {
+  userCommentReportCommentId: string;
+  userCommentReportId: Generated<string>;
+  userCommentReportReportedTime: Generated<Timestamp>;
+  userCommentReportReporterId: string;
+  userCommentReportResolvedTime: Timestamp | null;
+  userCommentReportResolverId: string | null;
+  userCommentReportStatus: string;
+}
+
+export interface UserDiscussionLike {
+  userDiscussionLikeCreatedTime: Generated<Timestamp>;
+  userDiscussionLikeDiscussionId: string;
+  userDiscussionLikeId: Generated<string>;
+  userDiscussionLikeUserId: string;
+}
+
+export interface UserDiscussionReport {
+  userDiscussionReportDiscussionId: string;
+  userDiscussionReportId: Generated<string>;
+  userDiscussionReportReportedTime: Generated<Timestamp>;
+  userDiscussionReportReporterId: string;
+  userDiscussionReportResolvedTime: Timestamp | null;
+  userDiscussionReportResolverId: string | null;
+  userDiscussionReportStatus: string;
+}
+
 export interface UserInfo {
   userInfoBio: string | null;
   userInfoCreatedTime: Generated<Timestamp>;
@@ -727,8 +806,13 @@ export interface DB {
   'auth.ssoDomains': AuthSsoDomains;
   'auth.ssoProviders': AuthSsoProviders;
   'auth.users': AuthUsers;
+  comment: Comment;
   conversation: Conversation;
   conversationParticipant: ConversationParticipant;
+  discussion: Discussion;
+  discussionAttachment: DiscussionAttachment;
+  discussionInterest: DiscussionInterest;
+  discussionPersonalGoal: DiscussionPersonalGoal;
   domain: Domain;
   'extensions.pgStatStatements': ExtensionsPgStatStatements;
   'extensions.pgStatStatementsInfo': ExtensionsPgStatStatementsInfo;
@@ -752,6 +836,10 @@ export interface DB {
   'storage.vectorIndexes': StorageVectorIndexes;
   university: University;
   user: User;
+  userCommentLike: UserCommentLike;
+  userCommentReport: UserCommentReport;
+  userDiscussionLike: UserDiscussionLike;
+  userDiscussionReport: UserDiscussionReport;
   userInfo: UserInfo;
   userInfoInterest: UserInfoInterest;
   userInfoPersonalGoal: UserInfoPersonalGoal;

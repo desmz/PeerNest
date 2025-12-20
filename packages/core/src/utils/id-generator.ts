@@ -26,6 +26,15 @@ export enum IdPrefix {
   Relationship = 'rlts',
   Conversation = 'cvst',
   ConversationParticipant = 'cvstptcp',
+  Discussion = 'dcs',
+  DiscussionAttachment = 'dcsatm',
+  DiscussionPersonalGoal = 'dcspsng',
+  DiscussionInterest = 'dcsitr',
+  UserDiscussionReport = 'usrdcsrp',
+  Comment = 'cm',
+  UserCommentReport = 'usrcmrp',
+  UserDiscussionLike = 'usrdcsl',
+  UserCommentLike = 'usrcml',
 }
 
 export function generateUuid() {
@@ -98,4 +107,40 @@ export function generateConversationId() {
 
 export function generateConversationParticipantId() {
   return IdPrefix.ConversationParticipant + '-' + generateUuid();
+}
+
+export function generateDiscussionId() {
+  return IdPrefix.Discussion + '-' + generateUuid();
+}
+
+export function generateDiscussionAttachmentId() {
+  return IdPrefix.DiscussionAttachment + '-' + generateUuid();
+}
+
+export function generateDiscussionPersonalGoalId() {
+  return IdPrefix.DiscussionPersonalGoal + '-' + generateUuid();
+}
+
+export function generateDiscussionInterestId() {
+  return IdPrefix.DiscussionInterest + '-' + generateUuid();
+}
+
+export function generateUserDiscussionReportId() {
+  return IdPrefix.UserDiscussionReport + '-' + generateUuid();
+}
+
+export function generateCommentId() {
+  return IdPrefix.Comment + '-' + generateUuid();
+}
+
+export function generateUserCommentReportId() {
+  return IdPrefix.UserCommentReport + '-' + generateUuid();
+}
+
+export function generateUserDiscussionLikeId() {
+  return IdPrefix.UserDiscussionLike + '-' + generateUuid();
+}
+
+export function generateUserCommentLikeId() {
+  return IdPrefix.UserCommentLike + '-' + generateUuid();
 }
