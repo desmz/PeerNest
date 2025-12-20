@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { generateAttachmentId, HttpErrorCode } from '@peernest/core';
+import { AttachmentStatus, generateAttachmentId, HttpErrorCode } from '@peernest/core';
 import {
   dbOrTx,
   KyselyService,
@@ -77,34 +77,63 @@ export class AttachmentRepository {
       );
     }
   }
+  async updateAttachmentById(
+    attachmentPayload: TUpdatableAttachment,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
 
-  // async findAttachmentById(
-  //   id: string,
-  //   options?: { includedDeleted?: boolean },
-  //   tx?: TKyselyTransaction
-  // ) {
-  //   try {
-  //     const db = dbOrTx(this.kyselyService.db, tx);
+      const now = attachmentPayload.attachmentUpdatedTime
+        ? attachmentPayload.attachmentUpdatedTime
+        : new Date();
 
-  //     let query = db
-  //       .selectFrom('user')
-  //       .innerJoin('role', 'role.roleId', 'user.userRoleId')
-  //       .selectAll(['user', 'role'])
-  //       .where('userId', '=', id);
+      const attachment = await db
+        .updateTable('attachment')
+        .set({
+          ...attachmentPayload,
+          attachmentUpdatedTime: now,
+        })
+        .where('attachmentId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
 
-  //     if (!options?.includedDeleted) {
-  //       query = query.where('userDeletedTime', 'is', null);
-  //     }
+      return attachment!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${AttachmentRepository.repoName}] | Fail to update attachment by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, attachmentPayload, id }
+      );
+    }
+  }
 
-  //     const user = await query.executeTakeFirst();
+  async findAttachmentById(
+    id: string,
+    options?: { status: AttachmentStatus },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
 
-  //     return user;
-  //   } catch (error) {
-  //     throw new CustomHttpException(
-  //       `[${AttachmentRepository.repoName}] | Fail to find user by id`,
-  //       HttpErrorCode.INTERNAL_SERVER_ERROR,
-  //       { error, id }
-  //     );
-  //   }
-  // }
+      const { status } = options || {};
+
+      let query = db.selectFrom('attachment').selectAll().where('attachmentId', '=', id);
+
+      if (status) {
+        query = query.where('attachmentStatus', '=', status);
+      }
+
+      const attachment = await query.executeTakeFirst();
+
+      return attachment;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${AttachmentRepository.repoName}] | Fail to find attachment by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id, options }
+      );
+    }
+  }
 }

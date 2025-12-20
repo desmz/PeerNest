@@ -1,12 +1,15 @@
 import { Inject } from '@nestjs/common';
 import { ConfigType, registerAs } from '@nestjs/config';
 import { envObj } from '@peernest/config/dynamic';
+import { StringValue } from 'ms';
 
 export const storageConfig = registerAs('storage', () => ({
   provider: envObj.BACKEND_STORAGE_PROVIDER as 's3',
-  publicBucket: envObj.BACKEND_STORAGE_PUBLIC_BUCKET || 'public',
-  privateBucket: envObj.BACKEND_STORAGE_PRIVATE_BUCKET || 'private',
+  publicBucket: envObj.BACKEND_STORAGE_PUBLIC_BUCKET ?? 'public',
+  privateBucket: envObj.BACKEND_STORAGE_PRIVATE_BUCKET ?? 'private',
   publicBaseUrl: envObj.BACKEND_STORAGE_S3_PUBLIC_BASE_URL!,
+  tokenExpireIn: (envObj.BACKEND_STORAGE_TOKEN_EXPIRE_IN ?? '6d') as StringValue,
+  urlExpireIn: (envObj.BACKEND_STORAGE_URL_EXPIRE_IN ?? '6d') as StringValue,
   s3: {
     region: envObj.BACKEND_STORAGE_S3_REGION!,
     endpoint: envObj.BACKEND_STORAGE_S3_ENDPOINT,

@@ -52,6 +52,7 @@ attachment [color:blue] {
   owner_id varchar?
   path text
   name varchar
+  status varchar // pending, ready, deleted
   size int
   mimetype varchar
   width int?

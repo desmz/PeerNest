@@ -1,3 +1,4 @@
+export * from './attachment.constant';
 export * from './auth.constant';
 export * from './conversation.constant';
 export * from './friend-request.constant';

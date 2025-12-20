@@ -5,6 +5,7 @@ import { TForgetPasswordRo, TResetPasswordRo, TSignInRo, TSignUpRo } from '@peer
 import {
   AccountProvider,
   AccountType,
+  AttachmentStatus,
   comparePassword,
   encodePassword,
   FORGET_PASSWORD_TOKEN_HASH_LENGTH,
@@ -180,6 +181,7 @@ export class AuthService {
       attachmentId: generateAttachmentId(),
       attachmentPath: avatarPath,
       attachmentName: hashValue,
+      attachmentStatus: AttachmentStatus.Ready,
       attachmentSize: avatarBuffer.length,
       attachmentMimetype: mimetype,
       attachmentWidth: avatarSideLength,
@@ -449,6 +451,7 @@ export class AuthService {
       attachmentId: generateAttachmentId(),
       attachmentPath: avatarPath,
       attachmentName: hashValue,
+      attachmentStatus: AttachmentStatus.Ready,
       attachmentSize: avatarBuffer.length,
       attachmentMimetype: mimetype,
       attachmentWidth: svgSize[0],

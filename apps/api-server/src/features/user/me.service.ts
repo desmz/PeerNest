@@ -8,6 +8,7 @@ import {
   TVerifyChangeEmailRo,
 } from '@peernest/contract';
 import {
+  AttachmentStatus,
   CHANGE_EMAIL_TOKEN_HASH_LENGTH,
   comparePassword,
   encodePassword,
@@ -398,6 +399,7 @@ export class MeService {
         attachmentMimetype: mimetype,
         attachmentPath: avatarPath,
         attachmentName: userId,
+        attachmentStatus: AttachmentStatus.Ready,
         attachmentSize: avatarBuffer.length,
         attachmentWidth: svgSize[0],
         attachmentHeight: svgSize[1],

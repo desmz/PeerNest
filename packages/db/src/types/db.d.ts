@@ -75,6 +75,7 @@ export interface Attachment {
   attachmentOwnerId: string | null;
   attachmentPath: string;
   attachmentSize: Int8;
+  attachmentStatus: string;
   attachmentUpdatedTime: Timestamp | null;
   attachmentWidth: Int8 | null;
 }

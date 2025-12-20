@@ -84,6 +84,7 @@
       "timestamptz",
       "aggs",
       "unaccent",
+      "presign",
     ],
     "peacock.remoteColor": "#374d6a",
     "github.copilot.enable": {

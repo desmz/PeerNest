@@ -1,3 +1,4 @@
 export enum UploadType {
-  Avatar = 1,
+  Avatar = 'avatar',
+  Discussion = 'discussion',
 }
