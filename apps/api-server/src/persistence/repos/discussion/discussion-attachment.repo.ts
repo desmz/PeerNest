@@ -69,17 +69,17 @@ export class DiscussionAttachmentRepository {
     }
   }
 
-  async deleteDiscussionAttachmentByDiscussionId(discussionId: string, tx?: TKyselyTransaction) {
+  async deleteDiscussionAttachmentsByDiscussionId(discussionId: string, tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
       await db
         .deleteFrom('discussionAttachment')
-        .where('discussionAttachmentId', '=', discussionId)
-        .executeTakeFirst();
+        .where('discussionAttachmentDiscussionId', '=', discussionId)
+        .execute();
     } catch (error) {
       throw new CustomHttpException(
-        `[${DiscussionAttachmentRepository.repoName}] | Fail to delete discussion attachment by id`,
+        `[${DiscussionAttachmentRepository.repoName}] | Fail to delete discussion attachments by id`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, discussionId }
       );

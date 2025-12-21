@@ -260,13 +260,14 @@ export class DiscussionService {
       );
 
       if (attachmentId) {
-        const ids: { discussionId: string; attachmentId: string } = { discussionId, attachmentId };
-
         const discussionAttachment =
-          await this.discussionAttachmentRepository.findDiscussionAttachmentByIds(ids, tx);
+          await this.discussionAttachmentRepository.findDiscussionAttachmentByIds(
+            { discussionId, attachmentId },
+            tx
+          );
 
         if (!discussionAttachment) {
-          await this.discussionAttachmentRepository.deleteDiscussionAttachmentByDiscussionId(
+          await this.discussionAttachmentRepository.deleteDiscussionAttachmentsByDiscussionId(
             discussionId,
             tx
           );
@@ -280,6 +281,11 @@ export class DiscussionService {
             tx
           );
         }
+      } else {
+        await this.discussionAttachmentRepository.deleteDiscussionAttachmentsByDiscussionId(
+          discussionId,
+          tx
+        );
       }
 
       if (filteredPersonalGoalIds && filteredPersonalGoalIds.length > 0) {
