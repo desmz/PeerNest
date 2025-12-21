@@ -25,8 +25,8 @@ export const updateMeProfileFields = {
   userInfoDomainId: 'Domain Id',
   userInfoBio: 'About or Bio',
   userInfoLookingFor: 'Looking For field',
-  interestIds: 'Interest Ids',
-  personalIds: 'Personal Goal Ids',
+  interestIds: 'Interests',
+  personalGoalIds: 'Personal Goals',
 } as const;
 
 export const userInfoBioSchema = z

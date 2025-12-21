@@ -385,7 +385,7 @@ export interface Discussion {
   discussionCreatedTime: Generated<Timestamp>;
   discussionDeletedTime: Timestamp | null;
   discussionId: Generated<string>;
-  discussionSearchTsv: string;
+  discussionSearchTsv: string | null;
   discussionStatus: string;
   discussionTitle: string;
   discussionUpdatedTime: Timestamp | null;

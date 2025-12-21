@@ -1,7 +1,7 @@
 import { isEmptyObject } from '@peernest/core';
 import z, { ZodObject, ZodRawShape } from 'zod';
 
-import { zNonEmpty, zString } from './schema';
+import { zMax, zMin, zNonEmpty, zString } from './schema';
 
 export const zNonEmptyString = (field: string): z.ZodString => {
   return z.string(zString(field)).nonempty(zNonEmpty(field));
@@ -19,3 +19,7 @@ export const zNonEmptyObject = <T extends ZodRawShape>(objectSchema: ZodObject<T
       });
     }
   });
+
+export const zMinMaxString = (field: string, min: number, max: number): z.ZodString => {
+  return z.string(zString(field)).min(min, zMin(field, min)).max(max, zMax(field, max));
+};

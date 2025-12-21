@@ -348,12 +348,12 @@ export class MeService {
 
     if (!userInfoAgg) {
       throw new CustomHttpException(
-        'Cannot found user info agg',
+        'Cannot find user info agg',
         HttpErrorCode.INTERNAL_SERVER_ERROR
       );
     }
     if (!user) {
-      throw new CustomHttpException('Cannot found user', HttpErrorCode.INTERNAL_SERVER_ERROR);
+      throw new CustomHttpException('Cannot find user', HttpErrorCode.INTERNAL_SERVER_ERROR);
     }
 
     return {
