@@ -8,6 +8,7 @@ import { DiscussionInterestRepository } from './repos/discussion/discussion-inte
 import { DiscussionPersonalGoalRepository } from './repos/discussion/discussion-personal-goal.repo';
 import { DiscussionRepository } from './repos/discussion/discussion.repo';
 import { UserDiscussionLikeRepository } from './repos/discussion/user-discussion-like.repo';
+import { UserDiscussionReportRepository } from './repos/discussion/user-discussion-report.repo';
 import { FriendRequestRepository } from './repos/friendship/friend-request.repo';
 import { RelationshipRepository } from './repos/friendship/relationship.repo';
 import { DomainRepository } from './repos/system/domain.repo';
@@ -46,6 +47,7 @@ const repositories: Provider[] = [
   DiscussionPersonalGoalRepository,
   DiscussionInterestRepository,
   UserDiscussionLikeRepository,
+  UserDiscussionReportRepository,
 ];
 
 @Module({

@@ -25,6 +25,7 @@ import {
   type TDeleteDiscussionParams,
   type TLikeDiscussionParams,
   type TUnlikeDiscussionParams,
+  type TReportDiscussionParams,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -78,5 +79,11 @@ export class DiscussionController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async unlikeDiscussion(@Param() unlikeDiscussionParams: TUnlikeDiscussionParams): Promise<void> {
     await this.discussionService.unlikeDiscussion(unlikeDiscussionParams);
+  }
+
+  @Post(':discussionId/reports')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async reportDiscussion(@Param() reportDiscussionParams: TReportDiscussionParams): Promise<void> {
+    await this.discussionService.reportDiscussion(reportDiscussionParams);
   }
 }

@@ -8,6 +8,7 @@ import {
   TGetDiscussionQueryParams,
   TGetDiscussionVo,
   TLikeDiscussionParams,
+  TReportDiscussionParams,
   TUnlikeDiscussionParams,
   type TCreateDiscussionRo,
   type TCreateDiscussionVo,
@@ -20,8 +21,10 @@ import {
   generateDiscussionInterestId,
   generateDiscussionPersonalGoalId,
   generateUserCommentLikeId,
+  generateUserDiscussionReportId,
   HttpErrorCode,
   UploadType,
+  UserDiscussionReportStatus,
 } from '@peernest/core';
 import {
   executeTx,
@@ -42,6 +45,7 @@ import { DiscussionInterestRepository } from '@/persistence/repos/discussion/dis
 import { DiscussionPersonalGoalRepository } from '@/persistence/repos/discussion/discussion-personal-goal.repo';
 import { DiscussionRepository } from '@/persistence/repos/discussion/discussion.repo';
 import { UserDiscussionLikeRepository } from '@/persistence/repos/discussion/user-discussion-like.repo';
+import { UserDiscussionReportRepository } from '@/persistence/repos/discussion/user-discussion-report.repo';
 import { InterestRepository } from '@/persistence/repos/system/interest.repo';
 import { PersonalGoalRepository } from '@/persistence/repos/system/personal-goal.repo';
 import { IClsStore } from '@/types/cls';
@@ -60,7 +64,8 @@ export class DiscussionService {
     private readonly discussionInterestRepository: DiscussionInterestRepository,
     private readonly discussionPersonalGoalRepository: DiscussionPersonalGoalRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
-    private readonly userDiscussionLikeRepository: UserDiscussionLikeRepository
+    private readonly userDiscussionLikeRepository: UserDiscussionLikeRepository,
+    private readonly userDiscussionReportRepository: UserDiscussionReportRepository
   ) {}
 
   async createDiscussion(createDiscussionRo: TCreateDiscussionRo): Promise<TCreateDiscussionVo> {
@@ -480,11 +485,47 @@ export class DiscussionService {
 
     if (discussion.discussionAuthorId === userId) {
       throw new CustomHttpException(
-        `You cannot like your own discussion`,
+        `You cannot unlike your own discussion`,
         HttpErrorCode.RESTRICTED_RESOURCE
       );
     }
 
     await this.userDiscussionLikeRepository.deleteUserDiscussionLikeByIds({ userId, discussionId });
+  }
+
+  async reportDiscussion(reportDiscussionParams: TReportDiscussionParams) {
+    const { discussionId } = reportDiscussionParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionAuthorId === userId) {
+      throw new CustomHttpException(
+        `You cannot report your own discussion`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const now = new Date();
+    await this.userDiscussionReportRepository.createUserDiscussionReport(
+      {
+        userDiscussionReportId: generateUserDiscussionReportId(),
+        userDiscussionReportReporterId: userId,
+        userDiscussionReportDiscussionId: discussionId,
+        userDiscussionReportStatus: UserDiscussionReportStatus.Reported,
+        userDiscussionReportReportedTime: now,
+      },
+      { onConflictDoNothing: true }
+    );
   }
 }
