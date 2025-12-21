@@ -1,5 +1,4 @@
 import {
-  DiscussionStatus,
   MAX_DISCUSSION_CONTENT_LEN,
   MAX_DISCUSSION_GOAL_TAGS,
   MAX_DISCUSSION_INTEREST_TAGS,
@@ -9,16 +8,15 @@ import {
 } from '@peernest/core';
 import z from 'zod';
 
-import { getInterestsVoSchema, getPersonalGoalsVoSchema } from '../system';
 import {
   attachmentIdSchema,
-  discussionIdSchema,
   interestIdSchema,
   personalGoalIdSchema,
-  userIdSchema,
   zArrayMax,
   zMinMaxString,
 } from '../utils';
+
+import { getDiscussionVoSchema } from './get-discussion';
 
 export const CREATE_DISCUSSION_URL = '/discussions';
 
@@ -60,27 +58,6 @@ export const createDiscussionRoSchema = z.object({
 
 export type TCreateDiscussionRo = z.infer<typeof createDiscussionRoSchema>;
 
-export const discussionAuthorVoSchema = z.object({
-  userId: userIdSchema(),
-  userDisplayName: z.string().nonempty(),
-  userAvatarUrl: z.string().nonempty(),
-  roleName: z.string().nonempty(),
-});
-
-export const createDiscussionVoSchema = z.object({
-  discussionId: discussionIdSchema(),
-  discussionTitle: z.string().nonempty(),
-  discussionContent: z.string().nonempty(),
-  discussionStatus: z.enum(DiscussionStatus),
-  discussionCreatedTime: z.date(),
-  author: discussionAuthorVoSchema,
-  interests: getInterestsVoSchema.nullable(),
-  goals: getPersonalGoalsVoSchema.nullable(),
-  likeCount: z.int(),
-  commentCount: z.int(),
-  isLiked: z.boolean(),
-  isReported: z.boolean(),
-  attachmentUrl: z.url().nullable(),
-});
+export const createDiscussionVoSchema = getDiscussionVoSchema;
 
 export type TCreateDiscussionVo = z.infer<typeof createDiscussionVoSchema>;

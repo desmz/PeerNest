@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { generateDiscussionId, HttpErrorCode, UserDiscussionReportStatus } from '@peernest/core';
+import {
+  DiscussionStatus,
+  generateDiscussionId,
+  HttpErrorCode,
+  UserDiscussionReportStatus,
+} from '@peernest/core';
 import { dbOrTx, KyselyService, TInsertableDiscussion, TKyselyTransaction } from '@peernest/db';
 import { DB } from '@peernest/db/types/db';
 import { expressionBuilder } from 'kysely';
@@ -39,6 +44,47 @@ export class DiscussionRepository {
         `[${DiscussionRepository.repoName}] | Fail to create discussion`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, discussionObj }
+      );
+    }
+  }
+
+  async findDiscussionById(
+    id: string,
+    options?: { includedDeleted?: boolean; statuses?: DiscussionStatus[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { includedDeleted, statuses } = options || {};
+
+      let query = db
+        .selectFrom('discussion')
+        .leftJoin(
+          'discussionAttachment',
+          'discussionAttachment.discussionAttachmentDiscussionId',
+          'discussion.discussionId'
+        )
+        .selectAll('discussion')
+        .select('discussionAttachment.discussionAttachmentAttachmentId as attachmentId')
+        .where('discussion.discussionId', '=', id);
+
+      if (!includedDeleted) {
+        query = query.where('discussion.discussionDeletedTime', 'is', null);
+      }
+
+      if (statuses && statuses.length > 0) {
+        query = query.where('discussion.discussionStatus', 'in', statuses);
+      }
+
+      const discussion = await query.executeTakeFirst();
+
+      return discussion;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to find discussion by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id, options }
       );
     }
   }

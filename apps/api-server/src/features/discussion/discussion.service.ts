@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { type TCreateDiscussionRo, type TCreateDiscussionVo } from '@peernest/contract';
+import {
+  TGetDiscussionParams,
+  TGetDiscussionQueryParams,
+  TGetDiscussionVo,
+  type TCreateDiscussionRo,
+  type TCreateDiscussionVo,
+} from '@peernest/contract';
 import {
   AttachmentStatus,
   DiscussionStatus,
@@ -137,6 +143,36 @@ export class DiscussionService {
         );
       }
     });
+
+    return this.getDiscussionAgg(discussionId, userId, attachment);
+  }
+
+  async getDiscussion(
+    getDiscussionParam: TGetDiscussionParams,
+    getDiscussionQueryParam: TGetDiscussionQueryParams
+  ): Promise<TGetDiscussionVo> {
+    const { discussionId } = getDiscussionParam;
+    const { statuses } = getDiscussionQueryParam;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: statuses || undefined,
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    let attachment;
+    if (discussion.attachmentId) {
+      attachment = await this.attachmentRepository.findAttachmentById(discussion.attachmentId, {
+        status: AttachmentStatus.Ready,
+      });
+    }
 
     return this.getDiscussionAgg(discussionId, userId, attachment);
   }
