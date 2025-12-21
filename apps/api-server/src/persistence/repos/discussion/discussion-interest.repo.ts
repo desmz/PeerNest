@@ -35,7 +35,7 @@ export class DiscussionInterestRepository {
         );
       }
 
-      const discussionInterest = query.returningAll().executeTakeFirst();
+      const discussionInterest = query.returningAll().execute();
 
       return discussionInterest!;
     } catch (error) {

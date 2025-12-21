@@ -7,6 +7,7 @@ import {
   TGetDiscussionParams,
   TGetDiscussionQueryParams,
   TGetDiscussionVo,
+  TLikeDiscussionParams,
   type TCreateDiscussionRo,
   type TCreateDiscussionVo,
 } from '@peernest/contract';
@@ -17,6 +18,7 @@ import {
   generateDiscussionId,
   generateDiscussionInterestId,
   generateDiscussionPersonalGoalId,
+  generateUserCommentLikeId,
   HttpErrorCode,
   UploadType,
 } from '@peernest/core';
@@ -38,6 +40,7 @@ import { DiscussionAttachmentRepository } from '@/persistence/repos/discussion/d
 import { DiscussionInterestRepository } from '@/persistence/repos/discussion/discussion-interest.repo';
 import { DiscussionPersonalGoalRepository } from '@/persistence/repos/discussion/discussion-personal-goal.repo';
 import { DiscussionRepository } from '@/persistence/repos/discussion/discussion.repo';
+import { UserDiscussionLikeRepository } from '@/persistence/repos/discussion/user-discussion-like.repo';
 import { InterestRepository } from '@/persistence/repos/system/interest.repo';
 import { PersonalGoalRepository } from '@/persistence/repos/system/personal-goal.repo';
 import { IClsStore } from '@/types/cls';
@@ -55,7 +58,8 @@ export class DiscussionService {
     private readonly discussionAttachmentRepository: DiscussionAttachmentRepository,
     private readonly discussionInterestRepository: DiscussionInterestRepository,
     private readonly discussionPersonalGoalRepository: DiscussionPersonalGoalRepository,
-    private readonly personalGoalRepository: PersonalGoalRepository
+    private readonly personalGoalRepository: PersonalGoalRepository,
+    private readonly userDiscussionLikeRepository: UserDiscussionLikeRepository
   ) {}
 
   async createDiscussion(createDiscussionRo: TCreateDiscussionRo): Promise<TCreateDiscussionVo> {
@@ -419,6 +423,41 @@ export class DiscussionService {
         discussionDeletedTime: now,
       },
       discussionId
+    );
+  }
+
+  async likeDiscussion(likeDiscussionParams: TLikeDiscussionParams) {
+    const { discussionId } = likeDiscussionParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionAuthorId === userId) {
+      throw new CustomHttpException(
+        `You cannot like your own discussion`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const now = new Date();
+    await this.userDiscussionLikeRepository.createUserDiscussionLike(
+      {
+        userDiscussionLikeId: generateUserCommentLikeId(),
+        userDiscussionLikeUserId: userId,
+        userDiscussionLikeDiscussionId: discussionId,
+        userDiscussionLikeCreatedTime: now,
+      },
+      { onConflictDoNothing: true }
     );
   }
 }

@@ -37,7 +37,7 @@ export class DiscussionPersonalGoalRepository {
         );
       }
 
-      const discussionPersonalGoal = await query.returningAll().executeTakeFirst();
+      const discussionPersonalGoal = await query.returningAll().execute();
 
       return discussionPersonalGoal!;
     } catch (error) {
