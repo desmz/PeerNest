@@ -31,6 +31,7 @@ export const getDiscussionVoSchema = z.object({
   discussionContent: z.string().nonempty(),
   discussionStatus: z.enum(DiscussionStatus),
   discussionCreatedTime: z.date(),
+  discussionUpdatedTime: z.date().nullable(),
   author: discussionAuthorVoSchema,
   interests: getInterestsVoSchema.nullable(),
   goals: getPersonalGoalsVoSchema.nullable(),

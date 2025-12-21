@@ -41,7 +41,7 @@ export const zArrayMin = (field: string, min: number): CheckTypeParams => ({
 });
 
 export const zArrayMax = (field: string, max: number): CheckTypeParams => ({
-  error: `${field} must be at least ${max} items`,
+  error: `${field} must be at most ${max} items`,
 });
 
 export const zEmail = (field: string): CheckTypeParams => ({

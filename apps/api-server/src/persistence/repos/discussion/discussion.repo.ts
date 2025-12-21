@@ -5,7 +5,13 @@ import {
   HttpErrorCode,
   UserDiscussionReportStatus,
 } from '@peernest/core';
-import { dbOrTx, KyselyService, TInsertableDiscussion, TKyselyTransaction } from '@peernest/db';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableDiscussion,
+  TKyselyTransaction,
+  TUpdatableDiscussion,
+} from '@peernest/db';
 import { DB } from '@peernest/db/types/db';
 import { expressionBuilder } from 'kysely';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
@@ -44,6 +50,38 @@ export class DiscussionRepository {
         `[${DiscussionRepository.repoName}] | Fail to create discussion`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, discussionObj }
+      );
+    }
+  }
+
+  async updateDiscussionById(
+    discussionPayload: TUpdatableDiscussion,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = discussionPayload.discussionUpdatedTime
+        ? discussionPayload.discussionUpdatedTime
+        : new Date();
+
+      const discussion = await db
+        .updateTable('discussion')
+        .set({
+          ...discussionPayload,
+          discussionUpdatedTime: now,
+        })
+        .where('discussionId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return discussion!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to update discussion by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, discussionPayload }
       );
     }
   }
@@ -124,6 +162,7 @@ export class DiscussionRepository {
           'base_discussion.discussionContent',
           'base_discussion.discussionStatus',
           'base_discussion.discussionCreatedTime',
+          'base_discussion.discussionUpdatedTime',
           jsonBuildObject({
             userId: eb.ref('base_discussion.userId'),
             userDisplayName: eb.ref('base_discussion.userDisplayName'),
@@ -163,6 +202,7 @@ export class DiscussionRepository {
         'discussion.discussionContent',
         'discussion.discussionStatus',
         'discussion.discussionCreatedTime',
+        'discussion.discussionUpdatedTime',
         'user.userId',
         'user.userDisplayName',
         'user.userAvatarUrl',

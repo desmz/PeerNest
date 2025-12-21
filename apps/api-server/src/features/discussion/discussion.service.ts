@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
+  TEditDiscussionParams,
+  TEditDiscussionRo,
+  TEditDiscussionVo,
   TGetDiscussionParams,
   TGetDiscussionQueryParams,
   TGetDiscussionVo,
@@ -123,6 +126,7 @@ export class DiscussionService {
 
         await this.discussionPersonalGoalRepository.createDiscussionPersonalGoals(
           discussionPersonalGoalObjs,
+          undefined,
           tx
         );
       }
@@ -139,6 +143,7 @@ export class DiscussionService {
 
         await this.discussionInterestRepository.createDiscussionInterests(
           discussionInterestObjs,
+          undefined,
           tx
         );
       }
@@ -148,11 +153,11 @@ export class DiscussionService {
   }
 
   async getDiscussion(
-    getDiscussionParam: TGetDiscussionParams,
-    getDiscussionQueryParam: TGetDiscussionQueryParams
+    getDiscussionParams: TGetDiscussionParams,
+    getDiscussionQueryParams: TGetDiscussionQueryParams
   ): Promise<TGetDiscussionVo> {
-    const { discussionId } = getDiscussionParam;
-    const { statuses } = getDiscussionQueryParam;
+    const { discussionId } = getDiscussionParams;
+    const { statuses } = getDiscussionQueryParams;
 
     const userId = this.clsService.get('user.id');
 
@@ -173,6 +178,168 @@ export class DiscussionService {
         status: AttachmentStatus.Ready,
       });
     }
+
+    return this.getDiscussionAgg(discussionId, userId, attachment);
+  }
+
+  async editDiscussion(
+    editDiscussionParams: TEditDiscussionParams,
+    editDiscussionRo: TEditDiscussionRo
+  ): Promise<TEditDiscussionVo> {
+    const { discussionId } = editDiscussionParams;
+    const { attachmentId, goalIds, interestIds, ...otherEditDiscussionRo } = editDiscussionRo;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionAuthorId !== userId) {
+      throw new CustomHttpException(
+        `You are not the author of this discussion`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    let attachment: TSelectableAttachment | undefined;
+    if (attachmentId) {
+      attachment = await this.attachmentRepository.findAttachmentById(attachmentId, {
+        status: AttachmentStatus.Ready,
+      });
+
+      if (!attachment) {
+        throw new CustomHttpException(
+          `Attachment ${attachmentId} does not exist`,
+          HttpErrorCode.NOT_FOUND
+        );
+      }
+    }
+
+    const systemPersonalGoalRows = await this.personalGoalRepository.findPersonalGoals();
+    const systemPersonalGoal = new Set(
+      systemPersonalGoalRows.map((systemPersonalGoalRow) => systemPersonalGoalRow.personalGoalId)
+    );
+    const filteredPersonalGoalIds = goalIds?.filter((personalGoalId) =>
+      systemPersonalGoal.has(personalGoalId)
+    );
+
+    const systemInterestRows = await this.interestRepository.findInterests();
+    const systemInterest = new Set(
+      systemInterestRows.map((systemInterestRow) => systemInterestRow.interestId)
+    );
+    const filteredInterestIds = interestIds?.filter((interestId) => systemInterest.has(interestId));
+
+    const now = new Date();
+    await executeTx(this.kyselyService.db, async (tx) => {
+      await this.discussionRepository.updateDiscussionById(
+        {
+          ...otherEditDiscussionRo,
+          discussionUpdatedTime: now,
+        },
+        discussionId,
+        tx
+      );
+
+      if (attachmentId) {
+        const ids: { discussionId: string; attachmentId: string } = { discussionId, attachmentId };
+
+        const discussionAttachment =
+          await this.discussionAttachmentRepository.findDiscussionAttachmentByIds(ids, tx);
+
+        if (!discussionAttachment) {
+          await this.discussionAttachmentRepository.deleteDiscussionAttachmentByDiscussionId(
+            discussionId,
+            tx
+          );
+
+          await this.discussionAttachmentRepository.createDiscussionAttachment(
+            {
+              discussionAttachmentId: generateDiscussionAttachmentId(),
+              discussionAttachmentDiscussionId: discussionId,
+              discussionAttachmentAttachmentId: attachmentId,
+            },
+            tx
+          );
+        }
+      }
+
+      if (filteredPersonalGoalIds && filteredPersonalGoalIds.length > 0) {
+        await this.discussionPersonalGoalRepository.deleteDiscussionPersonalGoals(
+          {
+            discussionPersonalGoalDiscussionId: discussionId,
+            discussionPersonalGoalPersonalGoalIds: filteredPersonalGoalIds,
+          },
+          { isExcludePersonalGoalIds: true },
+          tx
+        );
+
+        let basePos = await this.discussionPersonalGoalRepository.findMaxPositionByDiscussionId(
+          discussionId,
+          tx
+        );
+
+        if (basePos === -1) {
+          basePos = 0;
+        }
+
+        const discussionPersonalGoalObjs: TInsertableDiscussionPersonalGoal[] =
+          filteredPersonalGoalIds.map((personalGoalId, idx) => ({
+            discussionPersonalGoalId: generateDiscussionPersonalGoalId(),
+            discussionPersonalGoalDiscussionId: discussionId,
+            discussionPersonalGoalPersonalGoalId: personalGoalId,
+            discussionPersonalGoalPosition: basePos + idx + 1,
+          }));
+
+        await this.discussionPersonalGoalRepository.createDiscussionPersonalGoals(
+          discussionPersonalGoalObjs,
+          { onConflictDoNothing: true },
+          tx
+        );
+      }
+
+      if (filteredInterestIds && filteredInterestIds.length > 0) {
+        await this.discussionInterestRepository.deleteDiscussionInterests(
+          {
+            discussionInterestDiscussionId: discussionId,
+            discussionInterestInterestIds: filteredInterestIds,
+          },
+          { isExcludeInterestIds: true },
+          tx
+        );
+
+        let basePos = await this.discussionInterestRepository.findMaxPositionByDiscussionId(
+          discussionId,
+          tx
+        );
+
+        if (basePos === -1) {
+          basePos = 0;
+        }
+
+        const discussionInterestObjs: TInsertableDiscussionInterest[] = filteredInterestIds.map(
+          (interestId, idx) => ({
+            discussionInterestId: generateDiscussionInterestId(),
+            discussionInterestDiscussionId: discussionId,
+            discussionInterestInterestId: interestId,
+            discussionInterestPosition: basePos + idx + 1,
+          })
+        );
+
+        await this.discussionInterestRepository.createDiscussionInterests(
+          discussionInterestObjs,
+          { onConflictDoNothing: true },
+          tx
+        );
+      }
+    });
 
     return this.getDiscussionAgg(discussionId, userId, attachment);
   }

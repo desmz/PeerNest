@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import {
   getDiscussionQueryParamsSchema,
   type TGetDiscussionParams,
@@ -6,6 +16,11 @@ import {
   type TGetDiscussionVo,
   type TCreateDiscussionRo,
   type TCreateDiscussionVo,
+  type TEditDiscussionParams,
+  editDiscussionRoSchema,
+  type TEditDiscussionRo,
+  type TEditDiscussionVo,
+  createDiscussionRoSchema,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -19,7 +34,7 @@ export class DiscussionController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createDiscussion(
-    @Body() createDiscussionRo: TCreateDiscussionRo
+    @Body(new ZodValidationPipe(createDiscussionRoSchema)) createDiscussionRo: TCreateDiscussionRo
   ): Promise<TCreateDiscussionVo> {
     return this.discussionService.createDiscussion(createDiscussionRo);
   }
@@ -27,10 +42,19 @@ export class DiscussionController {
   @Get(':discussionId')
   @HttpCode(HttpStatus.OK)
   async getDiscussion(
-    @Param() getDiscussionParam: TGetDiscussionParams,
+    @Param() getDiscussionParams: TGetDiscussionParams,
     @Query(new ZodValidationPipe(getDiscussionQueryParamsSchema))
     getDiscussionQueryParam: TGetDiscussionQueryParams
   ): Promise<TGetDiscussionVo> {
-    return this.discussionService.getDiscussion(getDiscussionParam, getDiscussionQueryParam);
+    return this.discussionService.getDiscussion(getDiscussionParams, getDiscussionQueryParam);
+  }
+
+  @Put(':discussionId')
+  @HttpCode(HttpStatus.OK)
+  async editDiscussion(
+    @Param() editDiscussionParams: TEditDiscussionParams,
+    @Body(new ZodValidationPipe(editDiscussionRoSchema)) editDiscussionRo: TEditDiscussionRo
+  ): Promise<TEditDiscussionVo> {
+    return this.discussionService.editDiscussion(editDiscussionParams, editDiscussionRo);
   }
 }

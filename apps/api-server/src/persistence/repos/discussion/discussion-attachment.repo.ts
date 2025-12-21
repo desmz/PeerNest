@@ -42,4 +42,47 @@ export class DiscussionAttachmentRepository {
       );
     }
   }
+
+  async findDiscussionAttachmentByIds(
+    ids: { discussionId: string; attachmentId: string },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { discussionId, attachmentId } = ids;
+
+      const discussionAttachment = await db
+        .selectFrom('discussionAttachment')
+        .selectAll()
+        .where('discussionAttachmentDiscussionId', '=', discussionId)
+        .where('discussionAttachmentDiscussionId', '=', attachmentId)
+        .executeTakeFirst();
+
+      return discussionAttachment;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionAttachmentRepository.repoName}] | Fail to find discussion attachment by ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids }
+      );
+    }
+  }
+
+  async deleteDiscussionAttachmentByDiscussionId(discussionId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      await db
+        .deleteFrom('discussionAttachment')
+        .where('discussionAttachmentId', '=', discussionId)
+        .executeTakeFirst();
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionAttachmentRepository.repoName}] | Fail to delete discussion attachment by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, discussionId }
+      );
+    }
+  }
 }
