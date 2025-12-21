@@ -8,6 +8,7 @@ import {
   TGetDiscussionQueryParams,
   TGetDiscussionVo,
   TLikeDiscussionParams,
+  TUnlikeDiscussionParams,
   type TCreateDiscussionRo,
   type TCreateDiscussionVo,
 } from '@peernest/contract';
@@ -459,5 +460,31 @@ export class DiscussionService {
       },
       { onConflictDoNothing: true }
     );
+  }
+
+  async unlikeDiscussion(unlikeDiscussionParams: TUnlikeDiscussionParams) {
+    const { discussionId } = unlikeDiscussionParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionAuthorId === userId) {
+      throw new CustomHttpException(
+        `You cannot like your own discussion`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    await this.userDiscussionLikeRepository.deleteUserDiscussionLikeByIds({ userId, discussionId });
   }
 }

@@ -3,3 +3,4 @@ export * from './delete-discussion';
 export * from './edit-discussion';
 export * from './get-discussion';
 export * from './like-discussion';
+export * from './unlike-discussion';

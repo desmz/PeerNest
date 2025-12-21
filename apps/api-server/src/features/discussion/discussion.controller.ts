@@ -24,6 +24,7 @@ import {
   createDiscussionRoSchema,
   type TDeleteDiscussionParams,
   type TLikeDiscussionParams,
+  type TUnlikeDiscussionParams,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -71,5 +72,11 @@ export class DiscussionController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async likeDiscussion(@Param() likeDiscussionParams: TLikeDiscussionParams): Promise<void> {
     await this.discussionService.likeDiscussion(likeDiscussionParams);
+  }
+
+  @Delete(':discussionId/likes')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unlikeDiscussion(@Param() unlikeDiscussionParams: TUnlikeDiscussionParams): Promise<void> {
+    await this.discussionService.unlikeDiscussion(unlikeDiscussionParams);
   }
 }

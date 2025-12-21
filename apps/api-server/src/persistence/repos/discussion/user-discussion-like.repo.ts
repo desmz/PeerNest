@@ -47,7 +47,30 @@ export class UserDiscussionLikeRepository {
       throw new CustomHttpException(
         `[${UserDiscussionLikeRepository.repoName}] | Fail to create user-discussion-like`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userDiscussionLikeObj }
+        { error, userDiscussionLikeObj, options }
+      );
+    }
+  }
+
+  async deleteUserDiscussionLikeByIds(
+    ids: { userId: string; discussionId: string },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { userId, discussionId } = ids;
+
+      await db
+        .deleteFrom('userDiscussionLike')
+        .where('userDiscussionLikeUserId', '=', userId)
+        .where('userDiscussionLikeDiscussionId', '=', discussionId)
+        .executeTakeFirst();
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserDiscussionLikeRepository.repoName}] | Fail to create user-discussion-like`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids }
       );
     }
   }
