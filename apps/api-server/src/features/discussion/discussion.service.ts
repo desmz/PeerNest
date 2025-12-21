@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  TDeleteDiscussionParams,
   TEditDiscussionParams,
   TEditDiscussionRo,
   TEditDiscussionVo,
@@ -387,6 +388,37 @@ export class DiscussionService {
       attachmentUrl: attachmentUrl,
     };
   }
-}
 
-// for the update discussion api, refer to MeService.updateMeProfile
+  async deleteDiscussion(deleteDiscussionParams: TDeleteDiscussionParams) {
+    const { discussionId } = deleteDiscussionParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionAuthorId !== userId) {
+      throw new CustomHttpException(
+        `You are not the author of this discussion`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const now = new Date();
+    await this.discussionRepository.updateDiscussionById(
+      {
+        discussionStatus: DiscussionStatus.Deleted,
+        discussionDeletedTime: now,
+      },
+      discussionId
+    );
+  }
+}
