@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { TCreateCommentRo, TCreateCommentVo } from '@peernest/contract';
+import {
+  TCreateCommentRo,
+  TCreateCommentVo,
+  TReplyCommentParams,
+  TReplyCommentRo,
+  TReplyCommentVo,
+} from '@peernest/contract';
 import { DiscussionStatus, generateCommentId, HttpErrorCode } from '@peernest/core';
 import { ClsService } from 'nestjs-cls';
 
@@ -34,17 +40,47 @@ export class CommentService {
       );
     }
 
-    const commentId = generateCommentId();
     const now = new Date();
     const comment = await this.commentRepository.createComment({
       ...otherCreateCommentRo,
-      commentId: commentId,
+      commentId: generateCommentId(),
       commentAuthorId: userId,
       commentDiscussionId: discussionId,
       commentCreatedTime: now,
     });
 
     return this.getCommentAgg(comment.commentId, userId);
+  }
+
+  async replyComment(
+    replyCommentParams: TReplyCommentParams,
+    replyCommentRo: TReplyCommentRo
+  ): Promise<TReplyCommentVo> {
+    const { commentId: parentCommentId } = replyCommentParams;
+    const { commentContent } = replyCommentRo;
+
+    const userId = this.clsService.get('user.id');
+
+    const parentComment = await this.commentRepository.findCommentById(parentCommentId);
+
+    if (!parentComment) {
+      throw new CustomHttpException(
+        `Comment ${parentCommentId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const reply = await this.commentRepository.createComment({
+      commentId: generateCommentId(),
+      commentAuthorId: userId,
+      commentDiscussionId: parentComment.commentDiscussionId,
+      commentParentCommentId: parentComment.commentId,
+      commentContent: commentContent,
+      commentCreatedTime: now,
+    });
+
+    return this.getCommentAgg(reply.commentId, userId);
   }
 
   private async getCommentAgg(commentId: string, userId: string) {
