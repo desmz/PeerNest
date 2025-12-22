@@ -3,4 +3,5 @@ export * from './delete-comment';
 export * from './edit-comment';
 export * from './like-comment';
 export * from './reply-comment';
+export * from './report-comment';
 export * from './unlike-comment';

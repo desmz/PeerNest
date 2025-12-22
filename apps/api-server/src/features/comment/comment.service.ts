@@ -10,13 +10,16 @@ import {
   TReplyCommentParams,
   TReplyCommentRo,
   TReplyCommentVo,
+  TReportCommentParams,
   TUnlikeCommentParams,
 } from '@peernest/contract';
 import {
   DiscussionStatus,
   generateCommentId,
   generateUserCommentLikeId,
+  generateUserCommentReportId,
   HttpErrorCode,
+  UserCommentReportStatus,
 } from '@peernest/core';
 import { ClsService } from 'nestjs-cls';
 
@@ -24,6 +27,7 @@ import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
 import { CommentRepository } from '@/persistence/repos/comment/comment.repo';
 import { UserCommentLikeRepository } from '@/persistence/repos/comment/user-comment-like.repo';
+import { UserCommentReportRepository } from '@/persistence/repos/comment/user-comment-report';
 import { DiscussionRepository } from '@/persistence/repos/discussion/discussion.repo';
 import { IClsStore } from '@/types/cls';
 
@@ -34,7 +38,8 @@ export class CommentService {
 
     private readonly commentRepository: CommentRepository,
     private readonly discussionRepository: DiscussionRepository,
-    private readonly userCommentLikeRepository: UserCommentLikeRepository
+    private readonly userCommentLikeRepository: UserCommentLikeRepository,
+    private readonly userCommentReportRepository: UserCommentReportRepository
   ) {}
 
   async createComment(createCommentRo: TCreateCommentRo): Promise<TCreateCommentVo> {
@@ -229,5 +234,36 @@ export class CommentService {
     }
 
     await this.userCommentLikeRepository.deleteUserCommentLikeByIds({ userId, commentId });
+  }
+
+  async reportComment(reportCommentParams: TReportCommentParams): Promise<void> {
+    const { commentId } = reportCommentParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const comment = await this.commentRepository.findCommentById(commentId);
+
+    if (!comment) {
+      throw new CustomHttpException(`Comment ${commentId} does not exist`, HttpErrorCode.NOT_FOUND);
+    }
+
+    if (comment.commentAuthorId === userId) {
+      throw new CustomHttpException(
+        `You cannot report your own comment`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const now = new Date();
+    await this.userCommentReportRepository.createUserCommentReport(
+      {
+        userCommentReportId: generateUserCommentReportId(),
+        userCommentReportReporterId: userId,
+        userCommentReportCommentId: comment.commentId,
+        userCommentReportStatus: UserCommentReportStatus.Reported,
+        userCommentReportReportedTime: now,
+      },
+      { onConflictDoNothing: true }
+    );
   }
 }

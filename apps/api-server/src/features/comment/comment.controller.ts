@@ -14,6 +14,7 @@ import {
   type TDeleteCommentParams,
   type TLikeCommentParams,
   type TUnlikeCommentParams,
+  type TReportCommentParams,
 } from '@peernest/contract';
 
 import { CommentService } from '@/features/comment/comment.service';
@@ -65,5 +66,11 @@ export class CommentController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async unlikeComment(@Param() unlikeCommentParams: TUnlikeCommentParams): Promise<void> {
     await this.commentService.unlikeComment(unlikeCommentParams);
+  }
+
+  @Post(':commentId/reports')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async reportComment(@Param() reportCommentParams: TReportCommentParams): Promise<void> {
+    await this.commentService.reportComment(reportCommentParams);
   }
 }
