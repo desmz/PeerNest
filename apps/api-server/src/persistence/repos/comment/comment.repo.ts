@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { generateCommentId, HttpErrorCode, UserCommentReportStatus } from '@peernest/core';
-import { dbOrTx, KyselyService, TInsertableComment, TKyselyTransaction } from '@peernest/db';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableComment,
+  TKyselyTransaction,
+  TUpdatableComment,
+} from '@peernest/db';
 import { DB } from '@peernest/db/types/db';
 import { expressionBuilder } from 'kysely';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
@@ -35,6 +41,34 @@ export class CommentRepository {
         `[${CommentRepository.repoName}] | Fail to create comment`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, commentObj }
+      );
+    }
+  }
+
+  async updateCommentById(commentPayload: TUpdatableComment, id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = commentPayload.commentUpdatedTime
+        ? commentPayload.commentUpdatedTime
+        : new Date();
+
+      const comment = await db
+        .updateTable('comment')
+        .set({
+          ...commentPayload,
+          commentUpdatedTime: now,
+        })
+        .where('commentId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return comment!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CommentRepository.repoName}] | Fail to update comment by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, commentPayload, id }
       );
     }
   }

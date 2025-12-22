@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
   createCommentRoSchema,
   type TCreateCommentVo,
@@ -7,6 +7,10 @@ import {
   type TReplyCommentRo,
   type TReplyCommentVo,
   replyCommentRoSchema,
+  type TEditCommentParams,
+  type TEditCommentRo,
+  type TEditCommentVo,
+  editCommentRoSchema,
 } from '@peernest/contract';
 
 import { CommentService } from '@/features/comment/comment.service';
@@ -31,5 +35,14 @@ export class CommentController {
     @Body(new ZodValidationPipe(replyCommentRoSchema)) replyCommentRo: TReplyCommentRo
   ): Promise<TReplyCommentVo> {
     return this.commentService.replyComment(replyCommentParams, replyCommentRo);
+  }
+
+  @Put(':commentId')
+  @HttpCode(HttpStatus.OK)
+  async editComment(
+    @Param() editCommentParams: TEditCommentParams,
+    @Body(new ZodValidationPipe(editCommentRoSchema)) editCommentRo: TEditCommentRo
+  ): Promise<TEditCommentVo> {
+    return this.commentService.editComment(editCommentParams, editCommentRo);
   }
 }

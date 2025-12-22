@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import {
   TCreateCommentRo,
   TCreateCommentVo,
+  TEditCommentParams,
+  TEditCommentRo,
+  TEditCommentVo,
   TReplyCommentParams,
   TReplyCommentRo,
   TReplyCommentVo,
@@ -81,6 +84,39 @@ export class CommentService {
     });
 
     return this.getCommentAgg(reply.commentId, userId);
+  }
+
+  async editComment(
+    editCommentParams: TEditCommentParams,
+    editCommentRo: TEditCommentRo
+  ): Promise<TEditCommentVo> {
+    const { commentId } = editCommentParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const comment = await this.commentRepository.findCommentById(commentId);
+
+    if (!comment) {
+      throw new CustomHttpException(`Comment ${commentId} does not exist`, HttpErrorCode.NOT_FOUND);
+    }
+
+    if (comment.commentAuthorId !== userId) {
+      throw new CustomHttpException(
+        'You are not the author of this comment',
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const now = new Date();
+    await this.commentRepository.updateCommentById(
+      {
+        ...editCommentRo,
+        commentUpdatedTime: now,
+      },
+      comment.commentId
+    );
+
+    return this.getCommentAgg(comment.commentId, userId);
   }
 
   private async getCommentAgg(commentId: string, userId: string) {
