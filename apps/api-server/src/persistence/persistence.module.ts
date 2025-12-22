@@ -1,6 +1,7 @@
 import { Module, Provider } from '@nestjs/common';
 
 import { AttachmentRepository } from './repos/attachment/attachment.repo';
+import { CommentRepository } from './repos/comment/comment.repo';
 import { ConversationParticipantRepository } from './repos/conversation/conversation-participant.repo';
 import { ConversationRepository } from './repos/conversation/conversation.repo';
 import { DiscussionAttachmentRepository } from './repos/discussion/discussion-attachment.repo';
@@ -48,6 +49,7 @@ const repositories: Provider[] = [
   DiscussionInterestRepository,
   UserDiscussionLikeRepository,
   UserDiscussionReportRepository,
+  CommentRepository,
 ];
 
 @Module({

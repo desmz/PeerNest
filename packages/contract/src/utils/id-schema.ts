@@ -56,3 +56,7 @@ export const discussionIdSchema = (field = 'Discussion Id') => {
     .string(zString(field))
     .startsWith(IdPrefix.Discussion, zStartWith(field, IdPrefix.Discussion));
 };
+
+export const commentIdSchema = (field = 'Comment Id') => {
+  return z.string(zString(field)).startsWith(IdPrefix.Comment, zStartWith(field, IdPrefix.Comment));
+};
