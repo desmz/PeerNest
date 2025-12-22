@@ -43,14 +43,23 @@ export const findDiscussionCommentSchema = z.object({
   },
 });
 
-export const deletedCommentSchema = z.object({
+export const deletedFindDiscussionCommentsSchema = z.object({
   commentId: commentIdSchema(),
   commentParentCommentId: commentIdSchema().nullable(),
   isDeleted: z.literal(false),
+  replies: z.array(z.any()),
 });
 
-export const findDiscussionCommentsVoSchema = z.array(
-  z.discriminatedUnion('isDeleted', [findDiscussionCommentSchema, deletedCommentSchema])
-);
+export const mixedFindDiscussionCommentsSchema = z.discriminatedUnion('isDeleted', [
+  findDiscussionCommentSchema,
+  deletedFindDiscussionCommentsSchema,
+]);
+
+export type TMixedFindDiscussionCommentsSchema = z.infer<typeof mixedFindDiscussionCommentsSchema>;
+
+export const findDiscussionCommentsVoSchema = z.object({
+  comments: z.array(mixedFindDiscussionCommentsSchema),
+  count: z.int(),
+});
 
 export type TFindDiscussionCommentsVo = z.infer<typeof findDiscussionCommentsVoSchema>;

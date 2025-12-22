@@ -286,8 +286,15 @@ export class CommentRepository {
         isRoot: true,
       });
 
+      let count = 0;
       if (rootComments.length === 0) {
-        return [];
+        return { count: count, comments: [] };
+      }
+
+      for (const rootComment of rootComments) {
+        if (rootComment.isDeleted === false) {
+          count++;
+        }
       }
 
       const descendantComments = await this.findCommentsWithStats(db, discussionId, userId, {
@@ -295,10 +302,25 @@ export class CommentRepository {
         isRoot: false,
       });
 
-      return rootComments.map((rootComment) => ({
-        ...rootComment,
-        replies: this.buildCommentTree(descendantComments, rootComment.commentId, maxDepth),
-      }));
+      const comments = rootComments.map((rootComment) => {
+        const { count: replyCount, comments: replies } = this.buildCommentTree(
+          descendantComments,
+          rootComment.commentId,
+          maxDepth
+        );
+
+        count += replyCount;
+
+        return {
+          ...rootComment,
+          replies: replies,
+        };
+      });
+
+      return {
+        count,
+        comments,
+      };
     } catch (error) {
       throw new CustomHttpException(
         `[${CommentRepository.repoName}] | Fail to find comments by discussion id`,
@@ -485,19 +507,43 @@ export class CommentRepository {
     parentId: string | null,
     maxDepth: number,
     currentDepth = 0
-  ): any[] {
+  ): { count: number; comments: any[] } {
     if (currentDepth >= maxDepth) {
-      return [];
+      return { count: 0, comments: [] };
     }
 
-    const children = flatComments.filter((comment) => comment.commentParentCommentId === parentId);
+    const comments = [];
+    let count = 0;
+    for (const flatComment of flatComments) {
+      if (flatComment.commentParentCommentId !== parentId) continue;
 
-    return children.map((comment) => ({
-      ...comment,
-      replies:
-        currentDepth < maxDepth - 1
-          ? this.buildCommentTree(flatComments, comment.commentId, maxDepth, currentDepth + 1)
-          : null,
-    }));
+      let replies = null;
+
+      if (flatComment.isDeleted === false) {
+        count++;
+      }
+
+      if (currentDepth < maxDepth - 1) {
+        const { comments: repliesRes, count: replyCount } = this.buildCommentTree(
+          flatComments,
+          flatComment.commentId,
+          maxDepth,
+          currentDepth + 1
+        );
+
+        count += replyCount;
+        replies = repliesRes;
+      }
+
+      comments.push({
+        ...flatComment,
+        replies,
+      });
+    }
+
+    return {
+      count,
+      comments,
+    };
   }
 }
