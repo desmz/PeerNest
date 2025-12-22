@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { HttpErrorCode } from '@peernest/core';
+import { generateUserDiscussionLikeId, HttpErrorCode } from '@peernest/core';
 import {
   dbOrTx,
   KyselyService,
@@ -31,6 +31,9 @@ export class UserDiscussionLikeRepository {
 
       let query = db.insertInto('userDiscussionLike').values({
         ...userDiscussionLikeObj,
+        userDiscussionLikeId: userDiscussionLikeObj.userDiscussionLikeId
+          ? userDiscussionLikeObj.userDiscussionLikeId
+          : generateUserDiscussionLikeId(),
         userDiscussionLikeCreatedTime: now,
       });
 

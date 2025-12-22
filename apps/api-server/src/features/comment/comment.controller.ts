@@ -12,6 +12,7 @@ import {
   type TEditCommentVo,
   editCommentRoSchema,
   type TDeleteCommentParams,
+  type TLikeCommentParams,
 } from '@peernest/contract';
 
 import { CommentService } from '@/features/comment/comment.service';
@@ -51,5 +52,11 @@ export class CommentController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteComment(@Param() deleteCommentParams: TDeleteCommentParams): Promise<void> {
     await this.commentService.deleteComment(deleteCommentParams);
+  }
+
+  @Post(':commentId/likes')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async likeComment(@Param() likeCommentParams: TLikeCommentParams): Promise<void> {
+    await this.commentService.likeComment(likeCommentParams);
   }
 }
