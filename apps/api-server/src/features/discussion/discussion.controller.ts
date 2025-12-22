@@ -26,6 +26,10 @@ import {
   type TLikeDiscussionParams,
   type TUnlikeDiscussionParams,
   type TReportDiscussionParams,
+  type TFindDiscussionCommentsVo,
+  type TFindDiscussionCommentsParams,
+  findDiscussionCommentsQueryParamsSchema,
+  type TFindDiscussionCommentsQueryParams,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -85,5 +89,18 @@ export class DiscussionController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async reportDiscussion(@Param() reportDiscussionParams: TReportDiscussionParams): Promise<void> {
     await this.discussionService.reportDiscussion(reportDiscussionParams);
+  }
+
+  @Get(':discussionId/comments')
+  @HttpCode(HttpStatus.OK)
+  async findDiscussionComments(
+    @Param() findDiscussionCommentsParams: TFindDiscussionCommentsParams,
+    @Query(new ZodValidationPipe(findDiscussionCommentsQueryParamsSchema))
+    findDiscussionCommentsQueryParams: TFindDiscussionCommentsQueryParams
+  ): Promise<TFindDiscussionCommentsVo> {
+    return this.discussionService.findDiscussionComments(
+      findDiscussionCommentsParams,
+      findDiscussionCommentsQueryParams
+    );
   }
 }

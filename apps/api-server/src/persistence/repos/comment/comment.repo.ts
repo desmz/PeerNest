@@ -1,9 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
-import { generateCommentId, HttpErrorCode, UserCommentReportStatus } from '@peernest/core';
+import {
+  FindDiscussionCommentsSortOption,
+  generateCommentId,
+  HttpErrorCode,
+  UserCommentReportStatus,
+} from '@peernest/core';
 import {
   dbOrTx,
   KyselyService,
   TInsertableComment,
+  TKyselyDB,
   TKyselyTransaction,
   TUpdatableComment,
 } from '@peernest/db';
@@ -12,6 +19,7 @@ import { expressionBuilder } from 'kysely';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 import { CustomHttpException } from '@/custom.exception';
+import { getFullStorageUrl } from '@/features/attachment/utils';
 
 @Injectable()
 export class CommentRepository {
@@ -246,5 +254,250 @@ export class CommentRepository {
           )
           .as('is_reported'),
       ]);
+  }
+
+  // special case
+  /**
+   * Fetch comments for a discussion with hierarchical structure
+   * Returns top-level comments with nested replies
+   */
+  async findCommentsByDiscussionId(
+    ids: {
+      discussionId: string;
+      userId: string;
+    },
+    options?: {
+      includeDeleted?: boolean;
+      maxDepth?: number; // Limit nesting depth to prevent performance issues
+      sort?: FindDiscussionCommentsSortOption;
+      limit?: number;
+      offset?: number;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { discussionId, userId } = ids;
+      const { maxDepth = 10, ...otherOptions } = options || {};
+
+      const rootComments = await this.findCommentsWithStats(db, discussionId, userId, {
+        ...otherOptions,
+        isRoot: true,
+      });
+
+      if (rootComments.length === 0) {
+        return [];
+      }
+
+      const descendantComments = await this.findCommentsWithStats(db, discussionId, userId, {
+        ...otherOptions,
+        isRoot: false,
+      });
+
+      return rootComments.map((rootComment) => ({
+        ...rootComment,
+        replies: this.buildCommentTree(descendantComments, rootComment.commentId, maxDepth),
+      }));
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CommentRepository.repoName}] | Fail to find comments by discussion id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids, options }
+      );
+    }
+  }
+
+  /**
+   * Efficiently fetch all comments with their stats in a single query
+   */
+  private async findCommentsWithStats(
+    db: TKyselyDB | TKyselyTransaction,
+    discussionId: string,
+    userId: string,
+    options?: {
+      includeDeleted?: boolean;
+      sort?: FindDiscussionCommentsSortOption;
+      limit?: number;
+      offset?: number;
+      isRoot?: boolean;
+    }
+  ) {
+    const { includeDeleted, sort, limit, offset, isRoot } = options || {};
+
+    let query = db
+      .selectFrom('comment')
+      .innerJoin('user', 'user.userId', 'comment.commentAuthorId')
+      .innerJoin('role', 'role.roleId', 'user.userRoleId')
+      .leftJoin('userCommentLike', (join) =>
+        join.onRef('userCommentLike.userCommentLikeCommentId', '=', 'comment.commentId')
+      )
+      .leftJoin('comment as reply', (join) => {
+        const jb = join.onRef('reply.commentParentCommentId', '=', 'comment.commentId');
+
+        if (!includeDeleted) {
+          jb.on('reply.commentDeletedTime', 'is', null);
+        }
+
+        return jb;
+      })
+      .leftJoin('userCommentLike as my_like', (join) =>
+        join
+          .onRef('my_like.userCommentLikeCommentId', '=', 'comment.commentId')
+          .on('my_like.userCommentLikeUserId', '=', userId)
+      )
+      .leftJoin('comment as my_reply', (join) => {
+        const jb = join
+          .onRef('my_reply.commentParentCommentId', '=', 'comment.commentId')
+          .on('my_reply.commentAuthorId', '=', userId);
+
+        if (!includeDeleted) {
+          jb.on('my_reply.commentDeletedTime', 'is', null);
+        }
+
+        return jb;
+      })
+      .leftJoin('userCommentReport', (join) =>
+        join
+          .onRef('userCommentReport.userCommentReportCommentId', '=', 'comment.commentId')
+          .on('userCommentReport.userCommentReportReporterId', '=', userId)
+          .on('userCommentReport.userCommentReportStatus', '=', UserCommentReportStatus.Reported)
+      )
+      .where('comment.commentDiscussionId', '=', discussionId)
+      .where('comment.commentParentCommentId', isRoot ? 'is' : 'is not', null)
+      .groupBy([
+        'comment.commentId',
+        'comment.commentDiscussionId',
+        'comment.commentParentCommentId',
+        'comment.commentContent',
+        'comment.commentCreatedTime',
+        'comment.commentUpdatedTime',
+        'comment.commentDeletedTime',
+        'user.userId',
+        'user.userDisplayName',
+        'user.userAvatarUrl',
+        'role.roleName',
+      ])
+      .select((eb) => [
+        'comment.commentId',
+        'comment.commentDiscussionId as discussionId',
+        'comment.commentParentCommentId',
+        'comment.commentContent',
+        'comment.commentCreatedTime',
+        'comment.commentUpdatedTime',
+        'comment.commentDeletedTime',
+        jsonBuildObject({
+          userId: eb.ref('user.userId'),
+          userDisplayName: eb.ref('user.userDisplayName'),
+          userAvatarUrl: eb.ref('user.userAvatarUrl'),
+          roleName: eb.ref('role.roleName'),
+        }).as('author'),
+        eb.fn
+          .coalesce(eb.fn.count<number>('userCommentLike.userCommentLikeId').distinct(), eb.val(0))
+          .as('likeCount'),
+        eb.fn
+          .coalesce(eb.fn.count<number>('reply.commentId').distinct(), eb.val(0))
+          .as('replyCount'),
+        eb
+          .case()
+          .when(eb.fn.max<number | null>('my_like.userCommentLikeId'), 'is', null)
+          .then(eb.val(false))
+          .else(eb.val(true))
+          .end()
+          .$castTo<string>()
+          .as('isLiked'),
+        eb
+          .case()
+          .when(eb.fn.max<number | null>('my_reply.commentId'), 'is', null)
+          .then(eb.val(false))
+          .else(eb.val(true))
+          .end()
+          .$castTo<string>()
+          .as('isReplied'),
+        eb
+          .case()
+          .when(eb.fn.max<number | null>('userCommentReport.userCommentReportId'), 'is', null)
+          .then(eb.val(false))
+          .else(eb.val(true))
+          .end()
+          .$castTo<string>()
+          .as('isReported'),
+      ]);
+
+    if (!includeDeleted) {
+      query = query.where('comment.commentDeletedTime', 'is', null);
+    }
+
+    if (isRoot) {
+      switch (sort) {
+        case FindDiscussionCommentsSortOption.Oldest:
+          query = query.orderBy('comment.commentCreatedTime', 'asc');
+          break;
+        case FindDiscussionCommentsSortOption.Liked:
+          query = query.orderBy('likeCount', 'desc');
+          break;
+        default:
+          query = query.orderBy('comment.commentCreatedTime', 'desc');
+      }
+    } else {
+      query = query.orderBy('comment.commentCreatedTime', 'asc');
+    }
+
+    if (isRoot) {
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      if (offset) {
+        query = query.offset(offset);
+      }
+    }
+
+    const comments = await query.execute();
+
+    return comments.map(({ commentDeletedTime, ...otherComment }) =>
+      commentDeletedTime === null
+        ? {
+            ...otherComment,
+            author: {
+              ...otherComment.author,
+              userAvatarUrl: getFullStorageUrl(otherComment.author.userAvatarUrl),
+            },
+            isLiked: otherComment.isLiked === 'true',
+            isReplied: otherComment.isReplied === 'true',
+            isReported: otherComment.isReported === 'true',
+            isDeleted: false,
+          }
+        : {
+            commentId: otherComment.commentId,
+            commentParentCommentId: otherComment.commentParentCommentId,
+            isDeleted: true,
+          }
+    );
+  }
+
+  /**
+   * Build hierarchical comment tree from flat list
+   * Optimized with Map for O(n) complexity
+   */
+  private buildCommentTree(
+    flatComments: any[],
+    parentId: string | null,
+    maxDepth: number,
+    currentDepth = 0
+  ): any[] {
+    if (currentDepth >= maxDepth) {
+      return [];
+    }
+
+    const children = flatComments.filter((comment) => comment.commentParentCommentId === parentId);
+
+    return children.map((comment) => ({
+      ...comment,
+      replies:
+        currentDepth < maxDepth - 1
+          ? this.buildCommentTree(flatComments, comment.commentId, maxDepth, currentDepth + 1)
+          : null,
+    }));
   }
 }

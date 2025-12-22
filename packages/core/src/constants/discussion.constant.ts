@@ -16,6 +16,12 @@ export enum UserCommentReportStatus {
   Released = 'released',
 }
 
+export enum FindDiscussionCommentsSortOption {
+  Oldest = 'oldest',
+  Newest = 'newest',
+  Liked = 'liked',
+}
+
 export const MIN_DISCUSSION_TITLE_LEN = 5;
 export const MAX_DISCUSSION_TITLE_LEN = 100;
 export const MIN_DISCUSSION_CONTENT_LEN = 1;

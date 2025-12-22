@@ -1,0 +1,56 @@
+import { FindDiscussionCommentsSortOption } from '@peernest/core';
+import z from 'zod';
+
+import { commentIdSchema, discussionIdSchema } from '../utils';
+
+import { discussionAuthorVoSchema } from './get-discussion';
+
+export const FIND_DISCUSSION_COMMENTS = '/discussions/{discussionId}/comments';
+
+export const findDiscussionCommentsParamsSchema = z.object({
+  discussionId: discussionIdSchema(),
+});
+
+export type TFindDiscussionCommentsParams = z.infer<typeof findDiscussionCommentsParamsSchema>;
+
+export const findDiscussionCommentsQueryParamsSchema = z.object({
+  sort: z.enum(FindDiscussionCommentsSortOption).nullish(),
+  limit: z.int().nullish(),
+  offset: z.int().nullish(),
+});
+
+export type TFindDiscussionCommentsQueryParams = z.infer<
+  typeof findDiscussionCommentsQueryParamsSchema
+>;
+
+export const findDiscussionCommentSchema = z.object({
+  commentId: commentIdSchema(),
+  discussionId: discussionIdSchema(),
+  commentParentCommentId: commentIdSchema().nullable(),
+  commentContent: z.string().nonempty(),
+  commentCreatedTime: z.date(),
+  commentUpdatedTime: z.date().nullable(),
+  author: discussionAuthorVoSchema,
+  likeCount: z.int(),
+  replyCount: z.int(),
+  isLiked: z.boolean(),
+  isReplied: z.boolean(),
+  isReported: z.boolean(),
+  isDeleted: z.literal(true),
+
+  get replies() {
+    return z.array(findDiscussionCommentSchema).nullable();
+  },
+});
+
+export const deletedCommentSchema = z.object({
+  commentId: commentIdSchema(),
+  commentParentCommentId: commentIdSchema().nullable(),
+  isDeleted: z.literal(false),
+});
+
+export const findDiscussionCommentsVoSchema = z.array(
+  z.discriminatedUnion('isDeleted', [findDiscussionCommentSchema, deletedCommentSchema])
+);
+
+export type TFindDiscussionCommentsVo = z.infer<typeof findDiscussionCommentsVoSchema>;

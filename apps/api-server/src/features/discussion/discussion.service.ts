@@ -4,6 +4,9 @@ import {
   TEditDiscussionParams,
   TEditDiscussionRo,
   TEditDiscussionVo,
+  TFindDiscussionCommentsParams,
+  TFindDiscussionCommentsQueryParams,
+  TFindDiscussionCommentsVo,
   TGetDiscussionParams,
   TGetDiscussionQueryParams,
   TGetDiscussionVo,
@@ -40,6 +43,7 @@ import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { getFullStorageUrl } from '@/features/attachment/utils';
 import { AttachmentRepository } from '@/persistence/repos/attachment/attachment.repo';
+import { CommentRepository } from '@/persistence/repos/comment/comment.repo';
 import { DiscussionAttachmentRepository } from '@/persistence/repos/discussion/discussion-attachment.repo';
 import { DiscussionInterestRepository } from '@/persistence/repos/discussion/discussion-interest.repo';
 import { DiscussionPersonalGoalRepository } from '@/persistence/repos/discussion/discussion-personal-goal.repo';
@@ -58,11 +62,12 @@ export class DiscussionService {
     private readonly clsService: ClsService<IClsStore>,
 
     private readonly attachmentRepository: AttachmentRepository,
-    private readonly interestRepository: InterestRepository,
+    private readonly commentRepository: CommentRepository,
     private readonly discussionRepository: DiscussionRepository,
     private readonly discussionAttachmentRepository: DiscussionAttachmentRepository,
     private readonly discussionInterestRepository: DiscussionInterestRepository,
     private readonly discussionPersonalGoalRepository: DiscussionPersonalGoalRepository,
+    private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly userDiscussionLikeRepository: UserDiscussionLikeRepository,
     private readonly userDiscussionReportRepository: UserDiscussionReportRepository
@@ -533,5 +538,39 @@ export class DiscussionService {
       },
       { onConflictDoNothing: true }
     );
+  }
+
+  async findDiscussionComments(
+    findDiscussionCommentsParams: TFindDiscussionCommentsParams,
+    findDiscussionCommentsQueryParams: TFindDiscussionCommentsQueryParams
+  ): Promise<TFindDiscussionCommentsVo> {
+    const { discussionId } = findDiscussionCommentsParams;
+    const { limit, offset, sort } = findDiscussionCommentsQueryParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const commentAggs = await this.commentRepository.findCommentsByDiscussionId(
+      { discussionId, userId },
+      {
+        includeDeleted: true,
+        maxDepth: 50,
+        limit: limit || undefined,
+        offset: offset || undefined,
+        sort: sort || undefined,
+      }
+    );
+
+    return commentAggs as TFindDiscussionCommentsVo;
   }
 }
