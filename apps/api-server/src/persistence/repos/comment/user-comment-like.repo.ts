@@ -54,4 +54,27 @@ export class UserCommentLikeRepository {
       );
     }
   }
+
+  async deleteUserCommentLikeByIds(
+    ids: { userId: string; commentId: string },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { userId, commentId } = ids;
+
+      await db
+        .deleteFrom('userCommentLike')
+        .where('userCommentLikeUserId', '=', userId)
+        .where('userCommentLikeCommentId', '=', commentId)
+        .executeTakeFirst();
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserCommentLikeRepository.repoName}] | Fail to delete user-comment-like`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids }
+      );
+    }
+  }
 }

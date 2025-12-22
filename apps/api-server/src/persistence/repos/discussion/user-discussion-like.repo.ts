@@ -71,7 +71,7 @@ export class UserDiscussionLikeRepository {
         .executeTakeFirst();
     } catch (error) {
       throw new CustomHttpException(
-        `[${UserDiscussionLikeRepository.repoName}] | Fail to create user-discussion-like`,
+        `[${UserDiscussionLikeRepository.repoName}] | Fail to delete  user-discussion-like`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, ids }
       );

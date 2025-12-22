@@ -10,6 +10,7 @@ import {
   TReplyCommentParams,
   TReplyCommentRo,
   TReplyCommentVo,
+  TUnlikeCommentParams,
 } from '@peernest/contract';
 import {
   DiscussionStatus,
@@ -207,5 +208,26 @@ export class CommentService {
       },
       { onConflictDoNothing: true }
     );
+  }
+
+  async unlikeComment(unlikeCommentParams: TUnlikeCommentParams): Promise<void> {
+    const { commentId } = unlikeCommentParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const comment = await this.commentRepository.findCommentById(commentId);
+
+    if (!comment) {
+      throw new CustomHttpException(`Comment ${commentId} does not exist`, HttpErrorCode.NOT_FOUND);
+    }
+
+    if (comment.commentAuthorId === userId) {
+      throw new CustomHttpException(
+        `You cannot unlike your own comment`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    await this.userCommentLikeRepository.deleteUserCommentLikeByIds({ userId, commentId });
   }
 }
