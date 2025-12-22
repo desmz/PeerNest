@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
   createCommentRoSchema,
   type TCreateCommentVo,
@@ -11,6 +11,7 @@ import {
   type TEditCommentRo,
   type TEditCommentVo,
   editCommentRoSchema,
+  type TDeleteCommentParams,
 } from '@peernest/contract';
 
 import { CommentService } from '@/features/comment/comment.service';
@@ -44,5 +45,11 @@ export class CommentController {
     @Body(new ZodValidationPipe(editCommentRoSchema)) editCommentRo: TEditCommentRo
   ): Promise<TEditCommentVo> {
     return this.commentService.editComment(editCommentParams, editCommentRo);
+  }
+
+  @Delete(':commentId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteComment(@Param() deleteCommentParams: TDeleteCommentParams): Promise<void> {
+    await this.commentService.deleteComment(deleteCommentParams);
   }
 }
