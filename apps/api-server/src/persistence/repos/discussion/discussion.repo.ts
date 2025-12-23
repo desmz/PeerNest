@@ -18,6 +18,7 @@ import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 import { CustomHttpException } from '@/custom.exception';
 
+//todo: refactor
 @Injectable()
 export class DiscussionRepository {
   private static repoName = 'DISCUSSION_REPOSITORY';

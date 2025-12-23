@@ -6,6 +6,8 @@ import {
   TEditCommentParams,
   TEditCommentRo,
   TEditCommentVo,
+  TFindUserCommentsQueryParams,
+  TFindUserCommentsVo,
   TLikeCommentParams,
   TReplyCommentParams,
   TReplyCommentRo,
@@ -19,11 +21,15 @@ import {
   generateUserCommentLikeId,
   generateUserCommentReportId,
   HttpErrorCode,
+  UploadType,
   UserCommentReportStatus,
+  UserRole,
 } from '@peernest/core';
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
+import StorageAdapter from '@/features/attachment/plugins/adapter';
+import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { getFullStorageUrl } from '@/features/attachment/utils';
 import { CommentRepository } from '@/persistence/repos/comment/comment.repo';
 import { UserCommentLikeRepository } from '@/persistence/repos/comment/user-comment-like.repo';
@@ -34,6 +40,7 @@ import { IClsStore } from '@/types/cls';
 @Injectable()
 export class CommentService {
   constructor(
+    @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     private readonly clsService: ClsService<IClsStore>,
 
     private readonly commentRepository: CommentRepository,
@@ -265,5 +272,77 @@ export class CommentService {
       },
       { onConflictDoNothing: true }
     );
+  }
+
+  async findUserComments(
+    findUserCommentsQueryParams: TFindUserCommentsQueryParams
+  ): Promise<TFindUserCommentsVo> {
+    const { authorId, limit, offset, sort, type } = findUserCommentsQueryParams;
+
+    const userId = this.clsService.get('user.id');
+    const userRole = this.clsService.get('user.role');
+
+    const allowedUserRole = [UserRole.Admin, UserRole.Moderator];
+    if (authorId !== userId && !allowedUserRole.includes(userRole)) {
+      throw new CustomHttpException(
+        "You don't have permission to perform this action",
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const commentAggs = await this.commentRepository.findUserComments(userId, {
+      limit: limit || undefined,
+      offset: offset || undefined,
+      sort: sort || undefined,
+      type: type || undefined,
+    });
+
+    const formattedCommentAggs = await Promise.all(
+      commentAggs.map(async ({ author, discussion, parentComment, ...otherCommentAgg }) => ({
+        ...otherCommentAgg,
+        author: {
+          ...author,
+          userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
+        },
+        discussion: discussion
+          ? {
+              ...discussion,
+              author: {
+                ...discussion.author,
+                userAvatarUrl: getFullStorageUrl(discussion.author!.userAvatarUrl),
+                // userAvatarUrl: discussion.author?.userAvatarUrl
+                //   ? getFullStorageUrl(discussion.author?.userAvatarUrl)
+                //   : '',
+              },
+              attachmentUrl: discussion.attachmentPath
+                ? await this.storageAdapter.getPreviewUrl(
+                    StorageAdapter.getBucket(UploadType.Discussion),
+                    discussion.attachmentPath,
+                    undefined,
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    { 'Content-Type': discussion.attachmentMimetype }
+                  )
+                : null,
+            }
+          : null,
+        parentComment: parentComment
+          ? {
+              ...parentComment,
+              author: {
+                ...parentComment.author,
+                userAvatarUrl: getFullStorageUrl(parentComment.author!.userAvatarUrl),
+                // userAvatarUrl: parentComment.author?.userAvatarUrl
+                //   ? getFullStorageUrl(parentComment.author?.userAvatarUrl)
+                //   : '',
+              },
+            }
+          : null,
+      }))
+    );
+
+    return {
+      count: formattedCommentAggs.length,
+      comments: formattedCommentAggs,
+    } as TFindUserCommentsVo;
   }
 }

@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
 import {
+  DiscussionStatus,
   FindDiscussionCommentsSortOption,
+  FindUserCommentsSortOption,
+  FindUserCommentsType,
   generateCommentId,
   HttpErrorCode,
   UserCommentReportStatus,
+  UserDiscussionReportStatus,
 } from '@peernest/core';
 import {
   dbOrTx,
@@ -15,12 +19,13 @@ import {
   TUpdatableComment,
 } from '@peernest/db';
 import { DB } from '@peernest/db/types/db';
-import { expressionBuilder } from 'kysely';
+import { Expression, expressionBuilder, sql, SqlBool } from 'kysely';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
 
+//todo: refactor
 @Injectable()
 export class CommentRepository {
   private static repoName = 'COMMENT_REPOSITORY';
@@ -545,5 +550,521 @@ export class CommentRepository {
       count,
       comments,
     };
+  }
+
+  async findUserComments(
+    authorId: string,
+    options?: {
+      sort?: FindUserCommentsSortOption;
+      limit?: number;
+      offset?: number;
+      type?: FindUserCommentsType;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { sort, limit = 500, offset = 0, type } = options || {};
+
+      let query = db
+        .with('base_comment', (eb) =>
+          eb
+            .selectFrom('comment')
+            .where('comment.commentAuthorId', '=', authorId)
+            .where('comment.commentDeletedTime', 'is', null)
+            .where((eb) => {
+              const ands: Expression<SqlBool>[] = [];
+
+              if (type === FindUserCommentsType.Comments) {
+                ands.push(eb('commentParentCommentId', 'is', null));
+              } else if (type === FindUserCommentsType.Replies) {
+                ands.push(eb('commentParentCommentId', 'is not', null));
+              }
+
+              return eb.length > 0 ? eb.and(ands) : sql`true`;
+            })
+            .selectAll()
+        )
+        .with('base_comment_like', (eb) =>
+          eb
+            .selectFrom('base_comment')
+            .leftJoin(
+              'userCommentLike',
+              'userCommentLike.userCommentLikeCommentId',
+              'base_comment.commentId'
+            )
+            .groupBy('base_comment.commentId')
+            .select((eb) => [
+              'base_comment.commentId',
+              eb.fn
+                .coalesce(
+                  eb.fn.count<number>('userCommentLike.userCommentLikeId').distinct(),
+                  eb.val(0)
+                )
+                .as('likeCount'),
+              eb
+                .cast<boolean>(
+                  eb.fn.max(
+                    eb
+                      .case()
+                      .when(eb.ref('userCommentLike.userCommentLikeUserId'), '=', authorId)
+                      .then(eb.val(1))
+                      .else(eb.val(0))
+                      .end()
+                  ),
+                  'boolean'
+                )
+                .as('isLiked'),
+            ])
+        )
+        .with('base_comment_reply', (eb) =>
+          eb
+            .selectFrom('comment as reply')
+            .where('reply.commentParentCommentId', 'in', (eb) =>
+              eb.selectFrom('base_comment').select('base_comment.commentId')
+            )
+            .groupBy('reply.commentParentCommentId')
+            .select((eb) => [
+              'reply.commentParentCommentId',
+              eb.fn
+                .coalesce(eb.fn.count<number>('reply.commentId').distinct(), eb.val(0))
+                .as('replyCount'),
+
+              eb
+                .cast<boolean>(
+                  eb.fn.max(
+                    eb
+                      .case()
+                      .when(eb.ref('reply.commentAuthorId'), '=', authorId)
+                      .then(eb.val(1))
+                      .else(eb.val(0))
+                      .end()
+                  ),
+                  'boolean'
+                )
+                .as('isReplied'),
+            ])
+        )
+        .with('base_comment_report', (eb) =>
+          eb
+            .selectFrom('userCommentReport')
+            .where('userCommentReport.userCommentReportReporterId', '=', authorId)
+            .where('userCommentReport.userCommentReportCommentId', 'in', (eb) =>
+              eb.selectFrom('base_comment').select('base_comment.commentId')
+            )
+            .where(
+              'userCommentReport.userCommentReportStatus',
+              '=',
+              UserCommentReportStatus.Reported
+            )
+            .select((eb) => [
+              'userCommentReport.userCommentReportCommentId',
+              eb.cast<boolean>(eb.val(1), 'boolean').as('isReported'),
+            ])
+        )
+        .with('parent_comment', (eb) =>
+          eb
+            .selectFrom('comment')
+            .innerJoin('user', 'user.userId', 'comment.commentAuthorId')
+            .innerJoin('role', 'role.roleId', 'user.userRoleId')
+            .leftJoin(
+              'userCommentLike',
+              'userCommentLike.userCommentLikeCommentId',
+              'comment.commentId'
+            )
+            .leftJoin('comment as reply', 'reply.commentParentCommentId', 'comment.commentId')
+            .where('comment.commentId', 'in', (eb) =>
+              eb
+                .selectFrom('base_comment')
+                .where('base_comment.commentParentCommentId', 'is not', null)
+                .select('base_comment.commentParentCommentId')
+                .distinct()
+            )
+            .where('comment.commentDeletedTime', 'is', null)
+            .groupBy([
+              'comment.commentId',
+              'comment.commentDiscussionId',
+              'comment.commentParentCommentId',
+              'comment.commentContent',
+              'comment.commentCreatedTime',
+              'comment.commentUpdatedTime',
+              'user.userId',
+              'user.userDisplayName',
+              'user.userAvatarUrl',
+              'role.roleName',
+            ])
+            .select((eb) => [
+              'comment.commentId',
+              'comment.commentDiscussionId',
+              'comment.commentParentCommentId',
+              'comment.commentContent',
+              'comment.commentCreatedTime',
+              'comment.commentUpdatedTime',
+              jsonBuildObject({
+                userId: eb.ref('user.userId'),
+                userDisplayName: eb.ref('user.userDisplayName'),
+                userAvatarUrl: eb.ref('user.userAvatarUrl'),
+                roleName: eb.ref('role.roleName'),
+              }).as('author'),
+              eb.fn
+                .coalesce(
+                  eb.fn.count<number>('userCommentLike.userCommentLikeId').distinct(),
+                  eb.val(0)
+                )
+                .as('likeCount'),
+              eb.fn
+                .coalesce(eb.fn.count<number>('reply.commentId').distinct(), eb.val(0))
+                .as('replyCount'),
+              eb
+                .cast<boolean>(
+                  eb.fn.max(
+                    eb
+                      .case()
+                      .when(eb.ref('userCommentLike.userCommentLikeUserId'), '=', authorId)
+                      .then(eb.val(1))
+                      .else(eb.val(0))
+                      .end()
+                  ),
+                  'boolean'
+                )
+                .as('isLiked'),
+              eb
+                .cast<boolean>(
+                  eb.fn.max(
+                    eb
+                      .case()
+                      .when(eb.ref('reply.commentAuthorId'), '=', authorId)
+                      .then(eb.val(1))
+                      .else(eb.val(0))
+                      .end()
+                  ),
+                  'boolean'
+                )
+                .as('isReplied'),
+              eb.fn
+                .coalesce(
+                  eb
+                    .exists(
+                      eb
+                        .selectFrom('userCommentReport')
+                        .whereRef(
+                          'userCommentReport.userCommentReportCommentId',
+                          '=',
+                          'comment.commentId'
+                        )
+                        .where('userCommentReport.userCommentReportReporterId', '=', authorId)
+                        .where(
+                          'userCommentReport.userCommentReportStatus',
+                          '=',
+                          UserCommentReportStatus.Reported
+                        )
+                    )
+                    .$castTo<boolean>(),
+                  eb.val(false)
+                )
+                .as('isReported'),
+            ])
+        )
+        .with('base_discussion', (eb) =>
+          eb
+            .selectFrom('discussion')
+            .innerJoin('user', 'user.userId', 'discussion.discussionAuthorId')
+            .innerJoin('role', 'role.roleId', 'user.userRoleId')
+            .leftJoin(
+              'userDiscussionLike',
+              'userDiscussionLike.userDiscussionLikeDiscussionId',
+              'discussion.discussionId'
+            )
+            .leftJoin('comment', 'comment.commentDiscussionId', 'discussion.discussionId')
+            .where('discussion.discussionStatus', '=', DiscussionStatus.Active)
+            .where('discussion.discussionId', 'in', (eb) =>
+              eb
+                .selectFrom('base_comment')
+                .where('base_comment.commentParentCommentId', 'is', null)
+                .select('base_comment.commentDiscussionId')
+                .distinct()
+            )
+            .groupBy([
+              'discussion.discussionId',
+              'discussion.discussionAuthorId',
+              'discussion.discussionTitle',
+              'discussion.discussionContent',
+              'discussion.discussionStatus',
+              'discussion.discussionCreatedTime',
+              'discussion.discussionUpdatedTime',
+              'user.userId',
+              'user.userDisplayName',
+              'user.userAvatarUrl',
+              'role.roleName',
+            ])
+            .select((eb) => [
+              'discussion.discussionId',
+              'discussion.discussionAuthorId',
+              'discussion.discussionTitle',
+              'discussion.discussionContent',
+              'discussion.discussionStatus',
+              'discussion.discussionCreatedTime',
+              'discussion.discussionUpdatedTime',
+              jsonBuildObject({
+                userId: eb.ref('user.userId'),
+                userDisplayName: eb.ref('user.userDisplayName'),
+                userAvatarUrl: eb.ref('user.userAvatarUrl'),
+                roleName: eb.ref('role.roleName'),
+              }).as('author'),
+              eb.fn
+                .coalesce(
+                  eb.fn.count<number>('userDiscussionLike.userDiscussionLikeId').distinct(),
+                  eb.val(0)
+                )
+                .as('likeCount'),
+              eb.fn
+                .coalesce(eb.fn.count<number>('comment.commentId').distinct(), eb.val(0))
+                .as('commentCount'),
+              eb
+                .cast<boolean>(
+                  eb.fn.max(
+                    eb
+                      .case()
+                      .when(eb.ref('userDiscussionLike.userDiscussionLikeUserId'), '=', authorId)
+                      .then(eb.val(1))
+                      .else(eb.val(0))
+                      .end()
+                  ),
+                  'boolean'
+                )
+                .as('isLiked'),
+              eb.fn
+                .coalesce(
+                  eb
+                    .exists(
+                      eb
+                        .selectFrom('userDiscussionReport')
+                        .whereRef(
+                          'userDiscussionReport.userDiscussionReportDiscussionId',
+                          '=',
+                          'discussion.discussionId'
+                        )
+                        .where('userDiscussionReport.userDiscussionReportReporterId', '=', authorId)
+                        .where(
+                          'userDiscussionReport.userDiscussionReportStatus',
+                          '=',
+                          UserDiscussionReportStatus.Reported
+                        )
+                    )
+                    .$castTo<boolean>(),
+                  eb.val(false)
+                )
+                .as('isReported'),
+            ])
+        )
+        .with('discussion_interest_agg', (eb) =>
+          eb
+            .selectFrom('discussionInterest')
+            .innerJoin(
+              'interest',
+              'interest.interestId',
+              'discussionInterest.discussionInterestInterestId'
+            )
+            .where('discussionInterest.discussionInterestDiscussionId', 'in', (eb) =>
+              eb.selectFrom('base_discussion').select('base_discussion.discussionId')
+            )
+            .groupBy('discussionInterest.discussionInterestDiscussionId')
+            .select((eb) => [
+              'discussionInterest.discussionInterestDiscussionId as discussionId',
+              eb.fn
+                .jsonAgg(
+                  jsonBuildObject({
+                    interestId: eb.ref('interest.interestId'),
+                    interestName: eb.ref('interest.interestName'),
+                    interestPosition: eb.ref('discussionInterest.discussionInterestPosition'),
+                  })
+                )
+                .orderBy(eb.ref('discussionInterest.discussionInterestPosition'), 'asc')
+                .as('interests'),
+            ])
+        )
+        .with('discussion_goal_agg', (eb) =>
+          eb
+            .selectFrom('discussionPersonalGoal')
+            .innerJoin(
+              'personalGoal',
+              'personalGoal.personalGoalId',
+              'discussionPersonalGoal.discussionPersonalGoalPersonalGoalId'
+            )
+            .where('discussionPersonalGoal.discussionPersonalGoalDiscussionId', 'in', (eb) =>
+              eb.selectFrom('base_discussion').select('base_discussion.discussionId')
+            )
+            .groupBy('discussionPersonalGoal.discussionPersonalGoalDiscussionId')
+            .select((eb) => [
+              'discussionPersonalGoal.discussionPersonalGoalDiscussionId as discussionId',
+              eb.fn
+                .jsonAgg(
+                  jsonBuildObject({
+                    personalGoalId: eb.ref('personalGoal.personalGoalId'),
+                    personalGoalTitle: eb.ref('personalGoal.personalGoalTitle'),
+                    personalGoalName: eb.ref('personalGoal.personalGoalName'),
+                    personalGoalDescription: eb.ref('personalGoal.personalGoalDescription'),
+                    personalGoalPosition: eb.ref(
+                      'discussionPersonalGoal.discussionPersonalGoalPosition'
+                    ),
+                  })
+                )
+                .orderBy(eb.ref('discussionPersonalGoal.discussionPersonalGoalPosition'), 'asc')
+                .as('goals'),
+            ])
+        )
+        .with('discussion_attachment', (eb) =>
+          eb
+            .selectFrom('discussionAttachment')
+            .innerJoin(
+              'attachment',
+              'attachment.attachmentId',
+              'discussionAttachment.discussionAttachmentAttachmentId'
+            )
+            .where('discussionAttachment.discussionAttachmentDiscussionId', 'in', (eb) =>
+              eb.selectFrom('base_discussion').select('base_discussion.discussionId')
+            )
+            .select([
+              'discussionAttachment.discussionAttachmentDiscussionId as discussionId',
+              'attachment.attachmentPath',
+              'attachment.attachmentMimetype',
+            ])
+        )
+        .selectFrom('base_comment')
+        .innerJoin('user', 'user.userId', 'base_comment.commentAuthorId')
+        .innerJoin('role', 'role.roleId', 'user.userRoleId')
+        .leftJoin('base_comment_like', 'base_comment_like.commentId', 'base_comment.commentId')
+        .leftJoin(
+          'base_comment_reply',
+          'base_comment_reply.commentParentCommentId',
+          'base_comment.commentId'
+        )
+        .leftJoin(
+          'base_comment_report',
+          'base_comment_report.userCommentReportCommentId',
+          'base_comment.commentId'
+        )
+        .leftJoin(
+          'parent_comment',
+          'parent_comment.commentId',
+          'base_comment.commentParentCommentId'
+        )
+        .leftJoin(
+          'base_discussion',
+          'base_discussion.discussionId',
+          'base_comment.commentDiscussionId'
+        )
+        .leftJoin(
+          'discussion_interest_agg',
+          'discussion_interest_agg.discussionId',
+          'base_discussion.discussionId'
+        )
+        .leftJoin(
+          'discussion_goal_agg',
+          'discussion_goal_agg.discussionId',
+          'base_discussion.discussionId'
+        )
+        .leftJoin(
+          'discussion_attachment',
+          'discussion_attachment.discussionId',
+          'base_discussion.discussionId'
+        )
+        .select((eb) => [
+          'base_comment.commentId',
+          'base_comment.commentDiscussionId as discussionId',
+          'base_comment.commentParentCommentId',
+          'base_comment.commentContent',
+          'base_comment.commentCreatedTime',
+          'base_comment.commentUpdatedTime',
+          jsonBuildObject({
+            userId: eb.ref('user.userId'),
+            userDisplayName: eb.ref('user.userDisplayName'),
+            userAvatarUrl: eb.ref('user.userAvatarUrl'),
+            roleName: eb.ref('role.roleName'),
+          }).as('author'),
+          eb.fn.coalesce('base_comment_like.likeCount', eb.val(0)).as('likeCount'),
+          eb.fn.coalesce('base_comment_reply.replyCount', eb.val(0)).as('replyCount'),
+          eb.fn.coalesce('base_comment_like.isLiked', eb.val(false)).as('isLiked'),
+          eb.fn.coalesce('base_comment_reply.isReplied', eb.val(false)).as('isReplied'),
+          eb.fn.coalesce('base_comment_report.isReported', eb.val(false)).as('isReported'),
+          eb
+            .case()
+            .when(eb.ref('base_comment.commentParentCommentId'), 'is', null)
+            .then(
+              jsonBuildObject({
+                discussionId: eb.ref('base_discussion.discussionId'),
+                discussionTitle: eb.ref('base_discussion.discussionTitle'),
+                discussionContent: eb.ref('base_discussion.discussionContent'),
+                discussionStatus: eb.ref('base_discussion.discussionStatus'),
+                discussionCreatedTime: eb.ref('base_discussion.discussionCreatedTime'),
+                discussionUpdatedTime: eb.ref('base_discussion.discussionUpdatedTime'),
+                author: eb.ref('base_discussion.author'),
+                interests: eb.ref('discussion_interest_agg.interests'),
+                goals: eb.ref('discussion_goal_agg.goals'),
+                likeCount: eb.ref('base_discussion.likeCount'),
+                commentCount: eb.ref('base_discussion.commentCount'),
+                isLiked: eb.ref('base_discussion.isLiked'),
+                isReported: eb.ref('base_discussion.isReported'),
+                attachmentPath: eb.ref('discussion_attachment.attachmentPath'),
+                attachmentMimetype: eb.ref('discussion_attachment.attachmentMimetype'),
+              })
+            )
+            .else(eb.val(null))
+            .end()
+            .as('discussion'),
+          eb
+            .case()
+            .when(eb.ref('base_comment.commentParentCommentId'), 'is not', null)
+            .then(
+              jsonBuildObject({
+                commentId: eb.ref('parent_comment.commentId'),
+                discussionId: eb.ref('parent_comment.commentDiscussionId'),
+                commentParentCommentId: eb.ref('parent_comment.commentParentCommentId'),
+                commentContent: eb.ref('parent_comment.commentContent'),
+                commentCreatedTime: eb.ref('parent_comment.commentCreatedTime'),
+                commentUpdatedTime: eb.ref('parent_comment.commentUpdatedTime'),
+                author: eb.ref('parent_comment.author'),
+                likeCount: eb.ref('parent_comment.likeCount'),
+                replyCount: eb.ref('parent_comment.replyCount'),
+                isLiked: eb.ref('parent_comment.isLiked'),
+                isReplied: eb.ref('parent_comment.isReplied'),
+                isReported: eb.ref('parent_comment.isReported'),
+              })
+            )
+            .else(eb.val(null))
+            .end()
+            .as('parentComment'),
+        ]);
+
+      switch (sort) {
+        case FindUserCommentsSortOption.Oldest:
+          query = query.orderBy('base_comment.commentCreatedTime', 'asc');
+          break;
+        case FindUserCommentsSortOption.Liked:
+          query = query.orderBy('likeCount', 'desc');
+          break;
+        default:
+          query = query.orderBy('base_comment.commentCreatedTime', 'desc');
+      }
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      if (offset) {
+        query = query.offset(offset);
+      }
+
+      const commentAggs = await query.execute();
+
+      return commentAggs;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CommentRepository.repoName}] | Fail to find user comments`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, authorId }
+      );
+    }
   }
 }

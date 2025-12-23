@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import {
   createCommentRoSchema,
   type TCreateCommentVo,
@@ -15,6 +26,9 @@ import {
   type TLikeCommentParams,
   type TUnlikeCommentParams,
   type TReportCommentParams,
+  findUserCommentsQueryParamsSchema,
+  type TFindUserCommentsQueryParams,
+  type TFindUserCommentsVo,
 } from '@peernest/contract';
 
 import { CommentService } from '@/features/comment/comment.service';
@@ -72,5 +86,14 @@ export class CommentController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async reportComment(@Param() reportCommentParams: TReportCommentParams): Promise<void> {
     await this.commentService.reportComment(reportCommentParams);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async findUserComments(
+    @Query(new ZodValidationPipe(findUserCommentsQueryParamsSchema))
+    findUserCommentsQueryParams: TFindUserCommentsQueryParams
+  ): Promise<TFindUserCommentsVo> {
+    return this.commentService.findUserComments(findUserCommentsQueryParams);
   }
 }
