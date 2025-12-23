@@ -22,6 +22,13 @@ export enum FindDiscussionCommentsSortOption {
   Liked = 'liked',
 }
 
+export enum FindDiscussionsSortOption {
+  Oldest = 'oldest',
+  Newest = 'newest',
+  Liked = 'liked',
+  Trending = 'trending',
+}
+
 export const MIN_DISCUSSION_TITLE_LEN = 5;
 export const MAX_DISCUSSION_TITLE_LEN = 100;
 export const MIN_DISCUSSION_CONTENT_LEN = 1;

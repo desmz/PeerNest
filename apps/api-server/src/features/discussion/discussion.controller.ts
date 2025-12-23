@@ -30,6 +30,9 @@ import {
   type TFindDiscussionCommentsParams,
   findDiscussionCommentsQueryParamsSchema,
   type TFindDiscussionCommentsQueryParams,
+  findDiscussionsQueryParamsSchema,
+  type TFindDiscussionsQueryParams,
+  type TFindDiscussionsVo,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -102,5 +105,13 @@ export class DiscussionController {
       findDiscussionCommentsParams,
       findDiscussionCommentsQueryParams
     );
+  }
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async findDiscussions(
+    @Query(new ZodValidationPipe(findDiscussionsQueryParamsSchema))
+    findDiscussionsQueryParams: TFindDiscussionsQueryParams
+  ): Promise<TFindDiscussionsVo> {
+    return this.discussionService.findDiscussions(findDiscussionsQueryParams);
   }
 }

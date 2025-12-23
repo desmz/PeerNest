@@ -3,7 +3,7 @@ import z from 'zod';
 
 import { conversationIdSchema, userIdSchema } from '../utils';
 
-import { findUserSchema } from './find-users';
+import { findUserBaseSchema } from './find-users';
 
 export const GET_USER_PROFILE_URL = '/users/{userId}/profile';
 
@@ -30,7 +30,7 @@ export type TGetUserProfileLatestFriendRequest = z.infer<
   typeof getUserProfileLatestFriendRequestSchema
 >;
 
-export const getUserProfileVoSchema = findUserSchema.extend({
+export const getUserProfileVoSchema = findUserBaseSchema.extend({
   userInfoBio: z.string().nullable(),
   relationships: z.array(getUserProfileRelationshipSchema),
   latestFriendRequest: getUserProfileLatestFriendRequestSchema.nullable(),

@@ -173,11 +173,11 @@ export class UserRepository {
         .$if(Boolean(displayNameQuery), (eb) =>
           eb.select(
             sql<number>`
-          ts_rank(
-            user_display_name_tsv,
-            to_tsquery('english', f_unaccent(${displayNameQuery}))
-          )
-        `.as('rank')
+              ts_rank(
+                user_display_name_tsv,
+                to_tsquery('english', f_unaccent(${displayNameQuery}))
+              )
+            `.as('rank')
           )
         )
         .$if(Boolean(displayNameQuery), (eb) =>

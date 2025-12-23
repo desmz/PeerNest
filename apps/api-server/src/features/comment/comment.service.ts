@@ -277,7 +277,7 @@ export class CommentService {
   async findUserComments(
     findUserCommentsQueryParams: TFindUserCommentsQueryParams
   ): Promise<TFindUserCommentsVo> {
-    const { authorId, limit, offset, sort, type } = findUserCommentsQueryParams;
+    const { authorId, ...otherFindUserCommentsQueryParams } = findUserCommentsQueryParams;
 
     const userId = this.clsService.get('user.id');
     const userRole = this.clsService.get('user.role');
@@ -290,12 +290,10 @@ export class CommentService {
       );
     }
 
-    const commentAggs = await this.commentRepository.findUserComments(userId, {
-      limit: limit || undefined,
-      offset: offset || undefined,
-      sort: sort || undefined,
-      type: type || undefined,
-    });
+    const commentAggs = await this.commentRepository.findUserComments(
+      userId,
+      otherFindUserCommentsQueryParams
+    );
 
     const formattedCommentAggs = await Promise.all(
       commentAggs.map(async ({ author, discussion, parentComment, ...otherCommentAgg }) => ({

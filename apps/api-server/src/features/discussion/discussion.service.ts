@@ -7,6 +7,8 @@ import {
   TFindDiscussionCommentsParams,
   TFindDiscussionCommentsQueryParams,
   TFindDiscussionCommentsVo,
+  TFindDiscussionsQueryParams,
+  TFindDiscussionsVo,
   TGetDiscussionParams,
   TGetDiscussionQueryParams,
   TGetDiscussionVo,
@@ -545,7 +547,6 @@ export class DiscussionService {
     findDiscussionCommentsQueryParams: TFindDiscussionCommentsQueryParams
   ): Promise<TFindDiscussionCommentsVo> {
     const { discussionId } = findDiscussionCommentsParams;
-    const { limit, offset, sort } = findDiscussionCommentsQueryParams;
 
     const userId = this.clsService.get('user.id');
 
@@ -563,14 +564,49 @@ export class DiscussionService {
     const commentAggs = await this.commentRepository.findCommentsByDiscussionId(
       { discussionId, userId },
       {
+        ...findDiscussionCommentsQueryParams,
         includeDeleted: true,
         maxDepth: 50,
-        limit: limit || undefined,
-        offset: offset || undefined,
-        sort: sort || undefined,
       }
     );
 
     return commentAggs as TFindDiscussionCommentsVo;
+  }
+
+  async findDiscussions(
+    findDiscussionsQueryParams: TFindDiscussionsQueryParams
+  ): Promise<TFindDiscussionsVo> {
+    const userId = this.clsService.get('user.id');
+
+    const discussionAggs = await this.discussionRepository.findDiscussions(
+      userId,
+      findDiscussionsQueryParams
+    );
+
+    const formattedDiscussionAggs = await Promise.all(
+      discussionAggs.map(
+        async ({ attachmentMimetype, attachmentPath, author, ...otherDiscussionAgg }) => ({
+          ...otherDiscussionAgg,
+          author: {
+            ...author,
+            userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
+          },
+          attachmentUrl: attachmentPath
+            ? await this.storageAdapter.getPreviewUrl(
+                StorageAdapter.getBucket(UploadType.Discussion),
+                attachmentPath,
+                undefined,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                { 'Content-Type': attachmentMimetype }
+              )
+            : null,
+        })
+      )
+    );
+
+    return {
+      count: formattedDiscussionAggs.length,
+      discussions: formattedDiscussionAggs,
+    } as TFindDiscussionsVo;
   }
 }

@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
 import {
+  TFindDiscussionCommentsQueryParams,
+  TFindUserCommentsQueryParams,
+} from '@peernest/contract';
+import {
   DiscussionStatus,
   FindDiscussionCommentsSortOption,
   FindUserCommentsSortOption,
@@ -271,13 +275,7 @@ export class CommentRepository {
       discussionId: string;
       userId: string;
     },
-    options?: {
-      includeDeleted?: boolean;
-      maxDepth?: number; // Limit nesting depth to prevent performance issues
-      sort?: FindDiscussionCommentsSortOption;
-      limit?: number;
-      offset?: number;
-    },
+    options?: TFindDiscussionCommentsQueryParams & { maxDepth?: number; includeDeleted?: boolean },
     tx?: TKyselyTransaction
   ) {
     try {
@@ -342,11 +340,8 @@ export class CommentRepository {
     db: TKyselyDB | TKyselyTransaction,
     discussionId: string,
     userId: string,
-    options?: {
+    options?: TFindDiscussionCommentsQueryParams & {
       includeDeleted?: boolean;
-      sort?: FindDiscussionCommentsSortOption;
-      limit?: number;
-      offset?: number;
       isRoot?: boolean;
     }
   ) {
@@ -554,12 +549,7 @@ export class CommentRepository {
 
   async findUserComments(
     authorId: string,
-    options?: {
-      sort?: FindUserCommentsSortOption;
-      limit?: number;
-      offset?: number;
-      type?: FindUserCommentsType;
-    },
+    options?: Omit<TFindUserCommentsQueryParams, 'authorId'>,
     tx?: TKyselyTransaction
   ) {
     try {
