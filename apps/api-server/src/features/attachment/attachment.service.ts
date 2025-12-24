@@ -16,7 +16,7 @@ import {
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
-import { AttachmentRepository } from '@/persistence/repos/attachment/attachment.repo';
+import { AttachmentRepository } from '@/persistence/repos/attachment';
 import { IClsStore } from '@/types/cls';
 
 import StorageAdapter from './plugins/adapter';

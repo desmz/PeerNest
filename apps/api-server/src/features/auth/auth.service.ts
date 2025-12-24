@@ -32,12 +32,14 @@ import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
-import { AttachmentRepository } from '@/persistence/repos/attachment/attachment.repo';
-import { AccountRepository } from '@/persistence/repos/user/account.repo';
-import { RoleRepository } from '@/persistence/repos/user/role.repo';
-import { UserInfoRepository } from '@/persistence/repos/user/user-info.repo';
-import { UserTokenRepository } from '@/persistence/repos/user/user-token.repo';
-import { UserRepository } from '@/persistence/repos/user/user.repo';
+import { AttachmentRepository } from '@/persistence/repos/attachment';
+import {
+  AccountRepository,
+  RoleRepository,
+  UserInfoRepository,
+  UserRepository,
+  UserTokenRepository,
+} from '@/persistence/repos/user';
 
 import { TokenService } from './token.service';
 import { TJwtRawPayload } from './types/jwt-payload.type';

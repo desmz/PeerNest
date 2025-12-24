@@ -31,10 +31,12 @@ import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { getFullStorageUrl } from '@/features/attachment/utils';
-import { CommentRepository } from '@/persistence/repos/comment/comment.repo';
-import { UserCommentLikeRepository } from '@/persistence/repos/comment/user-comment-like.repo';
-import { UserCommentReportRepository } from '@/persistence/repos/comment/user-comment-report';
-import { DiscussionRepository } from '@/persistence/repos/discussion/discussion.repo';
+import {
+  CommentRepository,
+  UserCommentLikeRepository,
+  UserCommentReportRepository,
+} from '@/persistence/repos/comment';
+import { DiscussionRepository } from '@/persistence/repos/discussion';
 import { IClsStore } from '@/types/cls';
 
 @Injectable()

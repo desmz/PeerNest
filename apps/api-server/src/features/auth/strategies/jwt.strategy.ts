@@ -7,7 +7,7 @@ import { Strategy } from 'passport-jwt';
 
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { CustomHttpException } from '@/custom.exception';
-import { UserRepository } from '@/persistence/repos/user/user.repo';
+import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
 import { TJwtPayload, JwtType } from '../types/jwt-payload.type';

@@ -44,16 +44,17 @@ import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { getFullStorageUrl } from '@/features/attachment/utils';
-import { AttachmentRepository } from '@/persistence/repos/attachment/attachment.repo';
-import { CommentRepository } from '@/persistence/repos/comment/comment.repo';
-import { DiscussionAttachmentRepository } from '@/persistence/repos/discussion/discussion-attachment.repo';
-import { DiscussionInterestRepository } from '@/persistence/repos/discussion/discussion-interest.repo';
-import { DiscussionPersonalGoalRepository } from '@/persistence/repos/discussion/discussion-personal-goal.repo';
-import { DiscussionRepository } from '@/persistence/repos/discussion/discussion.repo';
-import { UserDiscussionLikeRepository } from '@/persistence/repos/discussion/user-discussion-like.repo';
-import { UserDiscussionReportRepository } from '@/persistence/repos/discussion/user-discussion-report.repo';
-import { InterestRepository } from '@/persistence/repos/system/interest.repo';
-import { PersonalGoalRepository } from '@/persistence/repos/system/personal-goal.repo';
+import { AttachmentRepository } from '@/persistence/repos/attachment';
+import { CommentRepository } from '@/persistence/repos/comment';
+import {
+  DiscussionAttachmentRepository,
+  DiscussionInterestRepository,
+  DiscussionPersonalGoalRepository,
+  DiscussionRepository,
+  UserDiscussionLikeRepository,
+  UserDiscussionReportRepository,
+} from '@/persistence/repos/discussion';
+import { InterestRepository, PersonalGoalRepository } from '@/persistence/repos/system';
 import { IClsStore } from '@/types/cls';
 
 @Injectable()

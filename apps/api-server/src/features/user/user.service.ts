@@ -18,11 +18,9 @@ import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
-import { ConversationRepository } from '@/persistence/repos/conversation/conversation.repo';
-import { FriendRequestRepository } from '@/persistence/repos/friendship/friend-request.repo';
-import { RelationshipRepository } from '@/persistence/repos/friendship/relationship.repo';
-import { UserInfoRepository } from '@/persistence/repos/user/user-info.repo';
-import { UserRepository } from '@/persistence/repos/user/user.repo';
+import { ConversationRepository } from '@/persistence/repos/conversation';
+import { FriendRequestRepository, RelationshipRepository } from '@/persistence/repos/friendship';
+import { UserInfoRepository, UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
 @Injectable()
