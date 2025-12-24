@@ -1,7 +1,7 @@
 import { Button, Container, Image, SimpleGrid, Text, Title } from '@mantine/core';
 import { Link } from 'react-router';
 
-import image from '@/assets/error404.svg';
+import error404Image from '@/assets/error404.svg';
 
 import classes from './error404.module.css';
 
@@ -9,7 +9,7 @@ export default function Error404() {
   return (
     <Container className={classes.root}>
       <SimpleGrid spacing={{ base: 40, sm: 80 }} cols={{ base: 2, sm: 2 }}>
-        <Image src={image} className={classes.mobileImage} />
+        <Image src={error404Image} className={classes.mobileImage} />
         <div>
           <Title className={classes.title}>Something is not right...</Title>
           <Text c='dimmed' size='lg'>
@@ -26,7 +26,7 @@ export default function Error404() {
             Get back to home page
           </Button>
         </div>
-        <Image src={image} className={classes.desktopImage} />
+        <Image src={error404Image} className={classes.desktopImage} />
       </SimpleGrid>
     </Container>
   );

@@ -14,6 +14,17 @@ const rating: MantineColorsTuple = [
 ];
 
 export const theme = createTheme({
+  // Default font for body text
+  fontFamily: 'Roboto, sans-serif',
+
+  // Monospace font (you can keep Roboto Mono or any other)
+  fontFamilyMonospace: 'Roboto Mono, monospace',
+
+  headings: {
+    // Font for headings
+    fontFamily: 'Roboto, sans-serif',
+  },
+
   colors: {
     rating,
   },
