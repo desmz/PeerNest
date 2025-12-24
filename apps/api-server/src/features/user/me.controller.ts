@@ -40,7 +40,15 @@ export class MeController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@Req() req: Request): Promise<TMeVo> {
+  async getCurrentUser(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<TMeVo> {
+    // Disable caching
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     return req.user as TMeVo;
   }
 
