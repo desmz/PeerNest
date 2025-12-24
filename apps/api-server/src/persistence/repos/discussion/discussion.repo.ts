@@ -450,11 +450,7 @@ export class DiscussionRepository {
               'userDiscussionReport.userDiscussionReportDiscussionId',
               'discussion.discussionId'
             )
-            .leftJoin('comment', (join) =>
-              join
-                .onRef('comment.commentDiscussionId', '=', 'discussion.discussionId')
-                .on('comment.commentDeletedTime', 'is', null)
-            )
+            .leftJoin('comment', 'comment.commentDiscussionId', 'discussion.discussionId')
             .where('discussion.discussionDeletedTime', 'is', null)
             .groupBy('discussion.discussionId')
             .select((eb) => [
@@ -474,6 +470,15 @@ export class DiscussionRepository {
               eb.fn
                 .coalesce(eb.fn.count<number>('comment.commentId').distinct(), eb.val(0))
                 .as('commentCount'),
+              eb.fn
+                .coalesce(
+                  eb.fn
+                    .count<number>('comment.commentId')
+                    .filterWhere('comment.commentDeletedTime', 'is', null)
+                    .distinct(),
+                  eb.val(0)
+                )
+                .as('nonDeletedCommentCount'),
             ])
         )
         .with('discussion_interest_agg', (eb) =>
@@ -588,6 +593,7 @@ export class DiscussionRepository {
           'discussion_goal_agg.goals',
           'discussion_stat.likeCount',
           'discussion_stat.commentCount',
+          'base_discussion.hoursSinceCreated',
           eb
             .exists(
               eb
@@ -620,7 +626,7 @@ export class DiscussionRepository {
             .fn<string>('least', [
               sql<number>`
                 discussion_stat.like_count * 3
-                + discussion_stat.comment_count * 2 
+                + discussion_stat.non_deleted_comment_count * 2 
                 - discussion_stat.report_count * 5 
                 + (100.0 / (1 + base_discussion.hours_since_created))`,
               eb.val(20),
@@ -653,7 +659,7 @@ export class DiscussionRepository {
       return discussionAggs;
     } catch (error) {
       throw new CustomHttpException(
-        `[${DiscussionRepository.repoName}] | Fail to find discussion agg by ids`,
+        `[${DiscussionRepository.repoName}] | Fail to find discussions`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
       );
