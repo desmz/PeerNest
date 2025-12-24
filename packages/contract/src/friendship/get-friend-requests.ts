@@ -3,7 +3,7 @@ import z from 'zod';
 
 import { getMyFriendSchema } from './get-my-friends';
 
-export const GET_FRIEND_REQUESTS = '/friend-requests';
+export const GET_FRIEND_REQUESTS_URL = '/friend-requests';
 
 export const getFriendRequestsQueryParamsSchema = z.object({
   status: z.enum(FriendRequestStatus).nullish(),

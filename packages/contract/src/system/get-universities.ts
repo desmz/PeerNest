@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const GET_UNIVERSITIES = '/sys/universities';
+export const GET_UNIVERSITIES_URL = '/sys/universities';
 
 export const universitySchema = z.object({
   universityId: z.string(),

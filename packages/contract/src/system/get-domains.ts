@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const GET_DOMAINS = '/sys/domains';
+export const GET_DOMAINS_URL = '/sys/domains';
 
 export const domainSchema = z.object({
   domainId: z.string(),

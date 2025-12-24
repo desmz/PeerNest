@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { zEmail, zNonEmptyString } from '../utils';
 
-export const CHANGE_EMAIL = '/me/email/change';
+export const CHANGE_EMAIL_URL = '/me/email/change';
 
 export const changeEmailFields = {
   newEmail: 'Email',

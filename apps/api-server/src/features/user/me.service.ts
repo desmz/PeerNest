@@ -8,6 +8,7 @@ import {
   TVerifyChangeEmailRo,
 } from '@peernest/contract';
 import {
+  AttachmentStatus,
   CHANGE_EMAIL_TOKEN_HASH_LENGTH,
   comparePassword,
   encodePassword,
@@ -37,15 +38,16 @@ import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
-import { AttachmentRepository } from '@/persistence/repos/attachment/attachment.repo';
-import { InterestRepository } from '@/persistence/repos/system/interest.repo';
-import { PersonalGoalRepository } from '@/persistence/repos/system/personal-goal.repo';
-import { AccountRepository } from '@/persistence/repos/user/account.repo';
-import { UserInfoInterestRepository } from '@/persistence/repos/user/user-info-interest.repo';
-import { UserInfoPersonalGoalRepository } from '@/persistence/repos/user/user-info-personal-goal.repo';
-import { UserInfoRepository } from '@/persistence/repos/user/user-info.repo';
-import { UserTokenRepository } from '@/persistence/repos/user/user-token.repo';
-import { UserRepository } from '@/persistence/repos/user/user.repo';
+import { AttachmentRepository } from '@/persistence/repos/attachment';
+import { InterestRepository, PersonalGoalRepository } from '@/persistence/repos/system';
+import {
+  AccountRepository,
+  UserInfoInterestRepository,
+  UserInfoPersonalGoalRepository,
+  UserInfoRepository,
+  UserRepository,
+  UserTokenRepository,
+} from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
 @Injectable()
@@ -347,12 +349,12 @@ export class MeService {
 
     if (!userInfoAgg) {
       throw new CustomHttpException(
-        'Cannot found user info agg',
+        'Cannot find user info agg',
         HttpErrorCode.INTERNAL_SERVER_ERROR
       );
     }
     if (!user) {
-      throw new CustomHttpException('Cannot found user', HttpErrorCode.INTERNAL_SERVER_ERROR);
+      throw new CustomHttpException('Cannot find user', HttpErrorCode.INTERNAL_SERVER_ERROR);
     }
 
     return {
@@ -398,6 +400,7 @@ export class MeService {
         attachmentMimetype: mimetype,
         attachmentPath: avatarPath,
         attachmentName: userId,
+        attachmentStatus: AttachmentStatus.Ready,
         attachmentSize: avatarBuffer.length,
         attachmentWidth: svgSize[0],
         attachmentHeight: svgSize[1],

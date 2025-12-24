@@ -85,6 +85,7 @@
       "aggs",
       "unaccent",
       "mantine",
+      "presign",
     ],
     "peacock.remoteColor": "#374d6a",
     "github.copilot.enable": {

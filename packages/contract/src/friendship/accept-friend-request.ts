@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { conversationIdSchema, friendRequestIdSchema } from '../utils';
 
-export const ACCEPT_FRIEND_REQUEST = '/friend-requests/{requestId}/accept';
+export const ACCEPT_FRIEND_REQUEST_URL = '/friend-requests/{requestId}/accept';
 
 export const acceptFriendRequestParamsSchema = z.object({
   requestId: friendRequestIdSchema('Request Id'),

@@ -26,11 +26,10 @@ import {
   type TUpdateMeProfileVo,
   TGetMeProfileVo,
 } from '@peernest/contract';
-import { ALLOWED_AVATAR_EXT, MAX_AVATAR_SIZE } from '@peernest/core';
 import { type Request, type Response } from 'express';
 
 import { clearCookie } from '@/features/auth/utils';
-import { FileValidationPipe } from '@/pipes/file-validation.pipe';
+import { AvatarValidationPipe } from '@/pipes/avatar-file-validation.pipe';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
 import { MeService } from './me.service';
@@ -90,13 +89,7 @@ export class MeController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FileInterceptor('avatar'))
   async updateAvatar(
-    @UploadedFile(
-      new FileValidationPipe({
-        maxFileSize: MAX_AVATAR_SIZE,
-        allowedFileExt: ALLOWED_AVATAR_EXT,
-        fieldName: 'avatar',
-      })
-    )
+    @UploadedFile(new AvatarValidationPipe({ fieldName: 'avatar' }))
     file: Express.Multer.File
   ) {
     await this.meService.updateAvatar(file);

@@ -1,1 +1,1 @@
-export const SIGN_OUT = '/auth/signout';
+export const SIGN_OUT_URL = '/auth/signout';
