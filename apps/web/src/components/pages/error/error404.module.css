@@ -31,3 +31,8 @@
     display: none;
   }
 }
+
+/* .custom {
+  color: var(--mantine-color-rating-0);
+  background-color: var(--mantine-color-rating-3);
+} */

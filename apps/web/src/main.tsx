@@ -1,12 +1,13 @@
+import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router';
-import '@mantine/core/styles.css';
 
 import App from './App';
+import { theme } from './theme';
 
 // other css files are required only if
 // you are using components from the corresponding package
@@ -31,7 +32,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <StrictMode>
     <BrowserRouter>
-      <MantineProvider>
+      <MantineProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
           <HelmetProvider>
             <App />

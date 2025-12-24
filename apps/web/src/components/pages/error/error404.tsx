@@ -3,9 +3,9 @@ import { Link } from 'react-router';
 
 import image from '@/assets/error404.svg';
 
-import classes from './notFoundImage.module.css';
+import classes from './error404.module.css';
 
-export default function NotFoundImage() {
+export default function Error404() {
   return (
     <Container className={classes.root}>
       <SimpleGrid spacing={{ base: 40, sm: 80 }} cols={{ base: 2, sm: 2 }}>
