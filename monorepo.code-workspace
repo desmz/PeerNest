@@ -84,6 +84,7 @@
       "timestamptz",
       "aggs",
       "unaccent",
+      "mantine",
       "presign",
     ],
     "peacock.remoteColor": "#374d6a",
@@ -113,5 +114,12 @@
       "titleBar.inactiveBackground": "#374d6a99",
       "titleBar.inactiveForeground": "#e7e7e799"
     },
+    "cssVariables.lookupFiles": [
+      "**/*.css",
+      "**/*.scss",
+      "**/*.sass",
+      "**/*.less",
+      "**/node_modules/@mantine/core/styles.css",
+    ],
   },
 }
