@@ -1,5 +1,5 @@
 import { envObj } from '@peernest/config/static';
-import { TSignInRo, TSignUpRo } from '@peernest/contract';
+import { GOOGLE_AUTHENTICATE_URL, TSignInRo, TSignUpRo } from '@peernest/contract';
 import { useAtom } from 'jotai';
 import { RESET } from 'jotai/utils';
 import { useState } from 'react';
@@ -47,7 +47,7 @@ export default function useAuth() {
     setIsLoading(true);
 
     try {
-      window.location.href = `${envObj.API_BASE_URL}/auth/google`;
+      window.location.href = `${envObj.API_BASE_URL}${GOOGLE_AUTHENTICATE_URL}`;
     } catch (error) {
       setIsLoading(false);
       console.error('Unable to sign in');

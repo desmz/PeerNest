@@ -1,5 +1,8 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
+
+export const GET_PRONOUNS_METHOD: TApiMethod = 'get';
 export const GET_PRONOUNS_URL = '/sys/pronouns';
 
 export const pronounSchema = z.object({

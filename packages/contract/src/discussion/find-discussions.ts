@@ -1,9 +1,12 @@
 import { DiscussionStatus, FindDiscussionsSortOption } from '@peernest/core';
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { interestIdSchema, personalGoalIdSchema, userIdSchema, zNonEmptyString } from '../utils';
 
 import { getDiscussionVoSchema } from './get-discussion';
+
+export const FIND_DISCUSSIONS_METHOD: TApiMethod = 'get';
 
 export const FIND_DISCUSSIONS_URL = '/discussions';
 

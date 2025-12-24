@@ -1,6 +1,9 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { discussionIdSchema } from '../utils';
+
+export const DELETE_DISCUSSION_METHOD: TApiMethod = 'delete';
 
 export const DELETE_DISCUSSION_URL = '/discussions/{discussionId}';
 

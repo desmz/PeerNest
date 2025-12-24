@@ -1,6 +1,9 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { zEmail } from '../utils';
+
+export const VERIFY_CHANGE_EMAIL_METHOD: TApiMethod = 'patch';
 
 export const VERIFY_CHANGE_EMAIL_URL = '/me/email/verify-change';
 

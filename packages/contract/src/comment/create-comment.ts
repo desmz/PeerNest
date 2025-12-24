@@ -2,7 +2,10 @@ import { MAX_COMMENT_CONTENT_LEN, MIN_COMMENT_CONTENT_LEN } from '@peernest/core
 import z from 'zod';
 
 import { findDiscussionCommentSchema } from '../discussion';
+import { TApiMethod } from '../types';
 import { discussionIdSchema, zMinMaxString } from '../utils';
+
+export const CREATE_COMMENT_METHOD: TApiMethod = 'post';
 
 export const CREATE_COMMENT_URL = '/comments';
 

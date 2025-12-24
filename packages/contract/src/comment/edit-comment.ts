@@ -1,10 +1,13 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { commentIdSchema } from '../utils';
 
 import { commentContentSchema, createCommentVoSchema } from './create-comment';
 
-export const EDIT_COMMENT_URL = '/comment/{commentId}';
+export const EDIT_COMMENT_METHOD: TApiMethod = 'put';
+
+export const EDIT_COMMENT_URL = '/comments/{commentId}';
 
 export const editCommentParamsSchema = z.object({
   commentId: commentIdSchema(),

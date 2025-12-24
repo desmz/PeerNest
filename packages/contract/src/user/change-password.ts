@@ -1,7 +1,10 @@
 import z from 'zod';
 
 import { passwordSchema } from '../auth';
+import { TApiMethod } from '../types';
 import { zNonEmptyString } from '../utils';
+
+export const CHANGE_PASSWORD_METHOD: TApiMethod = 'patch';
 
 export const CHANGE_PASSWORD_URL = '/me/password';
 

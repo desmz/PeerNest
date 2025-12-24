@@ -2,7 +2,10 @@ import { DiscussionStatus } from '@peernest/core';
 import z from 'zod';
 
 import { getInterestsVoSchema, getPersonalGoalsVoSchema } from '../system';
+import { TApiMethod } from '../types';
 import { discussionIdSchema, userIdSchema } from '../utils';
+
+export const GET_DISCUSSION_METHOD: TApiMethod = 'get';
 
 export const GET_DISCUSSION_URL = '/discussions/{discussionId}';
 

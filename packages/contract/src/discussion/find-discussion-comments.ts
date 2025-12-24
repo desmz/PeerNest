@@ -1,11 +1,14 @@
 import { FindDiscussionCommentsSortOption } from '@peernest/core';
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { commentIdSchema, discussionIdSchema } from '../utils';
 
 import { discussionAuthorVoSchema } from './get-discussion';
 
-export const FIND_DISCUSSION_COMMENTS = '/discussions/{discussionId}/comments';
+export const FIND_DISCUSSION_COMMENTS: TApiMethod = 'get';
+
+export const FIND_DISCUSSION_COMMENTS_URL = '/discussions/{discussionId}/comments';
 
 export const findDiscussionCommentsParamsSchema = z.object({
   discussionId: discussionIdSchema(),

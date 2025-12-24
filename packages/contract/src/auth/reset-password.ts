@@ -1,8 +1,11 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { zNonEmpty, zString } from '../utils';
 
 import { passwordSchema } from './signup';
+
+export const RESET_PASSWORD_METHOD: TApiMethod = 'post';
 
 export const RESET_PASSWORD_URL = '/auth/reset-password';
 

@@ -1,6 +1,9 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { zEmail, zNonEmptyString } from '../utils';
+
+export const CHANGE_EMAIL_METHOD: TApiMethod = 'post';
 
 export const CHANGE_EMAIL_URL = '/me/email/change';
 

@@ -1,5 +1,9 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
+
+export const GET_DOMAINS_METHOD: TApiMethod = 'get';
+
 export const GET_DOMAINS_URL = '/sys/domains';
 
 export const domainSchema = z.object({

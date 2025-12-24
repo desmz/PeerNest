@@ -1,6 +1,9 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { commentIdSchema } from '../utils';
+
+export const REPORT_COMMENT_METHOD: TApiMethod = 'post';
 
 export const REPORT_COMMENT_URL = '/comments/{commentId}/reports';
 

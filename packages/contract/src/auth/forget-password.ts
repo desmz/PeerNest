@@ -1,6 +1,10 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
+
 import { loosePasswordSchema } from './signin';
+
+export const FORGET_PASSWORD_METHOD: TApiMethod = 'post';
 
 export const FORGET_PASSWORD_URL = '/auth/forget-password';
 

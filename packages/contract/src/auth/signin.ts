@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
+import { TApiMethod } from '../types';
 import { zNonEmpty, zString } from '../utils';
 
 import { emailSchema } from './signup';
+
+export const SIGN_IN_METHOD: TApiMethod = 'post';
 
 export const SIGN_IN_URL = '/auth/signin';
 

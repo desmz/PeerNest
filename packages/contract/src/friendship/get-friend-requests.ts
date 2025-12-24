@@ -1,7 +1,11 @@
 import { FriendRequestStatus, FriendRequestType } from '@peernest/core';
 import z from 'zod';
 
+import { TApiMethod } from '../types';
+
 import { getMyFriendSchema } from './get-my-friends';
+
+export const GET_FRIEND_REQUESTS_METHOD: TApiMethod = 'get';
 
 export const GET_FRIEND_REQUESTS_URL = '/friend-requests';
 

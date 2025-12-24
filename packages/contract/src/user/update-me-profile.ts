@@ -2,6 +2,7 @@ import { MAX_BIO_LEN, MAX_LOOKING_FOR_LEN, MIN_BIO_LEN, MIN_LOOKING_FOR_LEN } fr
 import z from 'zod';
 
 import { displayNameSchema } from '../auth';
+import { TApiMethod } from '../types';
 import {
   domainIdSchema,
   interestIdSchema,
@@ -15,6 +16,8 @@ import {
 } from '../utils';
 
 import { getMeProfileVoSchema } from './get-me-profile';
+
+export const UPDATE_ME_PROFILE_METHOD: TApiMethod = 'put';
 
 export const UPDATE_ME_PROFILE_URL = '/me/profile';
 

@@ -1,6 +1,9 @@
 import z from 'zod';
 
 import { displayNameSchema, emailSchema } from '../auth/signup';
+import { TApiMethod } from '../types';
+
+export const ME_METHOD: TApiMethod = 'get';
 
 export const ME_URL = '/me';
 

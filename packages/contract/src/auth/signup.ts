@@ -6,7 +6,10 @@ import {
 } from '@peernest/core';
 import { z } from 'zod';
 
-import { zEmail, zMax, zMin, zNonEmpty, zString } from '../utils/schema';
+import { TApiMethod } from '../types';
+import { zEmail, zMax, zMin, zNonEmpty, zString } from '../utils';
+
+export const SIGN_UP_METHOD: TApiMethod = 'post';
 
 export const SIGN_UP_URL = '/auth/signup';
 
