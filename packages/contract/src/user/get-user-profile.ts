@@ -1,9 +1,12 @@
 import { FriendRequestStatus, FriendRequestType, RelationshipType } from '@peernest/core';
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { conversationIdSchema, userIdSchema } from '../utils';
 
 import { findUserBaseSchema } from './find-users';
+
+export const GET_USER_PROFILE_METHOD: TApiMethod = 'get';
 
 export const GET_USER_PROFILE_URL = '/users/{userId}/profile';
 

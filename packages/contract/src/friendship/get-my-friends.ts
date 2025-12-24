@@ -1,7 +1,10 @@
 import z from 'zod';
 
 import { displayNameSchema } from '../auth';
+import { TApiMethod } from '../types';
 import { userIdSchema } from '../utils';
+
+export const GET_MY_FRIENDS_METHOD: TApiMethod = 'get';
 
 export const GET_MY_FRIENDS_URL = '/me/friends';
 

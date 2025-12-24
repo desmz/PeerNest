@@ -1,6 +1,9 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { conversationIdSchema, friendRequestIdSchema } from '../utils';
+
+export const ACCEPT_FRIEND_REQUEST_METHOD: TApiMethod = 'post';
 
 export const ACCEPT_FRIEND_REQUEST_URL = '/friend-requests/{requestId}/accept';
 

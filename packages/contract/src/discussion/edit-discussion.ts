@@ -1,9 +1,12 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { discussionIdSchema } from '../utils';
 
 import { createDiscussionRoSchema } from './create-discussion';
 import { getDiscussionVoSchema } from './get-discussion';
+
+export const EDIT_DISCUSSION_METHOD: TApiMethod = 'put';
 
 export const EDIT_DISCUSSION_URL = '/discussions/{discussionId}';
 

@@ -8,6 +8,7 @@ import {
 } from '@peernest/core';
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import {
   attachmentIdSchema,
   interestIdSchema,
@@ -17,6 +18,8 @@ import {
 } from '../utils';
 
 import { getDiscussionVoSchema } from './get-discussion';
+
+export const CREATE_DISCUSSION_METHOD: TApiMethod = 'post';
 
 export const CREATE_DISCUSSION_URL = '/discussions';
 

@@ -2,9 +2,12 @@ import { FindUserCommentsSortOption, FindUserCommentsType } from '@peernest/core
 import z from 'zod';
 
 import { getDiscussionVoSchema } from '../discussion';
+import { TApiMethod } from '../types';
 import { userIdSchema } from '../utils';
 
 import { createCommentVoSchema } from './create-comment';
+
+export const FIND_USER_COMMENTS_METHOD: TApiMethod = 'get';
 
 export const FIND_USER_COMMENTS_URL = '/comments';
 

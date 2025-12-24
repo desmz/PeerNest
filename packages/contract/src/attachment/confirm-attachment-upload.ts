@@ -1,7 +1,10 @@
 import { UploadType } from '@peernest/core';
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { attachmentIdSchema } from '../utils';
+
+export const CONFIRM_ATTACHMENT_UPLOAD_METHOD: TApiMethod = 'put';
 
 export const CONFIRM_ATTACHMENT_UPLOAD_URL = '/attachments/{attachmentId}/confirm';
 

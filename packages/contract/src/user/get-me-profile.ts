@@ -8,6 +8,9 @@ import {
   pronounSchema,
   universitySchema,
 } from '../system';
+import { TApiMethod } from '../types';
+
+export const GET_ME_PROFILE_METHOD: TApiMethod = 'get';
 
 export const GET_ME_PROFILE_URL = '/me/profile';
 

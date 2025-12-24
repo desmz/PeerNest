@@ -8,7 +8,10 @@ import {
   pronounSchema,
   universitySchema,
 } from '../system';
+import { TApiMethod } from '../types';
 import { interestIdSchema, personalGoalIdSchema, userIdSchema, zNonEmptyString } from '../utils';
+
+export const FIND_USERS_METHOD: TApiMethod = 'get';
 
 export const FIND_USERS_URL = '/users';
 

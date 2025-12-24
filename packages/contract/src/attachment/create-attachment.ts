@@ -1,7 +1,10 @@
 import { UploadType } from '@peernest/core';
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { attachmentIdSchema } from '../utils';
+
+export const CREATE_ATTACHMENT_METHOD: TApiMethod = 'post';
 
 export const CREATE_ATTACHMENT_URL = '/attachments';
 

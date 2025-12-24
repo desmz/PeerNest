@@ -1,10 +1,13 @@
 import z from 'zod';
 
+import { TApiMethod } from '../types';
 import { commentIdSchema } from '../utils';
 
 import { commentContentSchema, createCommentVoSchema } from './create-comment';
 
-export const REPLY_COMMENT_URL = '/comment/{commentId}/replies';
+export const REPLY_COMMENT_METHOD: TApiMethod = 'post';
+
+export const REPLY_COMMENT_URL = '/comments/{commentId}/replies';
 
 export const replyCommentParamsSchema = z.object({
   commentId: commentIdSchema(),
