@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { conversationIdSchema, userIdSchema } from '../utils';
 
-export const SEND_FRIEND_REQUEST = '/friend-request';
+export const SEND_FRIEND_REQUEST_URL = '/friend-request';
 
 export const sendFriendRequestFields = {
   toId: 'To-User Id',

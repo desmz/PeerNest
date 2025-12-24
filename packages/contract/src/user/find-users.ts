@@ -10,7 +10,7 @@ import {
 } from '../system';
 import { interestIdSchema, personalGoalIdSchema, userIdSchema, zNonEmptyString } from '../utils';
 
-export const FIND_USERS = '/users';
+export const FIND_USERS_URL = '/users';
 
 export const findUsersQueryParams = {
   q: 'Query param',
@@ -32,7 +32,7 @@ export const findUsersQueryParamsSchema = z.object({
 
 export type TFindUsersQueryParams = z.infer<typeof findUsersQueryParamsSchema>;
 
-export const findUserSchema = z.object({
+export const findUserBaseSchema = z.object({
   userId: userIdSchema(),
   userDisplayName: displayNameSchema,
   userAvatarUrl: z.string().nonempty(),
@@ -43,6 +43,11 @@ export const findUserSchema = z.object({
   userInfoLookingFor: z.string().nullable(),
   interests: getInterestsVoSchema.nullable(),
   personalGoals: getPersonalGoalsVoSchema.nullable(),
+});
+
+export const findUserSchema = findUserBaseSchema.extend({
+  rank: z.number().nullish(),
+  highlight: z.string().nullish(),
 });
 
 export const findUsersVoSchema = z.object({

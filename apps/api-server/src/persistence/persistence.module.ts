@@ -1,8 +1,17 @@
 import { Module, Provider } from '@nestjs/common';
 
 import { AttachmentRepository } from './repos/attachment/attachment.repo';
+import { CommentRepository } from './repos/comment/comment.repo';
+import { UserCommentLikeRepository } from './repos/comment/user-comment-like.repo';
+import { UserCommentReportRepository } from './repos/comment/user-comment-report';
 import { ConversationParticipantRepository } from './repos/conversation/conversation-participant.repo';
 import { ConversationRepository } from './repos/conversation/conversation.repo';
+import { DiscussionAttachmentRepository } from './repos/discussion/discussion-attachment.repo';
+import { DiscussionInterestRepository } from './repos/discussion/discussion-interest.repo';
+import { DiscussionPersonalGoalRepository } from './repos/discussion/discussion-personal-goal.repo';
+import { DiscussionRepository } from './repos/discussion/discussion.repo';
+import { UserDiscussionLikeRepository } from './repos/discussion/user-discussion-like.repo';
+import { UserDiscussionReportRepository } from './repos/discussion/user-discussion-report.repo';
 import { FriendRequestRepository } from './repos/friendship/friend-request.repo';
 import { RelationshipRepository } from './repos/friendship/relationship.repo';
 import { DomainRepository } from './repos/system/domain.repo';
@@ -36,6 +45,15 @@ const repositories: Provider[] = [
   UserInfoPersonalGoalRepository,
   UserTokenRepository,
   UserRepository,
+  DiscussionRepository,
+  DiscussionAttachmentRepository,
+  DiscussionPersonalGoalRepository,
+  DiscussionInterestRepository,
+  UserDiscussionLikeRepository,
+  UserDiscussionReportRepository,
+  CommentRepository,
+  UserCommentLikeRepository,
+  UserCommentReportRepository,
 ];
 
 @Module({

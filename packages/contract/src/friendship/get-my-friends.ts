@@ -3,7 +3,7 @@ import z from 'zod';
 import { displayNameSchema } from '../auth';
 import { userIdSchema } from '../utils';
 
-export const GET_MY_FRIENDS = '/me/friends';
+export const GET_MY_FRIENDS_URL = '/me/friends';
 
 export const getMyFriendSchema = z.object({
   userId: userIdSchema(),

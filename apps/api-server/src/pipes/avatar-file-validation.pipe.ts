@@ -1,17 +1,17 @@
-import { extname } from 'path';
-
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
-import { HttpErrorCode } from '@peernest/core';
+import { AttachmentPolicies, HttpErrorCode } from '@peernest/core';
 
 import { CustomHttpException } from '@/custom.exception';
 import { type TFileValidationOptions } from '@/types/file-validation-pipe';
 
 @Injectable()
-export class FileValidationPipe implements PipeTransform {
+export class AvatarValidationPipe implements PipeTransform {
   constructor(private readonly options: TFileValidationOptions) {}
 
   transform(file: Express.Multer.File, _metadata: ArgumentMetadata) {
-    const { allowedFileExt, maxFileSize, fieldName: providedFieldName } = this.options;
+    const { fieldName: providedFieldName } = this.options;
+
+    const { maxSize, allowedMimeTypes } = AttachmentPolicies.avatar;
 
     const fieldName = providedFieldName || 'file';
     if (!file) {
@@ -19,17 +19,17 @@ export class FileValidationPipe implements PipeTransform {
     }
 
     const fileSize = file.size;
-    if (fileSize > maxFileSize) {
+    if (fileSize > maxSize) {
       throw new CustomHttpException(
-        `${fieldName} cannot larger than ${maxFileSize / 1024 / 1024}MB`,
+        `${fieldName} cannot larger than ${maxSize / (1024 * 1024)}MB`,
         HttpErrorCode.VALIDATION_ERROR
       );
     }
 
-    const ext = extname(file.originalname).toLowerCase();
-    if (!allowedFileExt.includes(ext)) {
+    const mimetype = file.mimetype;
+    if (!allowedMimeTypes.includes(mimetype)) {
       throw new CustomHttpException(
-        `Invalid file type. Only ${allowedFileExt.join(', ')} are allowed`,
+        `Invalid file type. Only ${allowedMimeTypes.join(', ')} are allowed`,
         HttpErrorCode.UNSUPPORTED_MIMETYPE
       );
     }

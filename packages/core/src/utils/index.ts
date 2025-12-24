@@ -1,3 +1,4 @@
+export * from './buffer-stream';
 export * from './datetime';
 export * from './id-generator';
 export * from './password';

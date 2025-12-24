@@ -16,7 +16,7 @@ import {
 
 import { getMeProfileVoSchema } from './get-me-profile';
 
-export const UPDATE_ME_PROFILE = '/me/profile';
+export const UPDATE_ME_PROFILE_URL = '/me/profile';
 
 export const updateMeProfileFields = {
   userDisplayName: 'Display name',
@@ -25,8 +25,8 @@ export const updateMeProfileFields = {
   userInfoDomainId: 'Domain Id',
   userInfoBio: 'About or Bio',
   userInfoLookingFor: 'Looking For field',
-  interestIds: 'Interest Ids',
-  personalIds: 'Personal Goal Ids',
+  interestIds: 'Interests',
+  personalGoalIds: 'Personal Goals',
 } as const;
 
 export const userInfoBioSchema = z

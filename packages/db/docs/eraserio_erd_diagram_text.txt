@@ -52,6 +52,7 @@ attachment [color:blue] {
   owner_id varchar?
   path text
   name varchar
+  status varchar // pending, ready, deleted
   size int
   mimetype varchar
   width int?
@@ -256,8 +257,8 @@ comment.parent_comment_id < comment.id
  
 user_comment_report [color: green] {
   id varchar pk
-  comment_id varchar fk
   reporter_id varchar fk
+  comment_id varchar fk
   status varchar // reported, deleted, released 
   reported_time timestamptz
   resolver_id varchar? fk

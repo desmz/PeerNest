@@ -7,6 +7,12 @@ export const userIdSchema = (field = 'User Id') => {
   return z.string(zString(field)).startsWith(IdPrefix.User, zStartWith(field, IdPrefix.User));
 };
 
+export const attachmentIdSchema = (field = 'Attachment Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.Attachment, zStartWith(field, IdPrefix.Attachment));
+};
+
 export const pronounIdSchema = (field = 'Pronoun Id') => {
   return z.string(zString(field)).startsWith(IdPrefix.Pronoun, zStartWith(field, IdPrefix.Pronoun));
 };
@@ -43,4 +49,14 @@ export const friendRequestIdSchema = (field = 'Friend Request Id') => {
   return z
     .string(zString(field))
     .startsWith(IdPrefix.FriendRequest, zStartWith(field, IdPrefix.FriendRequest));
+};
+
+export const discussionIdSchema = (field = 'Discussion Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.Discussion, zStartWith(field, IdPrefix.Discussion));
+};
+
+export const commentIdSchema = (field = 'Comment Id') => {
+  return z.string(zString(field)).startsWith(IdPrefix.Comment, zStartWith(field, IdPrefix.Comment));
 };

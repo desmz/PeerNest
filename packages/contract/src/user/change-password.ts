@@ -3,7 +3,7 @@ import z from 'zod';
 import { passwordSchema } from '../auth';
 import { zNonEmptyString } from '../utils';
 
-export const CHANGE_PASSWORD = '/me/password';
+export const CHANGE_PASSWORD_URL = '/me/password';
 
 export const changePasswordFields = {
   oldPassword: 'Old password',

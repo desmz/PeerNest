@@ -9,11 +9,13 @@ import {
 import { HttpErrorCode } from '@peernest/core';
 
 import { CustomHttpException } from '@/custom.exception';
-import { DomainRepository } from '@/persistence/repos/system/domain.repo';
-import { InterestRepository } from '@/persistence/repos/system/interest.repo';
-import { PersonalGoalRepository } from '@/persistence/repos/system/personal-goal.repo';
-import { PronounRepository } from '@/persistence/repos/system/pronoun.repo';
-import { UniversityRepository } from '@/persistence/repos/system/university.repo';
+import {
+  DomainRepository,
+  InterestRepository,
+  PersonalGoalRepository,
+  PronounRepository,
+  UniversityRepository,
+} from '@/persistence/repos/system';
 
 @Injectable()
 export class SystemService {

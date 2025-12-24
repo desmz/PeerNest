@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const GET_INTERESTS = '/sys/interests';
+export const GET_INTERESTS_URL = '/sys/interests';
 
 export const getInterestsVoSchema = z.array(
   z.object({

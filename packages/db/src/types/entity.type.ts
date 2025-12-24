@@ -18,6 +18,15 @@ import {
   Relationship,
   Conversation,
   ConversationParticipant,
+  Discussion,
+  DiscussionAttachment,
+  DiscussionPersonalGoal,
+  DiscussionInterest,
+  UserDiscussionReport,
+  Comment,
+  UserCommentReport,
+  UserDiscussionLike,
+  UserCommentLike,
 } from './db';
 
 // role
@@ -104,3 +113,48 @@ export type TUpdatableConversation = Updateable<Omit<Conversation, 'id'>>;
 export type TSelectableConversationParticipant = Selectable<ConversationParticipant>;
 export type TInsertableConversationParticipant = Insertable<ConversationParticipant>;
 export type TUpdatableConversationParticipant = Updateable<Omit<ConversationParticipant, 'id'>>;
+
+// discussion
+export type TSelectableDiscussion = Selectable<Discussion>;
+export type TInsertableDiscussion = Insertable<Discussion>;
+export type TUpdatableDiscussion = Updateable<Omit<Discussion, 'id'>>;
+
+// discussion_attachment
+export type TSelectableDiscussionAttachment = Selectable<DiscussionAttachment>;
+export type TInsertableDiscussionAttachment = Insertable<DiscussionAttachment>;
+export type TUpdatableDiscussionAttachment = Updateable<Omit<DiscussionAttachment, 'id'>>;
+
+// discussion_personal_goal
+export type TSelectableDiscussionPersonalGoal = Selectable<DiscussionPersonalGoal>;
+export type TInsertableDiscussionPersonalGoal = Insertable<DiscussionPersonalGoal>;
+export type TUpdatableDiscussionPersonalGoal = Updateable<Omit<DiscussionPersonalGoal, 'id'>>;
+
+// discussion_interest
+export type TSelectableDiscussionInterest = Selectable<DiscussionInterest>;
+export type TInsertableDiscussionInterest = Insertable<DiscussionInterest>;
+export type TUpdatableDiscussionInterest = Updateable<Omit<DiscussionInterest, 'id'>>;
+
+// user_discussion_report
+export type TSelectableUserDiscussionReport = Selectable<UserDiscussionReport>;
+export type TInsertableUserDiscussionReport = Insertable<UserDiscussionReport>;
+export type TUpdatableUserDiscussionReport = Updateable<Omit<UserDiscussionReport, 'id'>>;
+
+// comment
+export type TSelectableComment = Selectable<Comment>;
+export type TInsertableComment = Insertable<Comment>;
+export type TUpdatableComment = Updateable<Omit<Comment, 'id'>>;
+
+// user_comment_report
+export type TSelectableUserCommentReport = Selectable<UserCommentReport>;
+export type TInsertableUserCommentReport = Insertable<UserCommentReport>;
+export type TUpdatableUserCommentReport = Updateable<Omit<UserCommentReport, 'id'>>;
+
+// user_discussion_like
+export type TSelectableUserDiscussionLike = Selectable<UserDiscussionLike>;
+export type TInsertableUserDiscussionLike = Insertable<UserDiscussionLike>;
+export type TUpdatableUserDiscussionLike = Updateable<Omit<UserDiscussionLike, 'id'>>;
+
+// user_comment_like
+export type TSelectableUserCommentLike = Selectable<UserCommentLike>;
+export type TInsertableUserCommentLike = Insertable<UserCommentLike>;
+export type TUpdatableUserCommentLike = Updateable<Omit<UserCommentLike, 'id'>>;

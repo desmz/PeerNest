@@ -57,6 +57,8 @@ export const envValidationSchema = z.object({
   BACKEND_STORAGE_PROVIDER: z.string().nonempty(),
   BACKEND_STORAGE_PUBLIC_BUCKET: z.string().nonempty(),
   BACKEND_STORAGE_PRIVATE_BUCKET: z.string().nonempty(),
+  BACKEND_STORAGE_TOKEN_EXPIRE_IN: z.string().nonempty(),
+  BACKEND_STORAGE_URL_EXPIRE_IN: z.string().nonempty(),
 
   BACKEND_STORAGE_S3_REGION: z.string().nonempty(),
   BACKEND_STORAGE_S3_ENDPOINT: z.url(),

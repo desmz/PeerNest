@@ -1,13 +1,28 @@
-import { ObjectCannedACL, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+/* eslint-disable @typescript-eslint/naming-convention */
+import { posix } from 'path';
+import { Readable } from 'stream';
+
+import {
+  GetObjectCommand,
+  HeadObjectCommand,
+  ObjectCannedACL,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Injectable } from '@nestjs/common';
-import { HttpErrorCode } from '@peernest/core';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { HttpErrorCode, streamToBuffer } from '@peernest/core';
 import fse from 'fs-extra';
+import { Jimp } from 'jimp';
+import ms from 'ms';
 
 import { StorageConfig, type TStorageConfig } from '@/configs/storage.config';
 import { CustomHttpException } from '@/custom.exception';
+import { second } from '@/utils/second';
 
 import StorageAdapter from './adapter';
+import { TObjectMeta, TPresignParams, TPresignRes, TRespHeaders } from './types';
 
 @Injectable()
 export class S3Storage implements StorageAdapter {
@@ -29,6 +44,19 @@ export class S3Storage implements StorageAdapter {
   }
 
   private checkConfig() {
+    if (ms(this.config.tokenExpireIn) >= ms('7d')) {
+      throw new CustomHttpException(
+        `[${S3Storage.name}] | S3 token expire in must be less than 7 days`,
+        HttpErrorCode.VALIDATION_ERROR
+      );
+    }
+    if (ms(this.config.urlExpireIn) >= ms('7d')) {
+      throw new CustomHttpException(
+        `[${S3Storage.name}] | S3 token expire in must be less than 7 days`,
+        HttpErrorCode.VALIDATION_ERROR
+      );
+    }
+
     if (!this.config.s3.region) {
       throw new CustomHttpException(
         `[${S3Storage.name}] | S3 region is required`,
@@ -53,6 +81,120 @@ export class S3Storage implements StorageAdapter {
         HttpErrorCode.VALIDATION_ERROR
       );
     }
+  }
+
+  async presigned(bucket: string, dir: string, params: TPresignParams): Promise<TPresignRes> {
+    try {
+      const { tokenExpireIn } = this.config;
+      const uploadMethod = 'PUT';
+      const { expiresIn, contentLength, contentType, fileName } = params;
+
+      const path = posix.join(dir, fileName);
+
+      const command = new PutObjectCommand({
+        Bucket: bucket,
+        Key: path,
+        ContentType: contentType,
+        ContentLength: contentLength,
+      });
+
+      const url = await getSignedUrl(this.s3Client, command, {
+        expiresIn: expiresIn ?? second(tokenExpireIn),
+      });
+
+      const requestHeaders = {
+        'Content-Type': contentType,
+        'Content-Length': contentLength,
+      };
+
+      return {
+        url,
+        path,
+        uploadMethod,
+        requestHeaders,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      throw new BadRequestException(`S3 presigned error${e?.message ? `: ${e.message}` : ''}`);
+    }
+  }
+
+  async getObjectMeta(bucket: string, path: string): Promise<TObjectMeta> {
+    const url = `/${bucket}/${path}`;
+
+    const command = new HeadObjectCommand({
+      Bucket: bucket,
+      Key: path,
+    });
+
+    const {
+      ContentLength: size,
+      ContentType: s3Mimetype = 'application/octet-stream',
+      ETag: hash,
+    } = await this.s3Client.send(command);
+
+    const mimetype = s3Mimetype || 'application/octet-stream';
+
+    if (!size || !mimetype || !hash) {
+      throw new BadRequestException('Invalid object meta');
+    }
+
+    if (!mimetype?.startsWith('image/')) {
+      return {
+        size,
+        mimetype,
+        url,
+      };
+    }
+
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: bucket,
+      Key: path,
+    });
+
+    const { Body } = await this.s3Client.send(getObjectCommand);
+    if (!Body || !(Body instanceof Readable)) {
+      throw new BadRequestException('Invalid image stream');
+    }
+
+    const stream = Body as Readable;
+
+    try {
+      const buffer = await streamToBuffer(stream);
+      const image = await Jimp.fromBuffer(buffer, {
+        'image/jpeg': { maxMemoryUsageInMB: 1024 }, // 1GB
+      });
+      const { height, width } = image.bitmap;
+
+      return {
+        url,
+        size,
+        mimetype,
+        width,
+        height,
+      };
+    } catch (error) {
+      throw new BadRequestException(`Calculate image size failed: ${(error as Error).message}`);
+    } finally {
+      stream?.destroy();
+    }
+  }
+
+  async getPreviewUrl(
+    bucket: string,
+    path: string,
+    expiresIn: number = second(this.config.urlExpireIn),
+    respHeaders?: TRespHeaders
+  ): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: path,
+      ResponseContentDisposition: respHeaders?.['Content-Disposition'],
+    });
+
+    return getSignedUrl(this.s3Client, command, {
+      expiresIn: expiresIn ?? second(this.config.tokenExpireIn),
+    });
   }
 
   async uploadFileWithPath(

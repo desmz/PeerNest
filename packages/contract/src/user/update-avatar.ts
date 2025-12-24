@@ -1,4 +1,4 @@
-export const UPDATE_AVATAR = '/me/avatar';
+export const UPDATE_AVATAR_URL = '/me/avatar';
 
 export const updateAvatarField = {
   avatar: 'Avatar',

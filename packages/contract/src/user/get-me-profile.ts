@@ -9,7 +9,7 @@ import {
   universitySchema,
 } from '../system';
 
-export const GET_ME_PROFILE = '/me/profile';
+export const GET_ME_PROFILE_URL = '/me/profile';
 
 export const getMeProfileVoSchema = z.object({
   userDisplayName: displayNameSchema,

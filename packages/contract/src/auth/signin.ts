@@ -4,7 +4,7 @@ import { zNonEmpty, zString } from '../utils';
 
 import { emailSchema } from './signup';
 
-export const SIGN_IN = '/auth/signin';
+export const SIGN_IN_URL = '/auth/signin';
 
 export const signInFields = {
   email: 'Email ',
