@@ -5,6 +5,7 @@ import {
   TGetPersonalGoalsVo,
   TGetPronounsVo,
   TGetUniversityVo,
+  TGetWellnessMoodsVo,
 } from '@peernest/contract';
 import { HttpErrorCode } from '@peernest/core';
 
@@ -15,6 +16,7 @@ import {
   PersonalGoalRepository,
   PronounRepository,
   UniversityRepository,
+  WellnessMoodRepository,
 } from '@/persistence/repos/system';
 
 @Injectable()
@@ -24,6 +26,7 @@ export class SystemService {
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly pronounRepository: PronounRepository,
+    private readonly wellnessMoodRepository: WellnessMoodRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
 
@@ -113,5 +116,17 @@ export class SystemService {
         personalGoalPosition,
       })
     );
+  }
+
+  async getWellnessMoods(): Promise<TGetWellnessMoodsVo> {
+    const wellnessMoods = await this.wellnessMoodRepository.findWellnessMoods({
+      orderBy: 'wellnessMoodPosition',
+    });
+
+    return wellnessMoods.map(({ wellnessMoodId, wellnessMoodName, wellnessMoodPosition }) => ({
+      wellnessMoodId,
+      wellnessMoodName,
+      wellnessMoodPosition,
+    }));
   }
 }

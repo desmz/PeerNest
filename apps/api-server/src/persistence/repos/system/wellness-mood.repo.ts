@@ -1,43 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TKyselyTransaction, TSelectableDomain } from '@peernest/db';
+import { dbOrTx, KyselyService, TKyselyTransaction, TSelectableWellnessMood } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
 @Injectable()
-export class DomainRepository {
-  private static repoName = 'DOMAIN_REPOSITORY';
+export class WellnessMoodRepository {
+  private static repoName = 'WELLNESS_MOOD_REPOSITORY';
 
   constructor(private readonly kyselyService: KyselyService) {}
 
-  async findDomains(
+  async findWellnessMoods(
     options?: {
       includedDeleted?: boolean;
-      orderBy?: keyof TSelectableDomain | undefined;
+      orderBy?: keyof TSelectableWellnessMood | undefined;
       ordering?: 'asc' | 'desc' | undefined;
     },
     tx?: TKyselyTransaction
   ) {
     try {
-      const { includedDeleted, orderBy, ordering } = options || {};
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      let query = db.selectFrom('domain').selectAll();
+      const { includedDeleted, orderBy, ordering } = options || {};
+
+      let query = db.selectFrom('wellnessMood').selectAll();
 
       if (!includedDeleted) {
-        query = query.where('domainDeletedTime', 'is', null);
+        query = query.where('wellnessMoodDeletedTime', 'is', null);
       }
 
       if (orderBy) {
         query = query.orderBy(orderBy, ordering || 'asc');
       }
 
-      const domains = await query.execute();
+      const wellnessMoods = await query.execute();
 
-      return domains;
+      return wellnessMoods;
     } catch (error) {
       throw new CustomHttpException(
-        `[${DomainRepository.repoName}] | Fail to find domains`,
+        `[${WellnessMoodRepository.repoName}] | Fail to find wellness moods`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
       );
