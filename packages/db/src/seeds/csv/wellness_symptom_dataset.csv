@@ -1,0 +1,53 @@
+symptom_id,symptom,category
+1,anxiety,mental
+2,depression,mental
+3,dissociation,mental
+4,irritability,mental
+5,mood swings,mental
+6,sense of dread,mental
+7,difficulty concentrating,cognitive
+8,brain fog,cognitive
+9,forgetfulness,cognitive
+10,pessimism,cognitive
+11,racing thoughts,cognitive
+12,heartburn,digestive
+13,indigestion,digestive
+14,nausea,digestive
+15,stomachache,digestive
+16,stomach cramps,digestive
+17,abdominal pain,digestive
+18,acid reflux,digestive
+19,bloating,digestive
+20,constipation,digestive
+21,diarrhoea,digestive
+22,flatulence,digestive
+23,low appetite,digestive
+24,headache,physical pain
+25,arthritis,physical pain
+26,back (lower) pain,physical pain
+27,back (upper) pain,physical pain
+28,chest pain,physical pain
+29,earache,physical pain
+30,eye pain,physical pain
+31,generalised pain,physical pain
+32,jaw pain,physical pain
+33,joint pain,physical pain
+34,migraine pain,physical pain
+35,neck pain,physical pain
+36,toothache,physical pain
+37,drowsiness,physical other
+38,fatigue,physical other
+39,insomnia,physical other
+40,blurred vision,physical other
+41,brain zaps,physical other
+42,dizziness,physical other
+43,dry mouth,physical other
+44,heart palpitations,physical other
+45,high blood pressure,physical other
+46,low blood pressure,physical other
+47,night sweats,physical other
+48,seizure,physical other
+49,swelling,physical other
+50,tinnitus,physical other
+51,tremors,physical other
+52,vertigo,physical other
