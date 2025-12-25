@@ -22,9 +22,10 @@ import {
   PersonalGoalRepository,
   PronounRepository,
   UniversityRepository,
+  WellnessFactorRepository,
   WellnessMoodRepository,
+  WellnessSymptomRepository,
 } from './repos/system';
-import { WellnessSymptomRepository } from './repos/system/wellness-symptom.repo';
 import {
   AccountRepository,
   RoleRepository,
@@ -64,6 +65,7 @@ const repositories: Provider[] = [
   UserCommentReportRepository,
   WellnessMoodRepository,
   WellnessSymptomRepository,
+  WellnessFactorRepository,
 ];
 
 @Module({

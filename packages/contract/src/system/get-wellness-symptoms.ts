@@ -14,7 +14,7 @@ export const wellnessSymptomSchema = z.object({
 
 export type TWellnessSymptom = z.infer<typeof wellnessSymptomSchema>;
 
-export const getWellnessWellnessSymptomsVoSchema = z.array(
+export const getWellnessSymptomsVoSchema = z.array(
   z.object({
     wellnessSymptomCategoryId: z.string().nonempty(),
     wellnessSymptomCategoryName: z.string().nonempty(),
@@ -23,4 +23,4 @@ export const getWellnessWellnessSymptomsVoSchema = z.array(
   })
 );
 
-export type TGetWellnessSymptomsVo = z.infer<typeof getWellnessWellnessSymptomsVoSchema>;
+export type TGetWellnessSymptomsVo = z.infer<typeof getWellnessSymptomsVoSchema>;
