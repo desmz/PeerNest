@@ -6,6 +6,7 @@ import {
   TGetPronounsVo,
   TGetUniversityVo,
   TGetWellnessMoodsVo,
+  TGetWellnessSymptomsVo,
 } from '@peernest/contract';
 
 import { SystemService } from './system.service';
@@ -48,5 +49,11 @@ export class SystemController {
   @HttpCode(HttpStatus.OK)
   async getWellnessMoods(): Promise<TGetWellnessMoodsVo> {
     return this.systemService.getWellnessMoods();
+  }
+
+  @Get('wellness-symptoms')
+  @HttpCode(HttpStatus.OK)
+  async getWellnessSymptoms(): Promise<TGetWellnessSymptomsVo> {
+    return this.systemService.getWellnessSymptoms();
   }
 }

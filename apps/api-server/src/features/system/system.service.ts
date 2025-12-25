@@ -6,6 +6,7 @@ import {
   TGetPronounsVo,
   TGetUniversityVo,
   TGetWellnessMoodsVo,
+  TGetWellnessSymptomsVo,
 } from '@peernest/contract';
 import { HttpErrorCode } from '@peernest/core';
 
@@ -18,6 +19,7 @@ import {
   UniversityRepository,
   WellnessMoodRepository,
 } from '@/persistence/repos/system';
+import { WellnessSymptomRepository } from '@/persistence/repos/system/wellness-symptom.repo';
 
 @Injectable()
 export class SystemService {
@@ -27,6 +29,7 @@ export class SystemService {
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly pronounRepository: PronounRepository,
     private readonly wellnessMoodRepository: WellnessMoodRepository,
+    private readonly wellnessSymptomRepository: WellnessSymptomRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
 
@@ -127,6 +130,23 @@ export class SystemService {
       wellnessMoodId,
       wellnessMoodName,
       wellnessMoodPosition,
+    }));
+  }
+
+  async getWellnessSymptoms(): Promise<TGetWellnessSymptomsVo> {
+    const wellnessSymptomAggs = await this.wellnessSymptomRepository.findWellnessSymptomAggs({
+      orderBy: 'position',
+    });
+
+    return wellnessSymptomAggs.map((wellnessSymptomAgg) => ({
+      wellnessSymptomCategoryId: wellnessSymptomAgg.wellnessSymptomCategoryId,
+      wellnessSymptomCategoryName: wellnessSymptomAgg.wellnessSymptomCategoryName,
+      wellnessSymptomCategoryPosition: wellnessSymptomAgg.wellnessSymptomCategoryPosition,
+      wellnessSymptoms: wellnessSymptomAgg.wellnessSymptoms.map((wellnessSymptom) => ({
+        wellnessSymptomId: wellnessSymptom.wellnessSymptomId,
+        wellnessSymptomName: wellnessSymptom.wellnessSymptomName,
+        wellnessSymptomPosition: wellnessSymptom.wellnessSymptomPosition,
+      })),
     }));
   }
 }

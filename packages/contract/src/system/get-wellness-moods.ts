@@ -1,9 +1,10 @@
-import { TApiMethod } from 'src/types';
 import z from 'zod';
+
+import { TApiMethod } from '../types';
 
 export const GET_WELLNESS_MOODS_METHOD: TApiMethod = 'get';
 
-export const GET_WELLNESS_MOODS_URL = '/wellness/moods';
+export const GET_WELLNESS_MOODS_URL = '/sys/wellness-moods';
 
 export const getWellnessMoodsVoSchema = z.array(
   z.object({

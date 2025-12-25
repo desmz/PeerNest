@@ -4,3 +4,4 @@ export * from './get-personal-goals';
 export * from './get-pronouns';
 export * from './get-universities';
 export * from './get-wellness-moods';
+export * from './get-wellness-symptoms';
