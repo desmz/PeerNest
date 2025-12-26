@@ -60,3 +60,27 @@ export const discussionIdSchema = (field = 'Discussion Id') => {
 export const commentIdSchema = (field = 'Comment Id') => {
   return z.string(zString(field)).startsWith(IdPrefix.Comment, zStartWith(field, IdPrefix.Comment));
 };
+
+export const wellnessMoodIdSchema = (field = 'Wellness Mood Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.WellnessMood, zStartWith(field, IdPrefix.WellnessMood));
+};
+
+export const wellnessSymptomIdSchema = (field = 'Wellness Symptom Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.WellnessSymptom, zStartWith(field, IdPrefix.WellnessSymptom));
+};
+
+export const wellnessFactorIdSchema = (field = 'Wellness Factor Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.WellnessFactor, zStartWith(field, IdPrefix.WellnessFactor));
+};
+
+export const checkIdSchema = (field = 'Check In Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.CheckIn, zStartWith(field, IdPrefix.WellnessFactor));
+};

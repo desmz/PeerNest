@@ -35,6 +35,13 @@ import {
   UserRepository,
   UserTokenRepository,
 } from './repos/user';
+import {
+  CheckInHealthMeasurementRepository,
+  CheckInRepository,
+  CheckInWellnessFactorRepository,
+  CheckInWellnessMoodRepository,
+  CheckInWellnessSymptomRepository,
+} from './repos/wellness';
 
 const repositories: Provider[] = [
   AttachmentRepository,
@@ -66,6 +73,11 @@ const repositories: Provider[] = [
   WellnessMoodRepository,
   WellnessSymptomRepository,
   WellnessFactorRepository,
+  CheckInRepository,
+  CheckInWellnessMoodRepository,
+  CheckInWellnessSymptomRepository,
+  CheckInWellnessFactorRepository,
+  CheckInHealthMeasurementRepository,
 ];
 
 @Module({

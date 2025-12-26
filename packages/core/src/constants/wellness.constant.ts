@@ -1,0 +1,5 @@
+export const MIN_CHECK_IN_MOOD_RATING = 1;
+export const MAX_CHECK_IN_MOOD_RATING = 10;
+
+export const MIN_CHECK_IN_SLEEP_QUALITY_RATING = 1;
+export const MAX_CHECK_IN_SLEEP_QUALITY_RATING = 5;

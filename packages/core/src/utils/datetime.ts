@@ -1,3 +1,12 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration.js';
+import utc from 'dayjs/plugin/utc.js';
+
+dayjs.extend(duration);
+dayjs.extend(utc);
+
+export { dayjs };
+
 export const MONTHS_NUMBER = 12;
 export const CURRENT_YEAR = new Date().getFullYear();
 export const CURRENT_MONTH = new Date().getMonth();
@@ -92,4 +101,12 @@ export function getMonthNumber(monthName: string, locale: Intl.LocalesArgument =
   }
 
   return new Intl.DateTimeFormat(locale, { month: '2-digit' }).format(date);
+}
+
+export function getStartOfDay(date?: Date | string) {
+  return dayjs.utc(date).startOf('day').toDate();
+}
+
+export function getEndOfDay(date?: Date | string) {
+  return dayjs.utc(date).endOf('day').toDate();
 }

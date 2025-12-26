@@ -7,3 +7,4 @@ export * from './system';
 export type * from './types';
 export * from './user';
 export * from './utils';
+export * from './wellness';

@@ -8,3 +8,4 @@ export * from './relationship.constant';
 export * from './role.constant';
 export * from './storage.constant';
 export * from './user.constant';
+export * from './wellness.constant';
