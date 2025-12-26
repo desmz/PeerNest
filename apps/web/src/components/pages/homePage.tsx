@@ -30,7 +30,6 @@ export default function HomePage() {
         <br />
         <pre>{JSON.stringify(currentUser, null, 2)}</pre>
         <br />
-
         {currentUser?.avatarUrl && (
           <img
             src={`${currentUser.avatarUrl}?v=${currentUser.lastSignedTime}`}
@@ -40,7 +39,6 @@ export default function HomePage() {
             referrerPolicy='no-referrer'
           />
         )}
-
         <button type='button' onClick={onSignOutClick} disabled={isLoading}>
           Sign out
         </button>
