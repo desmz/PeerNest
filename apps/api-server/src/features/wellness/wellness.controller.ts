@@ -1,6 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import {
   createWellnessCheckInRoSchema,
+  getMyWellnessCheckInsQueryParamsSchema,
+  type TGetMyWellnessCheckInsQueryParams,
+  type TGetMyWellnessCheckInsVo,
   type TCreateWellnessCheckInRo,
   type TCreateWellnessCheckInVo,
 } from '@peernest/contract';
@@ -20,5 +23,14 @@ export class WellnessController {
     createWellnessCheckInRo: TCreateWellnessCheckInRo
   ): Promise<TCreateWellnessCheckInVo> {
     return this.wellnessService.createWellnessCheckIn(createWellnessCheckInRo);
+  }
+
+  @Get('/check-ins/me')
+  @HttpCode(HttpStatus.OK)
+  async getMyWellnessCheckIns(
+    @Query(new ZodValidationPipe(getMyWellnessCheckInsQueryParamsSchema))
+    getMyWellnessCheckInsQueryParams: TGetMyWellnessCheckInsQueryParams
+  ): Promise<TGetMyWellnessCheckInsVo> {
+    return this.wellnessService.getMyWellnessCheckIns(getMyWellnessCheckInsQueryParams);
   }
 }

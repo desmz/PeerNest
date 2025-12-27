@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpErrorCode } from '@peernest/core';
 import { dbOrTx, KyselyService, TKyselyTransaction } from '@peernest/db';
-import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -34,69 +33,6 @@ export class WellnessSymptomRepository {
     } catch (error) {
       throw new CustomHttpException(
         `[${WellnessSymptomRepository.repoName}] | Fail to find wellness symptoms`,
-        HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, options }
-      );
-    }
-  }
-
-  async findWellnessSymptomAggs(
-    options?: {
-      includedDeleted?: boolean;
-      orderBy?: 'position' | 'createdTime';
-      ordering?: 'asc' | 'desc';
-    },
-    tx?: TKyselyTransaction
-  ) {
-    try {
-      const db = dbOrTx(this.kyselyService.db, tx);
-
-      const { includedDeleted, orderBy, ordering: givenOrdering } = options || {};
-      const ordering = givenOrdering || 'asc';
-
-      let query = db
-        .selectFrom('wellnessSymptomCategory')
-        .selectAll('wellnessSymptomCategory')
-        .select((baseEb) => {
-          let eb = baseEb
-            .selectFrom('wellnessSymptom')
-            .whereRef(
-              'wellnessSymptom.wellnessSymptomWellnessSymptomCategoryId',
-              '=',
-              'wellnessSymptomCategory.wellnessSymptomCategoryId'
-            )
-            .selectAll('wellnessSymptom')
-            .select((eb) =>
-              eb
-                .cast<string>('wellnessSymptom.wellnessSymptomPosition', 'text')
-                .as('wellnessSymptomPosition')
-            );
-
-          if (orderBy === 'position') {
-            eb = eb.orderBy('wellnessSymptom.wellnessSymptomPosition', ordering);
-          } else {
-            eb = eb.orderBy('wellnessSymptom.wellnessSymptomCreatedTime', ordering);
-          }
-
-          return jsonArrayFrom(eb).as('wellnessSymptoms');
-        });
-
-      if (!includedDeleted) {
-        query = query.where('wellnessSymptomCategoryDeletedTime', 'is', null);
-      }
-
-      if (orderBy === 'position') {
-        query = query.orderBy('wellnessSymptomCategoryPosition', ordering);
-      } else {
-        query = query.orderBy('wellnessSymptomCategoryCreatedTime', ordering);
-      }
-
-      const wellnessSymptomAggs = await query.execute();
-
-      return wellnessSymptomAggs;
-    } catch (error) {
-      throw new CustomHttpException(
-        `[${WellnessSymptomRepository.repoName}] | Fail to find wellness symptom aggs`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
       );

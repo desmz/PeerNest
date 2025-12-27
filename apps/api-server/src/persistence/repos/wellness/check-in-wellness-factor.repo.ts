@@ -38,4 +38,41 @@ export class CheckInWellnessFactorRepository {
       );
     }
   }
+
+  async findWellnessFactorsByCheckInIds(checkInIds: string[], tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      if (checkInIds.length === 0) {
+        return [];
+      }
+
+      const wellnessFactors = await db
+        .selectFrom('checkInWellnessFactor')
+        .innerJoin(
+          'wellnessFactor',
+          'wellnessFactor.wellnessFactorId',
+          'checkInWellnessFactor.checkInWellnessFactorWellnessFactorId'
+        )
+        .innerJoin(
+          'wellnessFactorCategory',
+          'wellnessFactorCategory.wellnessFactorCategoryId',
+          'wellnessFactor.wellnessFactorWellnessFactorCategoryId'
+        )
+        .where('checkInWellnessFactor.checkInWellnessFactorCheckInId', 'in', checkInIds)
+        .where('wellnessFactor.wellnessFactorDeletedTime', 'is', null)
+        .where('wellnessFactorCategory.wellnessFactorCategoryDeletedTime', 'is', null)
+        .selectAll(['wellnessFactor', 'wellnessFactorCategory'])
+        .select('checkInWellnessFactor.checkInWellnessFactorCheckInId')
+        .execute();
+
+      return wellnessFactors;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessFactorRepository.repoName}] | Fail to find check in-wellness factors by check in ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkInIds }
+      );
+    }
+  }
 }

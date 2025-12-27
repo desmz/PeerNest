@@ -22,8 +22,10 @@ import {
   PersonalGoalRepository,
   PronounRepository,
   UniversityRepository,
+  WellnessFactorCategoryRepository,
   WellnessFactorRepository,
   WellnessMoodRepository,
+  WellnessSymptomCategoryRepository,
   WellnessSymptomRepository,
 } from './repos/system';
 import {
@@ -72,6 +74,8 @@ const repositories: Provider[] = [
   UserCommentReportRepository,
   WellnessMoodRepository,
   WellnessSymptomRepository,
+  WellnessSymptomCategoryRepository,
+  WellnessFactorCategoryRepository,
   WellnessFactorRepository,
   CheckInRepository,
   CheckInWellnessMoodRepository,

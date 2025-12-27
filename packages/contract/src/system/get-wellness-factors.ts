@@ -14,13 +14,18 @@ export const wellnessFactorSchema = z.object({
 
 export type TWellnessFactor = z.infer<typeof wellnessFactorSchema>;
 
-export const getWellnessWellnessFactorsVoSchema = z.array(
-  z.object({
-    wellnessFactorCategoryId: z.string().nonempty(),
-    wellnessFactorCategoryName: z.string().nonempty(),
-    wellnessFactorCategoryPosition: z.string().nonempty(),
+export const wellnessFactorCategorySchema = z.object({
+  wellnessFactorCategoryId: z.string().nonempty(),
+  wellnessFactorCategoryName: z.string().nonempty(),
+  wellnessFactorCategoryPosition: z.string().nonempty(),
+});
+
+export type TWellnessFactorCategory = z.infer<typeof wellnessFactorCategorySchema>;
+
+export const getWellnessFactorsVoSchema = z.array(
+  wellnessFactorCategorySchema.extend({
     wellnessFactors: z.array(wellnessFactorSchema),
   })
 );
 
-export type TGetWellnessFactorsVo = z.infer<typeof getWellnessWellnessFactorsVoSchema>;
+export type TGetWellnessFactorsVo = z.infer<typeof getWellnessFactorsVoSchema>;

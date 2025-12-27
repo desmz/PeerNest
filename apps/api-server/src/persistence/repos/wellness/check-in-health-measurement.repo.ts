@@ -42,4 +42,28 @@ export class CheckInHealthMeasurementRepository {
       );
     }
   }
+
+  async findCheckInMeasurementsByCheckInIds(checkInIds: string[], tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      if (checkInIds.length === 0) {
+        return [];
+      }
+
+      const CheckInMeasurements = await db
+        .selectFrom('checkInHealthMeasurement')
+        .where('checkInHealthMeasurement.checkInHealthMeasurementCheckInId', 'in', checkInIds)
+        .selectAll()
+        .execute();
+
+      return CheckInMeasurements;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInHealthMeasurementRepository.repoName}] | Fail to find check in health measurement by check in ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkInIds }
+      );
+    }
+  }
 }

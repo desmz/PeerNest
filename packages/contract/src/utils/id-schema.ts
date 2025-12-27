@@ -80,7 +80,14 @@ export const wellnessFactorIdSchema = (field = 'Wellness Factor Id') => {
 };
 
 export const checkIdSchema = (field = 'Check In Id') => {
+  return z.string(zString(field)).startsWith(IdPrefix.CheckIn, zStartWith(field, IdPrefix.CheckIn));
+};
+
+export const checkInHealthMeasurementIdSchema = (field = 'Check In Health Measurement Id') => {
   return z
     .string(zString(field))
-    .startsWith(IdPrefix.CheckIn, zStartWith(field, IdPrefix.WellnessFactor));
+    .startsWith(
+      IdPrefix.CheckInHealthMeasurement,
+      zStartWith(field, IdPrefix.CheckInHealthMeasurement)
+    );
 };

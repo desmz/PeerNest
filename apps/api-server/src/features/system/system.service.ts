@@ -18,10 +18,10 @@ import {
   PersonalGoalRepository,
   PronounRepository,
   UniversityRepository,
-  WellnessFactorRepository,
+  WellnessFactorCategoryRepository,
   WellnessMoodRepository,
+  WellnessSymptomCategoryRepository,
 } from '@/persistence/repos/system';
-import { WellnessSymptomRepository } from '@/persistence/repos/system/wellness-symptom.repo';
 
 @Injectable()
 export class SystemService {
@@ -31,8 +31,8 @@ export class SystemService {
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly pronounRepository: PronounRepository,
     private readonly wellnessMoodRepository: WellnessMoodRepository,
-    private readonly wellnessFactorRepository: WellnessFactorRepository,
-    private readonly wellnessSymptomRepository: WellnessSymptomRepository,
+    private readonly wellnessFactorCategoryRepository: WellnessFactorCategoryRepository,
+    private readonly wellnessSymptomCategoryRepository: WellnessSymptomCategoryRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
 
@@ -137,9 +137,10 @@ export class SystemService {
   }
 
   async getWellnessSymptoms(): Promise<TGetWellnessSymptomsVo> {
-    const wellnessSymptomAggs = await this.wellnessSymptomRepository.findWellnessSymptomAggs({
-      orderBy: 'position',
-    });
+    const wellnessSymptomAggs =
+      await this.wellnessSymptomCategoryRepository.findWellnessSymptomCategoryAggs({
+        orderBy: 'position',
+      });
 
     return wellnessSymptomAggs.map((wellnessSymptomAgg) => ({
       wellnessSymptomCategoryId: wellnessSymptomAgg.wellnessSymptomCategoryId,
@@ -154,9 +155,10 @@ export class SystemService {
   }
 
   async getWellnessFactors(): Promise<TGetWellnessFactorsVo> {
-    const wellnessFactorAggs = await this.wellnessFactorRepository.findWellnessFactorAggs({
-      orderBy: 'position',
-    });
+    const wellnessFactorAggs =
+      await this.wellnessFactorCategoryRepository.findWellnessFactorCategoryAggs({
+        orderBy: 'position',
+      });
 
     return wellnessFactorAggs.map((wellnessFactorAgg) => ({
       wellnessFactorCategoryId: wellnessFactorAgg.wellnessFactorCategoryId,
