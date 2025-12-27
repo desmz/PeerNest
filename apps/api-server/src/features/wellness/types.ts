@@ -38,3 +38,9 @@ export type TSelectableWellnessSymptomWithCheckInId = TSelectableWellnessSymptom
 export type TSelectableWellnessFactorWithCheckInId = TSelectableWellnessFactor &
   TSelectableWellnessFactorCategory &
   Pick<TSelectableCheckInWellnessFactor, 'checkInWellnessFactorCheckInId'>;
+
+export type TTrendQueryFn = (args: {
+  userId: string;
+  from: Date;
+  to: Date;
+}) => Promise<{ checkInCheckInTime: Date; value: number }[]>;

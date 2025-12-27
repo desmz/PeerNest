@@ -15,7 +15,11 @@ import {
   TGetWellnessMoodsSummaryVo,
   TGetWellnessSymptomsSummaryQueryParams,
   TGetWellnessSymptomsSummaryVo,
+  TGetWellnessTrendsQueryParams,
+  TGetWellnessTrendsVo,
   TWellnessMood,
+  TWellnessTrendsValue,
+  TWellnessTrendsValueData,
 } from '@peernest/contract';
 import {
   CURRENT_MONTH,
@@ -32,6 +36,8 @@ import {
   WELLNESS_FACTORS_SUMMARY_DEFAULT_DAYS,
   WELLNESS_MOODS_SUMMARY_DEFAULT_DAYS,
   WELLNESS_SYMPTOMS_SUMMARY_DEFAULT_DAYS,
+  wellnessTrendsDefaultDays,
+  WellnessTrendsMetric,
 } from '@peernest/core';
 import {
   executeTx,
@@ -59,6 +65,7 @@ import { IClsStore } from '@/types/cls';
 
 import {
   TSelectableCheckInWithSleepTimeString,
+  TTrendQueryFn,
   TWellnessFactorWithCategory,
   TWellnessSymptomWithCategory,
 } from './types';
@@ -80,6 +87,19 @@ export class WellnessService {
     private readonly wellnessSymptomRepository: WellnessSymptomRepository,
     private readonly wellnessCheckInFormatter: WellnessCheckInFormatter
   ) {}
+
+  private wellnessTrendQueryMap: Record<WellnessTrendsMetric, TTrendQueryFn> = {
+    [WellnessTrendsMetric.MoodRating]: ({ userId, from, to }) =>
+      this.checkInRepository.getMoodRatingTrend(userId, { from, to }),
+    [WellnessTrendsMetric.SleepQualityRating]: ({ userId, from, to }) =>
+      this.checkInRepository.getSleepQualityRatingTrend(userId, { from, to }),
+    [WellnessTrendsMetric.HeartRate]: ({ userId, from, to }) =>
+      this.checkInHealthMeasurementRepository.getHeartRateTrend(userId, { from, to }),
+    [WellnessTrendsMetric.StepCount]: ({ userId, from, to }) =>
+      this.checkInHealthMeasurementRepository.getStepCountTrend(userId, { from, to }),
+    [WellnessTrendsMetric.Weight]: ({ userId, from, to }) =>
+      this.checkInHealthMeasurementRepository.getWeightTrend(userId, { from, to }),
+  };
 
   async createWellnessCheckIn(
     createWellnessCheckInRo: TCreateWellnessCheckInRo
@@ -455,5 +475,77 @@ export class WellnessService {
       checkInDate: dayjs(obj.checkInCheckInTime).format('YYYY-MM-DD'),
       moodRating: obj.moodRating,
     }));
+  }
+
+  async getWellnessTrends(
+    getWellnessTrendsQueryParams: TGetWellnessTrendsQueryParams
+  ): Promise<TGetWellnessTrendsVo> {
+    let { metrics } = getWellnessTrendsQueryParams;
+    const { days: providedDays } = getWellnessTrendsQueryParams;
+
+    const userId = this.clsService.get('user.id');
+
+    if (!metrics || metrics.length === 0) {
+      metrics = Object.entries(wellnessTrendsDefaultDays).map(
+        ([wellnessTrendsMetric, _value]) => wellnessTrendsMetric as WellnessTrendsMetric
+      );
+    }
+
+    const now = new Date();
+    const tasks: [WellnessTrendsMetric, TWellnessTrendsValue][] = [];
+    for (const metric of metrics) {
+      const days = providedDays ?? wellnessTrendsDefaultDays[metric];
+      const [from, to] = getDatesInInterval(now, days, 'day');
+
+      const queryFn = this.wellnessTrendQueryMap[metric];
+      if (!queryFn) {
+        continue;
+      }
+
+      const fromDate = from.toDate();
+      const toDate = to.toDate();
+      const metricTrends = await queryFn({ userId, from: fromDate, to: toDate });
+
+      const formattedMetricTrends = metricTrends.map(({ checkInCheckInTime, value }) => ({
+        date: dayjs(checkInCheckInTime).format('YYYY-MM-DD'),
+        value: value,
+      }));
+
+      const filledMetricTrends: TWellnessTrendsValueData[] = this.fillDays(
+        fromDate,
+        toDate,
+        formattedMetricTrends
+      );
+
+      const values = filledMetricTrends
+        .map((filledMetricTrend) => filledMetricTrend.value)
+        .filter((value) => value !== null);
+
+      const task: TWellnessTrendsValue = {
+        metric,
+        days,
+        min: values.length > 0 ? Math.min(...values) : null,
+        max: values.length > 0 ? Math.max(...values) : null,
+        data: filledMetricTrends,
+      };
+
+      tasks.push([metric, task]);
+    }
+
+    const result = await Promise.all(tasks);
+
+    return Object.fromEntries(result) as TGetWellnessTrendsVo;
+  }
+
+  private fillDays(start: Date, end: Date, rows: { date: string; value: number }[]) {
+    const map = new Map(rows.map((r) => [r.date, r.value]));
+
+    const result = [];
+    for (let d = new Date(start); d < end; d.setUTCDate(d.getUTCDate() + 1)) {
+      const key = dayjs(d.toISOString()).format('YYYY-MM-DD');
+      result.push({ date: key, value: map.get(key) ?? null });
+    }
+
+    return result;
   }
 }

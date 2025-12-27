@@ -86,4 +86,170 @@ export class CheckInHealthMeasurementRepository {
       );
     }
   }
+
+  // special case
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getHeartRateTrend(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const heartRateTrends = await db
+        .selectFrom('checkInHealthMeasurement')
+        .innerJoin(
+          'checkIn',
+          'checkIn.checkInId',
+          'checkInHealthMeasurement.checkInHealthMeasurementCheckInId'
+        )
+        .where('checkIn.checkInUserId', '=', userId)
+        .where('checkIn.checkInCheckInTime', '>=', from)
+        .where('checkIn.checkInCheckInTime', '<', to)
+        .select((eb) => [
+          'checkIn.checkInCheckInTime',
+          eb
+            .cast<number>(
+              eb.fn.avg('checkInHealthMeasurement.checkInHealthMeasurementHeartRate'),
+              'double precision'
+            )
+            .as('value'),
+        ])
+        .groupBy('checkIn.checkInCheckInTime')
+        .orderBy('checkIn.checkInCheckInTime', 'asc')
+        .execute();
+
+      return heartRateTrends;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInHealthMeasurementRepository.repoName}] | Fail to get heart rate trend`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, options }
+      );
+    }
+  }
+
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getStepCountTrend(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const stepCountTrends = await db
+        .selectFrom('checkInHealthMeasurement')
+        .innerJoin(
+          'checkIn',
+          'checkIn.checkInId',
+          'checkInHealthMeasurement.checkInHealthMeasurementCheckInId'
+        )
+        .where('checkIn.checkInUserId', '=', userId)
+        .where('checkIn.checkInCheckInTime', '>=', from)
+        .where('checkIn.checkInCheckInTime', '<', to)
+        .select((eb) => [
+          'checkIn.checkInCheckInTime',
+          eb
+            .cast<number>(
+              eb.fn.avg('checkInHealthMeasurement.checkInHealthMeasurementStepCount'),
+              'double precision'
+            )
+            .as('value'),
+        ])
+        .groupBy('checkIn.checkInCheckInTime')
+        .orderBy('checkIn.checkInCheckInTime', 'asc')
+        .execute();
+
+      return stepCountTrends;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInHealthMeasurementRepository.repoName}] | Fail to get step count trend`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, options }
+      );
+    }
+  }
+
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getWeightTrend(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const weightTrends = await db
+        .selectFrom('checkInHealthMeasurement')
+        .innerJoin(
+          'checkIn',
+          'checkIn.checkInId',
+          'checkInHealthMeasurement.checkInHealthMeasurementCheckInId'
+        )
+        .where('checkIn.checkInUserId', '=', userId)
+        .where('checkIn.checkInCheckInTime', '>=', from)
+        .where('checkIn.checkInCheckInTime', '<', to)
+        .select((eb) => [
+          'checkIn.checkInCheckInTime',
+          eb
+            .cast<number>(
+              eb.fn.avg('checkInHealthMeasurement.checkInHealthMeasurementWeight'),
+              'double precision'
+            )
+            .as('value'),
+        ])
+        .groupBy('checkIn.checkInCheckInTime')
+        .orderBy('checkIn.checkInCheckInTime', 'asc')
+        .execute();
+
+      return weightTrends;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInHealthMeasurementRepository.repoName}] | Fail to get weight trend`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, options }
+      );
+    }
+  }
 }

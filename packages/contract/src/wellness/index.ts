@@ -5,3 +5,4 @@ export * from './get-wellness-check-in';
 export * from './get-wellness-factors-summary';
 export * from './get-wellness-moods-summary';
 export * from './get-wellness-symptoms-summary';
+export * from './get-wellness-trends';

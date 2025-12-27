@@ -21,6 +21,9 @@ import {
   type TGetWellnessCalendarQueryParams,
   type TGetWellnessCalendarVoSchema,
   getWellnessCalendarQueryParamsSchema,
+  getWellnessTrendsQueryParamsSchema,
+  type TGetWellnessTrendsVo,
+  type TGetWellnessTrendsQueryParams,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -92,5 +95,14 @@ export class WellnessController {
     getWellnessCalendarQueryParams: TGetWellnessCalendarQueryParams
   ): Promise<TGetWellnessCalendarVoSchema> {
     return this.wellnessService.getWellnessCalendar(getWellnessCalendarQueryParams);
+  }
+
+  @Get('stats/trends')
+  @HttpCode(HttpStatus.OK)
+  async getWellnessTrends(
+    @Query(new ZodValidationPipe(getWellnessTrendsQueryParamsSchema))
+    getWellnessTrendsQueryParams: TGetWellnessTrendsQueryParams
+  ): Promise<TGetWellnessTrendsVo> {
+    return this.wellnessService.getWellnessTrends(getWellnessTrendsQueryParams);
   }
 }

@@ -199,12 +199,103 @@ export class CheckInRepository {
           eb.cast<number>(eb.fn.avg('checkInMoodRating'), 'double precision').as('moodRating'),
         ])
         .groupBy('checkInCheckInTime')
+        .orderBy('checkInCheckInTime', 'asc')
         .execute();
 
       return wellnessCalendar;
     } catch (error) {
       throw new CustomHttpException(
         `[${CheckInRepository.repoName}] | Fail to get wellness calendar`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, options }
+      );
+    }
+  }
+
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getMoodRatingTrend(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const moodRatingTrends = await db
+        .selectFrom('checkIn')
+        .where('checkInUserId', '=', userId)
+        .where('checkInCheckInTime', '>=', from)
+        .where('checkInCheckInTime', '<', to)
+        .select((eb) => [
+          'checkInCheckInTime',
+          eb.cast<number>(eb.fn.avg('checkInMoodRating'), 'double precision').as('value'),
+        ])
+        .groupBy('checkInCheckInTime')
+        .orderBy('checkInCheckInTime', 'asc')
+        .execute();
+
+      return moodRatingTrends;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInRepository.repoName}] | Fail to get mood rating trend`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, options }
+      );
+    }
+  }
+
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getSleepQualityRatingTrend(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const sleepQualityRatingTrends = await db
+        .selectFrom('checkIn')
+        .where('checkInUserId', '=', userId)
+        .where('checkInCheckInTime', '>=', from)
+        .where('checkInCheckInTime', '<', to)
+        .select((eb) => [
+          'checkInCheckInTime',
+          eb.cast<number>(eb.fn.avg('checkInSleepQualityRating'), 'double precision').as('value'),
+        ])
+        .groupBy('checkInCheckInTime')
+        .orderBy('checkInCheckInTime', 'asc')
+        .execute();
+
+      return sleepQualityRatingTrends;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInRepository.repoName}] | Fail to get sleep quality rating trend`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, userId, options }
       );

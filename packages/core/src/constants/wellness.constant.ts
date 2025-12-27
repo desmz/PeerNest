@@ -12,3 +12,19 @@ export enum WellnessCheckInsSortOption {
 export const WELLNESS_MOODS_SUMMARY_DEFAULT_DAYS = 30;
 export const WELLNESS_SYMPTOMS_SUMMARY_DEFAULT_DAYS = 30;
 export const WELLNESS_FACTORS_SUMMARY_DEFAULT_DAYS = 30;
+
+export enum WellnessTrendsMetric {
+  MoodRating = 'moodRating',
+  SleepQualityRating = 'sleepQualityRating',
+  HeartRate = 'heartRate',
+  StepCount = 'stepCount',
+  Weight = 'weight',
+}
+
+export const wellnessTrendsDefaultDays: Record<WellnessTrendsMetric, number> = {
+  [WellnessTrendsMetric.MoodRating]: 30,
+  [WellnessTrendsMetric.SleepQualityRating]: 30,
+  [WellnessTrendsMetric.HeartRate]: 30,
+  [WellnessTrendsMetric.StepCount]: 30,
+  [WellnessTrendsMetric.Weight]: 30,
+} as const;
