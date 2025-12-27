@@ -1,15 +1,10 @@
 import { WellnessCheckInsSortOption } from '@peernest/core';
 import z from 'zod';
 
-import {
-  getWellnessMoodsVoSchema,
-  wellnessFactorCategorySchema,
-  wellnessFactorSchema,
-  wellnessSymptomCategorySchema,
-  wellnessSymptomSchema,
-} from '../system';
 import { TApiMethod } from '../types';
-import { checkIdSchema, zDate, zPosInt } from '../utils';
+import { zDate, zPosInt } from '../utils';
+
+import { getWellnessCheckInVoSchema } from './get-wellness-check-in';
 
 export const GET_MY_WELLNESS_CHECK_INS_METHOD: TApiMethod = 'get';
 
@@ -45,41 +40,9 @@ export type TGetMyWellnessCheckInsQueryParams = z.infer<
   typeof getMyWellnessCheckInsQueryParamsSchema
 >;
 
-export const checkInHealthMeasurementSchema = z.object({
-  hearRate: z.int().positive().nullable(),
-  stepCount: z.int().positive().nullable(),
-  weight: z.number().nullable(),
-});
-
-export type TCheckInHealthMeasurement = z.infer<typeof checkInHealthMeasurementSchema>;
-
 export const getMyWellnessCheckInsVoSchema = z.object({
   count: z.int().positive(),
-  checkIns: z.array(
-    z.object({
-      checkInId: checkIdSchema(),
-      checkInCheckInTime: z.date(),
-      checkInMoodRating: z.int().positive(),
-      checkInSleepQualityRating: z.int().positive().nullable(),
-      checkInSleepTime: z.string().nullable(),
-      wellnessMoods: getWellnessMoodsVoSchema.nullable(),
-      wellnessSymptoms: z
-        .array(
-          wellnessSymptomSchema.extend({
-            wellnessSymptomCategory: wellnessSymptomCategorySchema,
-          })
-        )
-        .nullable(),
-      wellnessFactors: z
-        .array(
-          wellnessFactorSchema.extend({
-            wellnessFactorCategory: wellnessFactorCategorySchema,
-          })
-        )
-        .nullable(),
-      checkInHealthMeasurement: checkInHealthMeasurementSchema.nullable(),
-    })
-  ),
+  checkIns: z.array(getWellnessCheckInVoSchema),
 });
 
 export type TGetMyWellnessCheckInsVo = z.infer<typeof getMyWellnessCheckInsVoSchema>;

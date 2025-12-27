@@ -43,6 +43,26 @@ export class CheckInHealthMeasurementRepository {
     }
   }
 
+  async findCheckInMeasurementByCheckInId(checkInId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const checkInMeasurements = await db
+        .selectFrom('checkInHealthMeasurement')
+        .where('checkInHealthMeasurement.checkInHealthMeasurementCheckInId', '=', checkInId)
+        .selectAll()
+        .executeTakeFirst();
+
+      return checkInMeasurements;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInHealthMeasurementRepository.repoName}] | Fail to find check in health measurement by check in id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkInId }
+      );
+    }
+  }
+
   async findCheckInMeasurementsByCheckInIds(checkInIds: string[], tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
@@ -51,16 +71,16 @@ export class CheckInHealthMeasurementRepository {
         return [];
       }
 
-      const CheckInMeasurements = await db
+      const checkInMeasurements = await db
         .selectFrom('checkInHealthMeasurement')
         .where('checkInHealthMeasurement.checkInHealthMeasurementCheckInId', 'in', checkInIds)
         .selectAll()
         .execute();
 
-      return CheckInMeasurements;
+      return checkInMeasurements;
     } catch (error) {
       throw new CustomHttpException(
-        `[${CheckInHealthMeasurementRepository.repoName}] | Fail to find check in health measurement by check in ids`,
+        `[${CheckInHealthMeasurementRepository.repoName}] | Fail to find check in health measurements by check in ids`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, checkInIds }
       );

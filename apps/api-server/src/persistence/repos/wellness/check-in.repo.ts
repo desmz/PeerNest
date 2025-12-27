@@ -49,6 +49,26 @@ export class CheckInRepository {
     }
   }
 
+  async findCheckInById(id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const checkIn = await db
+        .selectFrom('checkIn')
+        .select(this.checkInSelectBase)
+        .where('checkInId', '=', id)
+        .executeTakeFirst();
+
+      return checkIn;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInRepository.repoName}] | Fail to find check in by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id }
+      );
+    }
+  }
+
   async findCheckInByUserId(
     userId: string,
     options?: {

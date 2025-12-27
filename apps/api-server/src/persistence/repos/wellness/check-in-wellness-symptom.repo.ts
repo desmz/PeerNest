@@ -39,6 +39,39 @@ export class CheckInWellnessSymptomRepository {
     }
   }
 
+  async findWellnessSymptomsByCheckInId(checkInId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const wellnessSymptoms = db
+        .selectFrom('checkInWellnessSymptom')
+        .innerJoin(
+          'wellnessSymptom',
+          'wellnessSymptom.wellnessSymptomId',
+          'checkInWellnessSymptom.checkInWellnessSymptomWellnessSymptomId'
+        )
+        .innerJoin(
+          'wellnessSymptomCategory',
+          'wellnessSymptomCategory.wellnessSymptomCategoryId',
+          'wellnessSymptom.wellnessSymptomWellnessSymptomCategoryId'
+        )
+        .where('checkInWellnessSymptom.checkInWellnessSymptomCheckInId', '=', checkInId)
+        .where('wellnessSymptom.wellnessSymptomDeletedTime', 'is', null)
+        .where('wellnessSymptomCategory.wellnessSymptomCategoryDeletedTime', 'is', null)
+        .selectAll(['wellnessSymptom', 'wellnessSymptomCategory'])
+        .select('checkInWellnessSymptom.checkInWellnessSymptomCheckInId')
+        .execute();
+
+      return wellnessSymptoms;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessSymptomRepository.repoName}] | Fail to find check in-wellness symptoms by check in id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkInId }
+      );
+    }
+  }
+
   async findWellnessSymptomsByCheckInIds(checkInIds: string[], tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);

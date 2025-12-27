@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import {
   createWellnessCheckInRoSchema,
   getMyWellnessCheckInsQueryParamsSchema,
@@ -6,6 +6,9 @@ import {
   type TGetMyWellnessCheckInsVo,
   type TCreateWellnessCheckInRo,
   type TCreateWellnessCheckInVo,
+  getWellnessCheckInParamsSchema,
+  type TGetMyWellnessCheckInParams,
+  type TGetWellnessCheckInVo,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -25,12 +28,21 @@ export class WellnessController {
     return this.wellnessService.createWellnessCheckIn(createWellnessCheckInRo);
   }
 
-  @Get('/check-ins/me')
+  @Get('check-ins/me')
   @HttpCode(HttpStatus.OK)
   async getMyWellnessCheckIns(
     @Query(new ZodValidationPipe(getMyWellnessCheckInsQueryParamsSchema))
     getMyWellnessCheckInsQueryParams: TGetMyWellnessCheckInsQueryParams
   ): Promise<TGetMyWellnessCheckInsVo> {
     return this.wellnessService.getMyWellnessCheckIns(getMyWellnessCheckInsQueryParams);
+  }
+
+  @Get('check-ins/:checkInId')
+  @HttpCode(HttpStatus.OK)
+  async getWellnessCheckIn(
+    @Param(new ZodValidationPipe(getWellnessCheckInParamsSchema))
+    getWellnessCheckInParams: TGetMyWellnessCheckInParams
+  ): Promise<TGetWellnessCheckInVo> {
+    return this.wellnessService.getWellnessCheckIn(getWellnessCheckInParams);
   }
 }

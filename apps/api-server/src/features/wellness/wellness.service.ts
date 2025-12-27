@@ -3,8 +3,10 @@ import {
   TCheckInHealthMeasurement,
   TCreateWellnessCheckInRo,
   TCreateWellnessCheckInVo,
+  TGetMyWellnessCheckInParams,
   TGetMyWellnessCheckInsQueryParams,
   TGetMyWellnessCheckInsVo,
+  TGetWellnessCheckInVo,
   TWellnessMood,
 } from '@peernest/contract';
 import {
@@ -15,7 +17,6 @@ import {
   generateCheckInWellnessSymptomId,
   getStartOfDay,
   HttpErrorCode,
-  sortStringCompareFn,
 } from '@peernest/core';
 import {
   executeTx,
@@ -41,7 +42,12 @@ import {
 } from '@/persistence/repos/wellness';
 import { IClsStore } from '@/types/cls';
 
-import { TWellnessFactorWithCategory, TWellnessSymptomWithCategory } from './types';
+import {
+  TSelectableCheckInWithSleepTimeString,
+  TWellnessFactorWithCategory,
+  TWellnessSymptomWithCategory,
+} from './types';
+import { WellnessCheckInFormatter } from './wellness-check-in-formatter';
 
 @Injectable()
 export class WellnessService {
@@ -56,7 +62,8 @@ export class WellnessService {
     private readonly checkInHealthMeasurementRepository: CheckInHealthMeasurementRepository,
     private readonly wellnessMoodRepository: WellnessMoodRepository,
     private readonly wellnessFactorRepository: WellnessFactorRepository,
-    private readonly wellnessSymptomRepository: WellnessSymptomRepository
+    private readonly wellnessSymptomRepository: WellnessSymptomRepository,
+    private readonly wellnessCheckInFormatter: WellnessCheckInFormatter
   ) {}
 
   async createWellnessCheckIn(
@@ -196,10 +203,10 @@ export class WellnessService {
   ): Promise<TGetMyWellnessCheckInsVo> {
     const userId = this.clsService.get('user.id');
 
-    const checkIns = await this.checkInRepository.findCheckInsByUserId(
+    const checkIns = (await this.checkInRepository.findCheckInsByUserId(
       userId,
       getMyWellnessCheckInsQueryParams
-    );
+    )) as TSelectableCheckInWithSleepTimeString[];
 
     const checkInIds = checkIns.map((checkIn) => checkIn.checkInId);
 
@@ -217,98 +224,51 @@ export class WellnessService {
     // use map to assemble while formatting
     const wellnessMoodMap = new Map<string, TWellnessMood[]>();
     for (const wellnessMood of wellnessMoods) {
-      const {
-        checkInWellnessMoodCheckInId,
-        wellnessMoodId,
-        wellnessMoodName,
-        wellnessMoodPosition,
-      } = wellnessMood;
+      const { checkInWellnessMoodCheckInId } = wellnessMood;
 
       if (!wellnessMoodMap.has(checkInWellnessMoodCheckInId)) {
         wellnessMoodMap.set(checkInWellnessMoodCheckInId, []);
       }
 
-      wellnessMoodMap.get(checkInWellnessMoodCheckInId)!.push({
-        wellnessMoodId,
-        wellnessMoodName,
-        wellnessMoodPosition,
-      });
+      wellnessMoodMap
+        .get(checkInWellnessMoodCheckInId)!
+        .push(this.wellnessCheckInFormatter.formatWellnessMood(wellnessMood));
     }
 
     const wellnessSymptomMap = new Map<string, TWellnessSymptomWithCategory[]>();
     for (const wellnessSymptom of wellnessSymptoms) {
-      const {
-        checkInWellnessSymptomCheckInId,
-        wellnessSymptomId,
-        wellnessSymptomName,
-        wellnessSymptomPosition,
-        wellnessSymptomCategoryId,
-        wellnessSymptomCategoryName,
-        wellnessSymptomCategoryPosition,
-      } = wellnessSymptom;
+      const { checkInWellnessSymptomCheckInId } = wellnessSymptom;
 
       if (!wellnessSymptomMap.has(checkInWellnessSymptomCheckInId)) {
         wellnessSymptomMap.set(checkInWellnessSymptomCheckInId, []);
       }
 
-      wellnessSymptomMap.get(checkInWellnessSymptomCheckInId)!.push({
-        wellnessSymptomId,
-        wellnessSymptomName,
-        wellnessSymptomPosition,
-        wellnessSymptomCategory: {
-          wellnessSymptomCategoryId,
-          wellnessSymptomCategoryName,
-          wellnessSymptomCategoryPosition,
-        },
-      });
+      wellnessSymptomMap
+        .get(checkInWellnessSymptomCheckInId)!
+        .push(this.wellnessCheckInFormatter.formatWellnessSymptom(wellnessSymptom));
     }
 
     const wellnessFactorMap = new Map<string, TWellnessFactorWithCategory[]>();
     for (const wellnessFactor of wellnessFactors) {
-      const {
-        checkInWellnessFactorCheckInId,
-        wellnessFactorId,
-        wellnessFactorName,
-        wellnessFactorPosition,
-        wellnessFactorCategoryId,
-        wellnessFactorCategoryName,
-        wellnessFactorCategoryPosition,
-      } = wellnessFactor;
+      const { checkInWellnessFactorCheckInId } = wellnessFactor;
 
       if (!wellnessFactorMap.has(checkInWellnessFactorCheckInId)) {
         wellnessFactorMap.set(checkInWellnessFactorCheckInId, []);
       }
 
-      wellnessFactorMap.get(checkInWellnessFactorCheckInId)!.push({
-        wellnessFactorId,
-        wellnessFactorName,
-        wellnessFactorPosition,
-        wellnessFactorCategory: {
-          wellnessFactorCategoryId,
-          wellnessFactorCategoryName,
-          wellnessFactorCategoryPosition,
-        },
-      });
+      wellnessFactorMap
+        .get(checkInWellnessFactorCheckInId)!
+        .push(this.wellnessCheckInFormatter.formatWellnessFactor(wellnessFactor));
     }
 
     const checkInHealthMeasurementMap = new Map<string, TCheckInHealthMeasurement>();
     for (const checkInHealthMeasurement of checkInHealthMeasurements) {
-      const {
-        checkInHealthMeasurementCheckInId,
-        checkInHealthMeasurementHeartRate,
-        checkInHealthMeasurementStepCount,
-        checkInHealthMeasurementWeight,
-      } = checkInHealthMeasurement;
+      const { checkInHealthMeasurementCheckInId } = checkInHealthMeasurement;
 
-      checkInHealthMeasurementMap.set(checkInHealthMeasurementCheckInId, {
-        hearRate: checkInHealthMeasurementHeartRate
-          ? parseInt(checkInHealthMeasurementHeartRate)
-          : null,
-        stepCount: checkInHealthMeasurementStepCount
-          ? parseInt(checkInHealthMeasurementStepCount)
-          : null,
-        weight: checkInHealthMeasurementWeight ? parseFloat(checkInHealthMeasurementWeight) : null,
-      });
+      checkInHealthMeasurementMap.set(
+        checkInHealthMeasurementCheckInId,
+        this.wellnessCheckInFormatter.formatCheckInHealthMeasurement(checkInHealthMeasurement)
+      );
     }
 
     // construct the object, sort them by (category, item)
@@ -318,54 +278,66 @@ export class WellnessService {
       const { checkInId } = checkIn;
 
       const wellnessMoods = wellnessMoodMap.get(checkInId);
-      wellnessMoods?.sort((a, b) =>
-        sortStringCompareFn(a.wellnessMoodPosition, b.wellnessMoodPosition)
-      );
-
       const wellnessSymptoms = wellnessSymptomMap.get(checkInId);
-      wellnessSymptoms?.sort((a, b) => {
-        const aPos = a.wellnessSymptomPosition;
-        const bPos = b.wellnessSymptomPosition;
-        const aCategoryPos = a.wellnessSymptomCategory.wellnessSymptomCategoryPosition;
-        const bCategoryPos = b.wellnessSymptomCategory.wellnessSymptomCategoryPosition;
-
-        return aCategoryPos === bCategoryPos
-          ? sortStringCompareFn(aPos, bPos)
-          : sortStringCompareFn(aCategoryPos, bCategoryPos);
-      });
-
       const wellnessFactors = wellnessFactorMap.get(checkInId);
-      wellnessFactors?.sort((a, b) => {
-        const aPos = a.wellnessFactorPosition;
-        const bPos = b.wellnessFactorPosition;
-        const aCategoryPos = a.wellnessFactorCategory.wellnessFactorCategoryPosition;
-        const bCategoryPos = b.wellnessFactorCategory.wellnessFactorCategoryPosition;
+      const checkInHealthMeasurement = checkInHealthMeasurementMap.get(checkInId);
 
-        return aCategoryPos === bCategoryPos
-          ? sortStringCompareFn(aPos, bPos)
-          : sortStringCompareFn(aCategoryPos, bCategoryPos);
-      });
-
-      const formattedCheckIn: TGetMyWellnessCheckInsVo['checkIns'][number] = {
-        checkInId,
-        checkInCheckInTime: checkIn.checkInCheckInTime,
-        checkInMoodRating: parseInt(checkIn.checkInMoodRating),
-        checkInSleepQualityRating: checkIn.checkInSleepQualityRating
-          ? parseInt(checkIn.checkInSleepQualityRating)
-          : null,
-        checkInSleepTime: checkIn.checkInSleepTime,
-        wellnessMoods: wellnessMoods ? wellnessMoods : null,
-        wellnessSymptoms: wellnessSymptoms ? wellnessSymptoms : null,
-        wellnessFactors: wellnessFactors ? wellnessFactors : null,
-        checkInHealthMeasurement: checkInHealthMeasurementMap.get(checkInId) || null,
-      };
+      const formattedCheckIn: TGetMyWellnessCheckInsVo['checkIns'][number] =
+        this.wellnessCheckInFormatter.formatCheckInObj(
+          checkIn,
+          wellnessMoods,
+          wellnessSymptoms,
+          wellnessFactors,
+          checkInHealthMeasurement
+        );
 
       formattedCheckIns.push(formattedCheckIn);
     }
-
     return {
       count: formattedCheckIns.length,
       checkIns: formattedCheckIns,
     };
+  }
+
+  async getWellnessCheckIn(
+    getWellnessCheckInParams: TGetMyWellnessCheckInParams
+  ): Promise<TGetWellnessCheckInVo> {
+    const { checkInId } = getWellnessCheckInParams;
+
+    const checkIn = (await this.checkInRepository.findCheckInById(
+      checkInId
+    )) as TSelectableCheckInWithSleepTimeString;
+
+    if (!checkIn) {
+      throw new CustomHttpException(`${checkInId} does not exist`, HttpErrorCode.NOT_FOUND);
+    }
+    const [wellnessMoods, wellnessSymptoms, wellnessFactors, checkInHealthMeasurement] =
+      await Promise.all([
+        await this.checkInWellnessMoodRepository.findWellnessMoodsByCheckInId(checkInId),
+        await this.checkInWellnessSymptomRepository.findWellnessSymptomsByCheckInId(checkInId),
+        await this.checkInWellnessFactorRepository.findWellnessFactorsByCheckInId(checkInId),
+        await this.checkInHealthMeasurementRepository.findCheckInMeasurementByCheckInId(checkInId),
+      ]);
+
+    const formattedWellnessMoods = wellnessMoods.map((wellnessMood) =>
+      this.wellnessCheckInFormatter.formatWellnessMood(wellnessMood)
+    );
+    const formattedWellnessSymptoms = wellnessSymptoms.map((wellnessSymptom) =>
+      this.wellnessCheckInFormatter.formatWellnessSymptom(wellnessSymptom)
+    );
+    const formattedWellnessFactors = wellnessFactors.map((wellnessFactor) =>
+      this.wellnessCheckInFormatter.formatWellnessFactor(wellnessFactor)
+    );
+    const formattedCheckInHealthMeasurement = checkInHealthMeasurement
+      ? this.wellnessCheckInFormatter.formatCheckInHealthMeasurement(checkInHealthMeasurement)
+      : undefined;
+
+    return this.wellnessCheckInFormatter.formatCheckInObj(
+      checkIn,
+      formattedWellnessMoods,
+      formattedWellnessSymptoms,
+      formattedWellnessFactors,
+      formattedCheckInHealthMeasurement
+    );
   }
 }

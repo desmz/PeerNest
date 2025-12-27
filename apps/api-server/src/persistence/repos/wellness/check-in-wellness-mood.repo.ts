@@ -39,6 +39,33 @@ export class CheckInWellnessMoodRepository {
     }
   }
 
+  async findWellnessMoodsByCheckInId(checkId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const wellnessMoods = await db
+        .selectFrom('checkInWellnessMood')
+        .innerJoin(
+          'wellnessMood',
+          'wellnessMood.wellnessMoodId',
+          'checkInWellnessMood.checkInWellnessMoodWellnessMoodId'
+        )
+        .where('checkInWellnessMood.checkInWellnessMoodCheckInId', '=', checkId)
+        .where('wellnessMood.wellnessMoodDeletedTime', 'is', null)
+        .selectAll('wellnessMood')
+        .select('checkInWellnessMood.checkInWellnessMoodCheckInId')
+        .execute();
+
+      return wellnessMoods;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessMoodRepository.repoName}] | Fail to find check in-wellness moods by check in id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkId }
+      );
+    }
+  }
+
   async findWellnessMoodsByCheckInIds(checkInIds: string[], tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
