@@ -1,9 +1,8 @@
 import z from 'zod';
 
+import { wellnessSymptomSchema } from '../system';
 import { TApiMethod } from '../types';
 import { zPosInt } from '../utils';
-
-import { wellnessSymptomSchema } from './get-wellness-symptoms';
 
 export const GET_WELLNESS_SYMPTOMS_SUMMARY_METHOD: TApiMethod = 'get';
 

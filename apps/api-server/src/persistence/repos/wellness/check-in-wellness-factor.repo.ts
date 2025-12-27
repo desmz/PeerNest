@@ -108,4 +108,66 @@ export class CheckInWellnessFactorRepository {
       );
     }
   }
+
+  // special case
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getWellnessFactorsSummary(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const wellnessFactorsSummary = await db
+        .selectFrom('checkInWellnessFactor')
+        .innerJoin(
+          'checkIn',
+          'checkIn.checkInId',
+          'checkInWellnessFactor.checkInWellnessFactorCheckInId'
+        )
+        .innerJoin(
+          'wellnessFactor',
+          'wellnessFactor.wellnessFactorId',
+          'checkInWellnessFactor.checkInWellnessFactorWellnessFactorId'
+        )
+        .where('checkIn.checkInUserId', '=', userId)
+        .where('checkIn.checkInCheckInTime', '>=', from)
+        .where('checkIn.checkInCheckInTime', '<', to)
+        .groupBy([
+          'wellnessFactor.wellnessFactorId',
+          'wellnessFactor.wellnessFactorName',
+          'wellnessFactor.wellnessFactorPosition',
+        ])
+        .orderBy('wellnessFactor.wellnessFactorPosition', 'asc')
+        .select((eb) => [
+          'wellnessFactor.wellnessFactorId',
+          'wellnessFactor.wellnessFactorName',
+          'wellnessFactor.wellnessFactorPosition',
+          eb.fn.count<number>('wellnessFactor.wellnessFactorId').as('count'),
+        ])
+        .execute();
+
+      return wellnessFactorsSummary;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessFactorRepository.repoName}] | Fail to get wellness factors summary`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
+      );
+    }
+  }
 }

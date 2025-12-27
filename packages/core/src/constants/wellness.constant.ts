@@ -11,3 +11,4 @@ export enum WellnessCheckInsSortOption {
 
 export const WELLNESS_MOODS_SUMMARY_DEFAULT_DAYS = 30;
 export const WELLNESS_SYMPTOMS_SUMMARY_DEFAULT_DAYS = 30;
+export const WELLNESS_FACTORS_SUMMARY_DEFAULT_DAYS = 30;

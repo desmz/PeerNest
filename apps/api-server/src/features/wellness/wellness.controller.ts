@@ -15,6 +15,9 @@ import {
   getWellnessSymptomsSummaryQueryParamsSchema,
   type TGetWellnessSymptomsSummaryQueryParams,
   type TGetWellnessSymptomsSummaryVo,
+  getWellnessFactorsSummaryQueryParamsSchema,
+  type TGetWellnessFactorsSummaryQueryParams,
+  type TGetWellnessFactorsSummaryVo,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -68,5 +71,14 @@ export class WellnessController {
     getWellnessSymptomsSummaryQueryParams: TGetWellnessSymptomsSummaryQueryParams
   ): Promise<TGetWellnessSymptomsSummaryVo> {
     return this.wellnessService.getWellnessSymptomsSummary(getWellnessSymptomsSummaryQueryParams);
+  }
+
+  @Get('stats/factors')
+  @HttpCode(HttpStatus.OK)
+  async getWellnessFactorsSummary(
+    @Query(new ZodValidationPipe(getWellnessFactorsSummaryQueryParamsSchema))
+    getWellnessFactorsSummaryQueryParams: TGetWellnessFactorsSummaryQueryParams
+  ): Promise<TGetWellnessFactorsSummaryVo> {
+    return this.wellnessService.getWellnessFactorsSummary(getWellnessFactorsSummaryQueryParams);
   }
 }

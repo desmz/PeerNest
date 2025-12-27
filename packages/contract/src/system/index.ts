@@ -5,6 +5,4 @@ export * from './get-pronouns';
 export * from './get-universities';
 export * from './get-wellness-factors';
 export * from './get-wellness-moods';
-export * from './get-wellness-moods-summary';
 export * from './get-wellness-symptoms';
-export * from './get-wellness-symptoms-summary';
