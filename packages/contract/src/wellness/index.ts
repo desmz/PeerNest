@@ -1,5 +1,6 @@
 export * from './create-wellness-check-in';
 export * from './get-my-wellness-check-ins';
+export * from './get-wellness-calendar';
 export * from './get-wellness-check-in';
 export * from './get-wellness-factors-summary';
 export * from './get-wellness-moods-summary';

@@ -9,7 +9,7 @@ export { dayjs };
 
 export const MONTHS_NUMBER = 12;
 export const CURRENT_YEAR = new Date().getFullYear();
-export const CURRENT_MONTH = new Date().getMonth();
+export const CURRENT_MONTH = new Date().getMonth() + 1;
 
 export const MONTH_WITH_MAX_DAYS = 3;
 

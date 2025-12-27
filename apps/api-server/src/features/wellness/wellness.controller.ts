@@ -18,6 +18,9 @@ import {
   getWellnessFactorsSummaryQueryParamsSchema,
   type TGetWellnessFactorsSummaryQueryParams,
   type TGetWellnessFactorsSummaryVo,
+  type TGetWellnessCalendarQueryParams,
+  type TGetWellnessCalendarVoSchema,
+  getWellnessCalendarQueryParamsSchema,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -80,5 +83,14 @@ export class WellnessController {
     getWellnessFactorsSummaryQueryParams: TGetWellnessFactorsSummaryQueryParams
   ): Promise<TGetWellnessFactorsSummaryVo> {
     return this.wellnessService.getWellnessFactorsSummary(getWellnessFactorsSummaryQueryParams);
+  }
+
+  @Get('stats/calendar')
+  @HttpCode(HttpStatus.OK)
+  async getWellnessCalendar(
+    @Query(new ZodValidationPipe(getWellnessCalendarQueryParamsSchema))
+    getWellnessCalendarQueryParams: TGetWellnessCalendarQueryParams
+  ): Promise<TGetWellnessCalendarVoSchema> {
+    return this.wellnessService.getWellnessCalendar(getWellnessCalendarQueryParams);
   }
 }

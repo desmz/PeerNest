@@ -6,6 +6,8 @@ import {
   TGetMyWellnessCheckInParams,
   TGetMyWellnessCheckInsQueryParams,
   TGetMyWellnessCheckInsVo,
+  TGetWellnessCalendarQueryParams,
+  TGetWellnessCalendarVoSchema,
   TGetWellnessCheckInVo,
   TGetWellnessFactorsSummaryQueryParams,
   TGetWellnessFactorsSummaryVo,
@@ -16,6 +18,9 @@ import {
   TWellnessMood,
 } from '@peernest/contract';
 import {
+  CURRENT_MONTH,
+  CURRENT_YEAR,
+  dayjs,
   generateCheckInHealthMeasurementId,
   generateCheckInId,
   generateCheckInWellnessFactorId,
@@ -426,5 +431,29 @@ export class WellnessService {
       count: wellnessFactorsSummary.length,
       wellnessFactors: wellnessFactorsSummary,
     };
+  }
+
+  async getWellnessCalendar(
+    getWellnessCalendarQueryParams: TGetWellnessCalendarQueryParams
+  ): Promise<TGetWellnessCalendarVoSchema> {
+    const { month: providedMonth, year: providedYear } = getWellnessCalendarQueryParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const month = providedMonth ?? CURRENT_MONTH;
+    const year = providedYear ?? CURRENT_YEAR;
+
+    const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+    const endDate = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
+
+    const wellnessCalendar = await this.checkInRepository.getWellnessCalendar(userId, {
+      from: startDate,
+      to: endDate,
+    });
+
+    return wellnessCalendar.map((obj) => ({
+      checkInDate: dayjs(obj.checkInCheckInTime).format('YYYY-MM-DD'),
+      moodRating: obj.moodRating,
+    }));
   }
 }
