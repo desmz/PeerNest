@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs, ManipulateType } from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 import utc from 'dayjs/plugin/utc.js';
 
@@ -103,10 +103,30 @@ export function getMonthNumber(monthName: string, locale: Intl.LocalesArgument =
   return new Intl.DateTimeFormat(locale, { month: '2-digit' }).format(date);
 }
 
-export function getStartOfDay(date?: Date | string) {
-  return dayjs.utc(date).startOf('day').toDate();
+export function getStartOfDay(date?: Date | string): Dayjs {
+  return dayjs.utc(date).startOf('day');
 }
 
-export function getEndOfDay(date?: Date | string) {
-  return dayjs.utc(date).endOf('day').toDate();
+export function getEndOfDay(date?: Date | string): Dayjs {
+  return dayjs.utc(date).endOf('day');
+}
+
+/**
+ *
+ * @param endingDate
+ * @param value
+ * @param unit
+ * @returns from-to pair
+ * - `from`: the starting date
+ * - `to`: the next day of the ending date
+ */
+export function getDatesInInterval(
+  endingDate: Date | string,
+  value: number,
+  unit: ManipulateType
+): [Dayjs, Dayjs] {
+  const to = getStartOfDay(endingDate).add(1, unit);
+  const from = to.subtract(value, unit);
+
+  return [from, to];
 }

@@ -8,3 +8,5 @@ export enum WellnessCheckInsSortOption {
   Oldest = 'oldest',
   Newest = 'newest',
 }
+
+export const WELLNESS_MOODS_SUMMARY_DEFAULT_DAYS = 30;
