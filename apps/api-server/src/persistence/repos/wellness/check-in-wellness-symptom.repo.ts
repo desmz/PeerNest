@@ -108,4 +108,66 @@ export class CheckInWellnessSymptomRepository {
       );
     }
   }
+
+  // special case
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getWellnessSymptomsSummary(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const wellnessSymptomsSummary = await db
+        .selectFrom('checkInWellnessSymptom')
+        .innerJoin(
+          'checkIn',
+          'checkIn.checkInId',
+          'checkInWellnessSymptom.checkInWellnessSymptomCheckInId'
+        )
+        .innerJoin(
+          'wellnessSymptom',
+          'wellnessSymptom.wellnessSymptomId',
+          'checkInWellnessSymptom.checkInWellnessSymptomWellnessSymptomId'
+        )
+        .where('checkIn.checkInUserId', '=', userId)
+        .where('checkIn.checkInCheckInTime', '>=', from)
+        .where('checkIn.checkInCheckInTime', '<', to)
+        .groupBy([
+          'wellnessSymptom.wellnessSymptomId',
+          'wellnessSymptom.wellnessSymptomName',
+          'wellnessSymptom.wellnessSymptomPosition',
+        ])
+        .orderBy('wellnessSymptom.wellnessSymptomPosition', 'asc')
+        .select((eb) => [
+          'wellnessSymptom.wellnessSymptomId',
+          'wellnessSymptom.wellnessSymptomName',
+          'wellnessSymptom.wellnessSymptomPosition',
+          eb.fn.count<number>('wellnessSymptom.wellnessSymptomId').as('count'),
+        ])
+        .execute();
+
+      return wellnessSymptomsSummary;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessSymptomRepository.repoName}] | Fail to get wellness symptoms summary`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
+      );
+    }
+  }
 }

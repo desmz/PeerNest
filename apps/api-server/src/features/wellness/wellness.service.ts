@@ -9,6 +9,8 @@ import {
   TGetWellnessCheckInVo,
   TGetWellnessMoodsSummaryQueryParams,
   TGetWellnessMoodsSummaryVo,
+  TGetWellnessSymptomsSummaryQueryParams,
+  TGetWellnessSymptomsSummaryVo,
   TWellnessMood,
 } from '@peernest/contract';
 import {
@@ -21,6 +23,7 @@ import {
   getStartOfDay,
   HttpErrorCode,
   WELLNESS_MOODS_SUMMARY_DEFAULT_DAYS,
+  WELLNESS_SYMPTOMS_SUMMARY_DEFAULT_DAYS,
 } from '@peernest/core';
 import {
   executeTx,
@@ -367,6 +370,32 @@ export class WellnessService {
     return {
       count: wellnessMoodsSummary.length,
       wellnessMoods: wellnessMoodsSummary,
+    };
+  }
+
+  async getWellnessSymptomsSummary(
+    getWellnessSymptomsSummaryQueryParams: TGetWellnessSymptomsSummaryQueryParams
+  ): Promise<TGetWellnessSymptomsSummaryVo> {
+    let { days } = getWellnessSymptomsSummaryQueryParams;
+
+    if (!days) {
+      days = WELLNESS_SYMPTOMS_SUMMARY_DEFAULT_DAYS;
+    }
+
+    const userId = this.clsService.get('user.id');
+
+    const now = new Date();
+    const [from, to] = getDatesInInterval(now, days, 'day');
+
+    const wellnessSymptomsSummary =
+      await this.checkInWellnessSymptomRepository.getWellnessSymptomsSummary(userId, {
+        from: from.toDate(),
+        to: to.toDate(),
+      });
+
+    return {
+      count: wellnessSymptomsSummary.length,
+      wellnessSymptoms: wellnessSymptomsSummary,
     };
   }
 }
