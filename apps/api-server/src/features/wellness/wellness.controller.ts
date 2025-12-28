@@ -24,12 +24,18 @@ import {
   getWellnessTrendsQueryParamsSchema,
   type TGetWellnessTrendsVo,
   type TGetWellnessTrendsQueryParams,
+  getWellnessOverviewQueryParamsSchema,
+  type TGetWellnessOverviewQueryParams,
+  type TGetWellnessOverviewVo,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
 import { WellnessService } from './wellness.service';
 
+// todo: add the /wellness/dashboard api endpoint
+// - this endpoint is used to serve the first load of the wellness dashboard page
+// - the other endpoints are used for filtering and more granular control
 @Controller('api/wellness')
 export class WellnessController {
   constructor(private readonly wellnessService: WellnessService) {}
@@ -104,5 +110,14 @@ export class WellnessController {
     getWellnessTrendsQueryParams: TGetWellnessTrendsQueryParams
   ): Promise<TGetWellnessTrendsVo> {
     return this.wellnessService.getWellnessTrends(getWellnessTrendsQueryParams);
+  }
+
+  @Get('stats/overview')
+  @HttpCode(HttpStatus.OK)
+  async getWellnessOverview(
+    @Query(new ZodValidationPipe(getWellnessOverviewQueryParamsSchema))
+    getWellnessOverviewQueryParams: TGetWellnessOverviewQueryParams
+  ): Promise<TGetWellnessOverviewVo> {
+    return this.wellnessService.getWellnessOverview(getWellnessOverviewQueryParams);
   }
 }

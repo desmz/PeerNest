@@ -28,3 +28,17 @@ export const wellnessTrendsDefaultDays: Record<WellnessTrendsMetric, number> = {
   [WellnessTrendsMetric.StepCount]: 30,
   [WellnessTrendsMetric.Weight]: 30,
 } as const;
+
+export enum WellnessOverviewMetric {
+  MoodRating = 'moodRating',
+  SleepTime = 'sleepTime',
+  SleepQualityRating = 'sleepQualityRating',
+}
+
+export enum WellnessOverviewTrend {
+  Up = 'up',
+  Down = 'down',
+  Neutral = 'neutral',
+}
+
+export const WELLNESS_OVERVIEW_DEFAULT_DAYS = 30;

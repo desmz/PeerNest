@@ -301,4 +301,57 @@ export class CheckInRepository {
       );
     }
   }
+
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getWellnessOverview(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const wellnessOverview = await db
+        .selectFrom('checkIn')
+        .where('checkInUserId', '=', userId)
+        .where('checkInCheckInTime', '>=', from)
+        .where('checkInCheckInTime', '<', to)
+        .select((eb) => [
+          eb
+            .cast<number>(eb.fn.avg('checkInMoodRating'), 'double precision')
+            .as('averageMoodRating'),
+          eb
+            .cast<number>(
+              eb.fn.avg(sql`EXTRACT (EPOCH FROM check_in_sleep_time) / 60`),
+              'double precision'
+            )
+            .as('averageSleepTime'),
+          eb
+            .cast<number>(eb.fn.avg('checkInSleepQualityRating'), 'double precision')
+            .as('averageSleepQualityRating'),
+        ])
+        .executeTakeFirst();
+
+      return wellnessOverview!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInRepository.repoName}] | Fail to get wellness overview`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, options }
+      );
+    }
+  }
 }

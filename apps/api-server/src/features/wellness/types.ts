@@ -44,3 +44,9 @@ export type TTrendQueryFn = (args: {
   from: Date;
   to: Date;
 }) => Promise<{ checkInCheckInTime: Date; value: number }[]>;
+
+export type TSelectableWellnessOverview = {
+  averageMoodRating: number;
+  averageSleepTime: number;
+  averageSleepQualityRating: number;
+};

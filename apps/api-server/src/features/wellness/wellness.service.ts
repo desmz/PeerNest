@@ -13,11 +13,14 @@ import {
   TGetWellnessFactorsSummaryVo,
   TGetWellnessMoodsSummaryQueryParams,
   TGetWellnessMoodsSummaryVo,
+  TGetWellnessOverviewQueryParams,
+  TGetWellnessOverviewVo,
   TGetWellnessSymptomsSummaryQueryParams,
   TGetWellnessSymptomsSummaryVo,
   TGetWellnessTrendsQueryParams,
   TGetWellnessTrendsVo,
   TWellnessMood,
+  TWellnessOverviewValue,
   TWellnessTrendsValue,
   TWellnessTrendsValueData,
 } from '@peernest/contract';
@@ -35,7 +38,10 @@ import {
   HttpErrorCode,
   WELLNESS_FACTORS_SUMMARY_DEFAULT_DAYS,
   WELLNESS_MOODS_SUMMARY_DEFAULT_DAYS,
+  WELLNESS_OVERVIEW_DEFAULT_DAYS,
   WELLNESS_SYMPTOMS_SUMMARY_DEFAULT_DAYS,
+  WellnessOverviewMetric,
+  WellnessOverviewTrend,
   wellnessTrendsDefaultDays,
   WellnessTrendsMetric,
 } from '@peernest/core';
@@ -65,6 +71,7 @@ import { IClsStore } from '@/types/cls';
 
 import {
   TSelectableCheckInWithSleepTimeString,
+  TSelectableWellnessOverview,
   TTrendQueryFn,
   TWellnessFactorWithCategory,
   TWellnessSymptomWithCategory,
@@ -486,8 +493,8 @@ export class WellnessService {
     const userId = this.clsService.get('user.id');
 
     if (!metrics || metrics.length === 0) {
-      metrics = Object.entries(wellnessTrendsDefaultDays).map(
-        ([wellnessTrendsMetric, _value]) => wellnessTrendsMetric as WellnessTrendsMetric
+      metrics = Object.values(WellnessTrendsMetric).map(
+        (wellnessTrendsMetric) => wellnessTrendsMetric as WellnessTrendsMetric
       );
     }
 
@@ -547,5 +554,73 @@ export class WellnessService {
     }
 
     return result;
+  }
+
+  async getWellnessOverview(
+    getWellnessOverviewQueryParams: TGetWellnessOverviewQueryParams
+  ): Promise<TGetWellnessOverviewVo> {
+    let { days } = getWellnessOverviewQueryParams;
+
+    const userId = this.clsService.get('user.id');
+
+    days = days ?? WELLNESS_OVERVIEW_DEFAULT_DAYS;
+
+    const now = new Date();
+    const [from, to] = getDatesInInterval(now, days, 'day');
+    const [ffrom] = getDatesInInterval(now, 2 * days, 'day');
+
+    const [previousWellnessOverview, wellnessOverview] = await Promise.all([
+      await this.checkInRepository.getWellnessOverview(userId, {
+        from: ffrom.toDate(),
+        to: from.toDate(),
+      }),
+      await this.checkInRepository.getWellnessOverview(userId, {
+        from: from.toDate(),
+        to: to.toDate(),
+      }),
+    ]);
+
+    const wellnessOverviewMap: Record<WellnessOverviewMetric, keyof TSelectableWellnessOverview> = {
+      [WellnessOverviewMetric.MoodRating]: 'averageMoodRating',
+      [WellnessOverviewMetric.SleepTime]: 'averageSleepTime',
+      [WellnessOverviewMetric.SleepQualityRating]: 'averageSleepQualityRating',
+    } as const;
+
+    const metrics = Object.values(WellnessOverviewMetric).map(
+      (wellnessOverviewMetric) => wellnessOverviewMetric as WellnessOverviewMetric
+    );
+
+    const tasks: [WellnessOverviewMetric, TWellnessOverviewValue][] = [];
+    for (const metric of metrics) {
+      const previousValue = previousWellnessOverview[wellnessOverviewMap[metric]];
+      const value = wellnessOverview[wellnessOverviewMap[metric]];
+
+      let changePercentage;
+      if (previousValue && value && previousValue !== 0) {
+        changePercentage = ((value - previousValue) / previousValue) * 100;
+      } else {
+        changePercentage = 0;
+      }
+
+      let trend: WellnessOverviewTrend;
+      if (changePercentage > 1) {
+        trend = WellnessOverviewTrend.Up;
+      } else if (changePercentage < -1) {
+        trend = WellnessOverviewTrend.Down;
+      } else {
+        trend = WellnessOverviewTrend.Neutral;
+      }
+
+      tasks.push([
+        metric,
+        {
+          average: value,
+          changePercentage,
+          trend,
+        },
+      ]);
+    }
+
+    return Object.fromEntries(tasks) as TGetWellnessOverviewVo;
   }
 }
