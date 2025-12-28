@@ -36,7 +36,8 @@
     "kysely": "^0.28.8",
     "kysely-migration-cli": "^0.4.2",
     "pg": "^8.16.3",
-    "sql-formatter": "15.6.10"
+    "sql-formatter": "15.6.10",
+    "postgres-interval": "1.2.0"
   },
   "devDependencies": {
     "@types/pg": "^8.15.6",

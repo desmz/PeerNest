@@ -1,31 +1,49 @@
 import { Module, Provider } from '@nestjs/common';
 
-import { AttachmentRepository } from './repos/attachment/attachment.repo';
-import { CommentRepository } from './repos/comment/comment.repo';
-import { UserCommentLikeRepository } from './repos/comment/user-comment-like.repo';
-import { UserCommentReportRepository } from './repos/comment/user-comment-report';
-import { ConversationParticipantRepository } from './repos/conversation/conversation-participant.repo';
-import { ConversationRepository } from './repos/conversation/conversation.repo';
-import { DiscussionAttachmentRepository } from './repos/discussion/discussion-attachment.repo';
-import { DiscussionInterestRepository } from './repos/discussion/discussion-interest.repo';
-import { DiscussionPersonalGoalRepository } from './repos/discussion/discussion-personal-goal.repo';
-import { DiscussionRepository } from './repos/discussion/discussion.repo';
-import { UserDiscussionLikeRepository } from './repos/discussion/user-discussion-like.repo';
-import { UserDiscussionReportRepository } from './repos/discussion/user-discussion-report.repo';
-import { FriendRequestRepository } from './repos/friendship/friend-request.repo';
-import { RelationshipRepository } from './repos/friendship/relationship.repo';
-import { DomainRepository } from './repos/system/domain.repo';
-import { InterestRepository } from './repos/system/interest.repo';
-import { PersonalGoalRepository } from './repos/system/personal-goal.repo';
-import { PronounRepository } from './repos/system/pronoun.repo';
-import { UniversityRepository } from './repos/system/university.repo';
-import { AccountRepository } from './repos/user/account.repo';
-import { RoleRepository } from './repos/user/role.repo';
-import { UserInfoInterestRepository } from './repos/user/user-info-interest.repo';
-import { UserInfoPersonalGoalRepository } from './repos/user/user-info-personal-goal.repo';
-import { UserInfoRepository } from './repos/user/user-info.repo';
-import { UserTokenRepository } from './repos/user/user-token.repo';
-import { UserRepository } from './repos/user/user.repo';
+import { AttachmentRepository } from './repos/attachment';
+import {
+  CommentRepository,
+  UserCommentLikeRepository,
+  UserCommentReportRepository,
+} from './repos/comment';
+import { ConversationParticipantRepository, ConversationRepository } from './repos/conversation';
+import {
+  DiscussionAttachmentRepository,
+  DiscussionInterestRepository,
+  DiscussionPersonalGoalRepository,
+  DiscussionRepository,
+  UserDiscussionLikeRepository,
+  UserDiscussionReportRepository,
+} from './repos/discussion';
+import { FriendRequestRepository, RelationshipRepository } from './repos/friendship';
+import {
+  DomainRepository,
+  InterestRepository,
+  PersonalGoalRepository,
+  PronounRepository,
+  UniversityRepository,
+  WellnessFactorCategoryRepository,
+  WellnessFactorRepository,
+  WellnessMoodRepository,
+  WellnessSymptomCategoryRepository,
+  WellnessSymptomRepository,
+} from './repos/system';
+import {
+  AccountRepository,
+  RoleRepository,
+  UserInfoInterestRepository,
+  UserInfoPersonalGoalRepository,
+  UserInfoRepository,
+  UserRepository,
+  UserTokenRepository,
+} from './repos/user';
+import {
+  CheckInHealthMeasurementRepository,
+  CheckInRepository,
+  CheckInWellnessFactorRepository,
+  CheckInWellnessMoodRepository,
+  CheckInWellnessSymptomRepository,
+} from './repos/wellness';
 
 const repositories: Provider[] = [
   AttachmentRepository,
@@ -54,6 +72,16 @@ const repositories: Provider[] = [
   CommentRepository,
   UserCommentLikeRepository,
   UserCommentReportRepository,
+  WellnessMoodRepository,
+  WellnessSymptomRepository,
+  WellnessSymptomCategoryRepository,
+  WellnessFactorCategoryRepository,
+  WellnessFactorRepository,
+  CheckInRepository,
+  CheckInWellnessMoodRepository,
+  CheckInWellnessSymptomRepository,
+  CheckInWellnessFactorRepository,
+  CheckInHealthMeasurementRepository,
 ];
 
 @Module({

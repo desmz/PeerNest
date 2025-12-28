@@ -13,6 +13,7 @@ import { FriendshipModule } from '@/features/friendship/friendship.module';
 import { MailSenderModule } from '@/features/mail-sender/mail-sender.module';
 import { SystemModule } from '@/features/system/system.module';
 import { UserModule } from '@/features/user/user.module';
+import { WellnessModule } from '@/features/wellness/wellness.module';
 import { PersistenceModule } from '@/persistence/persistence.module';
 
 export const AppModules = {
@@ -34,6 +35,7 @@ export const AppModules = {
     FriendshipModule,
     DiscussionModule,
     CommentModule,
+    WellnessModule,
   ],
   providers: [
     {

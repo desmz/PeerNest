@@ -4,6 +4,7 @@
  */
 
 import type { ColumnType } from 'kysely';
+import type { IPostgresInterval } from 'postgres-interval';
 
 export type AuthAalLevel = 'aal1' | 'aal2' | 'aal3';
 
@@ -35,6 +36,12 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
+
+export type Interval = ColumnType<
+  IPostgresInterval,
+  IPostgresInterval | number | string,
+  IPostgresInterval | number | string
+>;
 
 export type Json = JsonValue;
 
@@ -348,6 +355,43 @@ export interface AuthUsers {
   recoveryToken: string | null;
   role: string | null;
   updatedAt: Timestamp | null;
+}
+
+export interface CheckIn {
+  checkInCheckInTime: Generated<Timestamp>;
+  checkInCreatedTime: Generated<Timestamp>;
+  checkInId: Generated<string>;
+  checkInMoodRating: Int8;
+  checkInSleepQualityRating: Int8 | null;
+  checkInSleepTime: Interval | null;
+  checkInUpdatedTime: Timestamp | null;
+  checkInUserId: string;
+}
+
+export interface CheckInHealthMeasurement {
+  checkInHealthMeasurementCheckInId: string;
+  checkInHealthMeasurementHeartRate: Int8 | null;
+  checkInHealthMeasurementId: Generated<string>;
+  checkInHealthMeasurementStepCount: Int8 | null;
+  checkInHealthMeasurementWeight: Numeric | null;
+}
+
+export interface CheckInWellnessFactor {
+  checkInWellnessFactorCheckInId: string;
+  checkInWellnessFactorId: Generated<string>;
+  checkInWellnessFactorWellnessFactorId: string;
+}
+
+export interface CheckInWellnessMood {
+  checkInWellnessMoodCheckInId: string;
+  checkInWellnessMoodId: Generated<string>;
+  checkInWellnessMoodWellnessMoodId: string;
+}
+
+export interface CheckInWellnessSymptom {
+  checkInWellnessSymptomCheckInId: string;
+  checkInWellnessSymptomId: Generated<string>;
+  checkInWellnessSymptomWellnessSymptomId: string;
 }
 
 export interface Comment {
@@ -783,6 +827,53 @@ export interface VaultSecrets {
   updatedAt: Generated<Timestamp>;
 }
 
+export interface WellnessFactor {
+  wellnessFactorCreatedTime: Generated<Timestamp>;
+  wellnessFactorDeletedTime: Timestamp | null;
+  wellnessFactorId: Generated<string>;
+  wellnessFactorName: string;
+  wellnessFactorPosition: Numeric;
+  wellnessFactorUpdatedTime: Timestamp | null;
+  wellnessFactorWellnessFactorCategoryId: string;
+}
+
+export interface WellnessFactorCategory {
+  wellnessFactorCategoryCreatedTime: Generated<Timestamp>;
+  wellnessFactorCategoryDeletedTime: Timestamp | null;
+  wellnessFactorCategoryId: Generated<string>;
+  wellnessFactorCategoryName: string;
+  wellnessFactorCategoryPosition: Numeric;
+  wellnessFactorCategoryUpdatedTime: Timestamp | null;
+}
+
+export interface WellnessMood {
+  wellnessMoodCreatedTime: Generated<Timestamp>;
+  wellnessMoodDeletedTime: Timestamp | null;
+  wellnessMoodId: Generated<string>;
+  wellnessMoodName: string;
+  wellnessMoodPosition: Numeric;
+  wellnessMoodUpdatedTime: Timestamp | null;
+}
+
+export interface WellnessSymptom {
+  wellnessSymptomCreatedTime: Generated<Timestamp>;
+  wellnessSymptomDeletedTime: Timestamp | null;
+  wellnessSymptomId: Generated<string>;
+  wellnessSymptomName: string;
+  wellnessSymptomPosition: Numeric;
+  wellnessSymptomUpdatedTime: Timestamp | null;
+  wellnessSymptomWellnessSymptomCategoryId: string;
+}
+
+export interface WellnessSymptomCategory {
+  wellnessSymptomCategoryCreatedTime: Generated<Timestamp>;
+  wellnessSymptomCategoryDeletedTime: Timestamp | null;
+  wellnessSymptomCategoryId: Generated<string>;
+  wellnessSymptomCategoryName: string;
+  wellnessSymptomCategoryPosition: Numeric;
+  wellnessSymptomCategoryUpdatedTime: Timestamp | null;
+}
+
 export interface DB {
   account: Account;
   attachment: Attachment;
@@ -806,6 +897,11 @@ export interface DB {
   'auth.ssoDomains': AuthSsoDomains;
   'auth.ssoProviders': AuthSsoProviders;
   'auth.users': AuthUsers;
+  checkIn: CheckIn;
+  checkInHealthMeasurement: CheckInHealthMeasurement;
+  checkInWellnessFactor: CheckInWellnessFactor;
+  checkInWellnessMood: CheckInWellnessMood;
+  checkInWellnessSymptom: CheckInWellnessSymptom;
   comment: Comment;
   conversation: Conversation;
   conversationParticipant: ConversationParticipant;
@@ -846,4 +942,9 @@ export interface DB {
   userToken: UserToken;
   'vault.decryptedSecrets': VaultDecryptedSecrets;
   'vault.secrets': VaultSecrets;
+  wellnessFactor: WellnessFactor;
+  wellnessFactorCategory: WellnessFactorCategory;
+  wellnessMood: WellnessMood;
+  wellnessSymptom: WellnessSymptom;
+  wellnessSymptomCategory: WellnessSymptomCategory;
 }

@@ -5,6 +5,9 @@ import {
   TGetPersonalGoalsVo,
   TGetPronounsVo,
   TGetUniversityVo,
+  TGetWellnessFactorsVo,
+  TGetWellnessMoodsVo,
+  TGetWellnessSymptomsVo,
 } from '@peernest/contract';
 import { HttpErrorCode } from '@peernest/core';
 
@@ -15,6 +18,9 @@ import {
   PersonalGoalRepository,
   PronounRepository,
   UniversityRepository,
+  WellnessFactorCategoryRepository,
+  WellnessMoodRepository,
+  WellnessSymptomCategoryRepository,
 } from '@/persistence/repos/system';
 
 @Injectable()
@@ -24,6 +30,9 @@ export class SystemService {
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly pronounRepository: PronounRepository,
+    private readonly wellnessMoodRepository: WellnessMoodRepository,
+    private readonly wellnessFactorCategoryRepository: WellnessFactorCategoryRepository,
+    private readonly wellnessSymptomCategoryRepository: WellnessSymptomCategoryRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
 
@@ -113,5 +122,53 @@ export class SystemService {
         personalGoalPosition,
       })
     );
+  }
+
+  async getWellnessMoods(): Promise<TGetWellnessMoodsVo> {
+    const wellnessMoods = await this.wellnessMoodRepository.findWellnessMoods({
+      orderBy: 'wellnessMoodPosition',
+    });
+
+    return wellnessMoods.map(({ wellnessMoodId, wellnessMoodName, wellnessMoodPosition }) => ({
+      wellnessMoodId,
+      wellnessMoodName,
+      wellnessMoodPosition,
+    }));
+  }
+
+  async getWellnessSymptoms(): Promise<TGetWellnessSymptomsVo> {
+    const wellnessSymptomAggs =
+      await this.wellnessSymptomCategoryRepository.findWellnessSymptomCategoryAggs({
+        orderBy: 'position',
+      });
+
+    return wellnessSymptomAggs.map((wellnessSymptomAgg) => ({
+      wellnessSymptomCategoryId: wellnessSymptomAgg.wellnessSymptomCategoryId,
+      wellnessSymptomCategoryName: wellnessSymptomAgg.wellnessSymptomCategoryName,
+      wellnessSymptomCategoryPosition: wellnessSymptomAgg.wellnessSymptomCategoryPosition,
+      wellnessSymptoms: wellnessSymptomAgg.wellnessSymptoms.map((wellnessSymptom) => ({
+        wellnessSymptomId: wellnessSymptom.wellnessSymptomId,
+        wellnessSymptomName: wellnessSymptom.wellnessSymptomName,
+        wellnessSymptomPosition: wellnessSymptom.wellnessSymptomPosition,
+      })),
+    }));
+  }
+
+  async getWellnessFactors(): Promise<TGetWellnessFactorsVo> {
+    const wellnessFactorAggs =
+      await this.wellnessFactorCategoryRepository.findWellnessFactorCategoryAggs({
+        orderBy: 'position',
+      });
+
+    return wellnessFactorAggs.map((wellnessFactorAgg) => ({
+      wellnessFactorCategoryId: wellnessFactorAgg.wellnessFactorCategoryId,
+      wellnessFactorCategoryName: wellnessFactorAgg.wellnessFactorCategoryName,
+      wellnessFactorCategoryPosition: wellnessFactorAgg.wellnessFactorCategoryPosition,
+      wellnessFactors: wellnessFactorAgg.wellnessFactors.map((wellnessFactor) => ({
+        wellnessFactorId: wellnessFactor.wellnessFactorId,
+        wellnessFactorName: wellnessFactor.wellnessFactorName,
+        wellnessFactorPosition: wellnessFactor.wellnessFactorPosition,
+      })),
+    }));
   }
 }
