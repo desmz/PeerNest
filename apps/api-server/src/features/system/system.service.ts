@@ -4,6 +4,8 @@ import {
   TCreateInterestVo,
   TCreatePersonalGoalRo,
   TCreatePersonalGoalVo,
+  TCreateWellnessMoodRo,
+  TCreateWellnessMoodVo,
   TGetDomainsVo,
   TGetInterestsVo,
   TGetPersonalGoalsVo,
@@ -19,7 +21,12 @@ import {
   TUpdatePersonalGoalRo,
   TUpdatePersonalGoalVo,
 } from '@peernest/contract';
-import { generateInterestId, generatePersonalGoalId, HttpErrorCode } from '@peernest/core';
+import {
+  generateInterestId,
+  generatePersonalGoalId,
+  generateWellnessMoodId,
+  HttpErrorCode,
+} from '@peernest/core';
 
 import { CustomHttpException } from '@/custom.exception';
 import {
@@ -255,7 +262,7 @@ export class SystemService {
 
     if (existingPersonalGoal) {
       throw new CustomHttpException(
-        `PersonalGoal ${personalGoalTitle} already exist`,
+        `Personal Goal ${personalGoalTitle} already exist`,
         HttpErrorCode.CONFLICT
       );
     }
@@ -288,7 +295,7 @@ export class SystemService {
 
     if (!personalGoal) {
       throw new CustomHttpException(
-        `PersonalGoal ${personalGoalId} does not exist`,
+        `Personal Goal ${personalGoalId} does not exist`,
         HttpErrorCode.NOT_FOUND
       );
     }
@@ -308,6 +315,38 @@ export class SystemService {
       personalGoalName: updatedPersonalGoal.personalGoalName,
       personalGoalDescription: updatedPersonalGoal.personalGoalDescription,
       personalGoalPosition: updatedPersonalGoal.personalGoalPosition,
+    };
+  }
+
+  async createWellnessMood(
+    createWellnessMoodRo: TCreateWellnessMoodRo
+  ): Promise<TCreateWellnessMoodVo> {
+    const { wellnessMoodName } = createWellnessMoodRo;
+
+    const wellnessMoodMaxPosition = await this.wellnessMoodRepository.findMaxPosition();
+
+    const existingWellnessMood =
+      await this.wellnessMoodRepository.findWellnessMoodByName(wellnessMoodName);
+
+    if (existingWellnessMood) {
+      throw new CustomHttpException(
+        `Wellness Mood ${wellnessMoodName} already exist`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const now = new Date();
+    const wellnessMood = await this.wellnessMoodRepository.createWellnessMood({
+      wellnessMoodId: generateWellnessMoodId(),
+      wellnessMoodName: wellnessMoodName,
+      wellnessMoodPosition: wellnessMoodMaxPosition + 1,
+      wellnessMoodCreatedTime: now,
+    });
+
+    return {
+      wellnessMoodId: wellnessMood.wellnessMoodId,
+      wellnessMoodName: wellnessMood.wellnessMoodName,
+      wellnessMoodPosition: wellnessMood.wellnessMoodPosition,
     };
   }
 }

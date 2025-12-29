@@ -22,6 +22,9 @@ import {
   updatePersonalGoalRoSchema,
   type TUpdatePersonalGoalRo,
   type TUpdatePersonalGoalVo,
+  createWellnessMoodRoSchema,
+  type TCreateWellnessMoodRo,
+  type TCreateWellnessMoodVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -121,5 +124,15 @@ export class SystemController {
     updatePersonalGoalRo: TUpdatePersonalGoalRo
   ): Promise<TUpdatePersonalGoalVo> {
     return this.systemService.updatePersonalGoal(updatePersonalGoalParams, updatePersonalGoalRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Post('wellness-moods')
+  @HttpCode(HttpStatus.CREATED)
+  async createWellnessMood(
+    @Body(new ZodValidationPipe(createWellnessMoodRoSchema))
+    createWellnessMoodRo: TCreateWellnessMoodRo
+  ): Promise<TCreateWellnessMoodVo> {
+    return this.systemService.createWellnessMood(createWellnessMoodRo);
   }
 }
