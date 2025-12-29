@@ -577,7 +577,7 @@ export interface PersonalGoal {
   personalGoalDeletedTime: Timestamp | null;
   personalGoalDescription: string | null;
   personalGoalId: Generated<string>;
-  personalGoalName: string;
+  personalGoalName: string | null;
   personalGoalPosition: Numeric;
   personalGoalTitle: string;
   personalGoalUpdatedTime: Timestamp | null;

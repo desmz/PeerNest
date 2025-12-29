@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
   TCreateInterestRo,
   TCreateInterestVo,
+  TCreatePersonalGoalRo,
+  TCreatePersonalGoalVo,
   TGetDomainsVo,
   TGetInterestsVo,
   TGetPersonalGoalsVo,
@@ -14,7 +16,7 @@ import {
   TUpdateInterestRo,
   TUpdateInterestVo,
 } from '@peernest/contract';
-import { generateInterestId, HttpErrorCode } from '@peernest/core';
+import { generateInterestId, generatePersonalGoalId, HttpErrorCode } from '@peernest/core';
 
 import { CustomHttpException } from '@/custom.exception';
 import {
@@ -235,6 +237,40 @@ export class SystemService {
       interestId: updatedInterest.interestId,
       interestName: updatedInterest.interestName,
       interestPosition: updatedInterest.interestPosition,
+    };
+  }
+
+  async createPersonalGoal(
+    createPersonalGoalRo: TCreatePersonalGoalRo
+  ): Promise<TCreatePersonalGoalVo> {
+    const { personalGoalTitle } = createPersonalGoalRo;
+
+    const personalGoalMaxPosition = await this.personalGoalRepository.findMaxPosition();
+
+    const existingPersonalGoal =
+      await this.personalGoalRepository.findPersonalGoalByTitle(personalGoalTitle);
+
+    if (existingPersonalGoal) {
+      throw new CustomHttpException(
+        `PersonalGoal ${personalGoalTitle} already exist`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const now = new Date();
+    const personalGoal = await this.personalGoalRepository.createPersonalGoal({
+      personalGoalId: generatePersonalGoalId(),
+      personalGoalTitle: personalGoalTitle,
+      personalGoalPosition: personalGoalMaxPosition + 1,
+      personalGoalCreatedTime: now,
+    });
+
+    return {
+      personalGoalId: personalGoal.personalGoalId,
+      personalGoalTitle: personalGoal.personalGoalTitle,
+      personalGoalName: personalGoal.personalGoalName,
+      personalGoalDescription: personalGoal.personalGoalDescription,
+      personalGoalPosition: personalGoal.personalGoalPosition,
     };
   }
 }

@@ -75,40 +75,6 @@ export class InterestRepository {
     }
   }
 
-  async findInterests(
-    options?: {
-      includedDeleted?: boolean;
-      orderBy?: keyof TSelectableInterest | undefined;
-      ordering?: 'asc' | 'desc' | undefined;
-    },
-    tx?: TKyselyTransaction
-  ) {
-    try {
-      const { includedDeleted, orderBy, ordering } = options || {};
-      const db = dbOrTx(this.kyselyService.db, tx);
-
-      let query = db.selectFrom('interest').selectAll();
-
-      if (!includedDeleted) {
-        query = query.where('interestDeletedTime', 'is', null);
-      }
-
-      if (orderBy) {
-        query = query.orderBy(orderBy, ordering || 'asc');
-      }
-
-      const interests = await query.execute();
-
-      return interests;
-    } catch (error) {
-      throw new CustomHttpException(
-        `[${InterestRepository.repoName}] | Fail to find interests`,
-        HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, options }
-      );
-    }
-  }
-
   async findInterestById(id: string, tx?: TKyselyTransaction) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
@@ -145,6 +111,40 @@ export class InterestRepository {
         `[${InterestRepository.repoName}] | Fail to find interest by name`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error }
+      );
+    }
+  }
+
+  async findInterests(
+    options?: {
+      includedDeleted?: boolean;
+      orderBy?: keyof TSelectableInterest | undefined;
+      ordering?: 'asc' | 'desc' | undefined;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const { includedDeleted, orderBy, ordering } = options || {};
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db.selectFrom('interest').selectAll();
+
+      if (!includedDeleted) {
+        query = query.where('interestDeletedTime', 'is', null);
+      }
+
+      if (orderBy) {
+        query = query.orderBy(orderBy, ordering || 'asc');
+      }
+
+      const interests = await query.execute();
+
+      return interests;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to find interests`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
       );
     }
   }

@@ -15,6 +15,9 @@ import {
   type TGetWellnessMoodsVo,
   type TGetWellnessSymptomsVo,
   type TUpdateInterestParams,
+  createPersonalGoalRoSchema,
+  type TCreatePersonalGoalRo,
+  type TCreatePersonalGoalVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -93,5 +96,15 @@ export class SystemController {
     @Body(new ZodValidationPipe(updateInterestRoSchema)) updateInterestRo: TUpdateInterestRo
   ): Promise<TUpdateInterestVo> {
     return this.systemService.updateInterest(updateInterestParams, updateInterestRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Post('personal-goals')
+  @HttpCode(HttpStatus.CREATED)
+  async createPersonalGoal(
+    @Body(new ZodValidationPipe(createPersonalGoalRoSchema))
+    createPersonalGoalRo: TCreatePersonalGoalRo
+  ): Promise<TCreatePersonalGoalVo> {
+    return this.systemService.createPersonalGoal(createPersonalGoalRo);
   }
 }

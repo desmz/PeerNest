@@ -1,4 +1,5 @@
 export * from './create-interest';
+export * from './create-personal-goal';
 export * from './get-domains';
 export * from './get-interests';
 export * from './get-personal-goals';
