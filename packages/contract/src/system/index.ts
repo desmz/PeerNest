@@ -1,5 +1,6 @@
 export * from './create-interest';
 export * from './create-personal-goal';
+export * from './create-wellness-factor';
 export * from './create-wellness-mood';
 export * from './create-wellness-symptom';
 export * from './get-domains';

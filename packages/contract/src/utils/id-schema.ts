@@ -88,6 +88,12 @@ export const wellnessFactorIdSchema = (field = 'Wellness Factor Id') => {
     .startsWith(IdPrefix.WellnessFactor, zStartWith(field, IdPrefix.WellnessFactor));
 };
 
+export const wellnessFactorCategoryIdSchema = (field = 'Wellness Factor Category Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.WellnessFactorCategory, zStartWith(field, IdPrefix.WellnessFactor));
+};
+
 export const checkIdSchema = (field = 'Check In Id') => {
   return z.string(zString(field)).startsWith(IdPrefix.CheckIn, zStartWith(field, IdPrefix.CheckIn));
 };
