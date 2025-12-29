@@ -14,7 +14,7 @@ export default function HomePage() {
     await signOut();
   }
 
-  // this is just testing purpose
+  // this is just testing purpose lol
 
   return (
     <>
