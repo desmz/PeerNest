@@ -6,6 +6,7 @@ import {
   TInsertableWellnessMood,
   TKyselyTransaction,
   TSelectableWellnessMood,
+  TUpdatableWellnessMood,
 } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
@@ -42,6 +43,58 @@ export class WellnessMoodRepository {
         `[${WellnessMoodRepository.repoName}] | Fail to create wellness mood`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, wellnessMoodObj }
+      );
+    }
+  }
+
+  async updateWellnessMoodById(
+    wellnessMoodPayload: TUpdatableWellnessMood,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = wellnessMoodPayload.wellnessMoodUpdatedTime
+        ? wellnessMoodPayload.wellnessMoodUpdatedTime
+        : new Date();
+
+      const wellnessMood = await db
+        .updateTable('wellnessMood')
+        .set({
+          ...wellnessMoodPayload,
+          wellnessMoodUpdatedTime: now,
+        })
+        .where('wellnessMoodId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return wellnessMood!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessMoodRepository.repoName}] | Fail to update wellness mood by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, wellnessMoodPayload, id }
+      );
+    }
+  }
+
+  async findWellnessMoodById(id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const wellnessMood = await db
+        .selectFrom('wellnessMood')
+        .where('wellnessMoodId', '=', id)
+        .selectAll()
+        .executeTakeFirst();
+
+      return wellnessMood;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessMoodRepository.repoName}] | Fail to find wellness mood by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
       );
     }
   }

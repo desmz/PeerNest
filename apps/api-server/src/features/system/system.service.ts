@@ -20,6 +20,9 @@ import {
   TUpdatePersonalGoalParams,
   TUpdatePersonalGoalRo,
   TUpdatePersonalGoalVo,
+  TUpdateWellnessMoodParams,
+  TUpdateWellnessMoodRo,
+  TUpdateWellnessMoodVo,
 } from '@peernest/contract';
 import {
   generateInterestId,
@@ -347,6 +350,38 @@ export class SystemService {
       wellnessMoodId: wellnessMood.wellnessMoodId,
       wellnessMoodName: wellnessMood.wellnessMoodName,
       wellnessMoodPosition: wellnessMood.wellnessMoodPosition,
+    };
+  }
+
+  async updateWellnessMood(
+    updateWellnessMoodParams: TUpdateWellnessMoodParams,
+    updateWellnessMoodRo: TUpdateWellnessMoodRo
+  ): Promise<TUpdateWellnessMoodVo> {
+    const { wellnessMoodId } = updateWellnessMoodParams;
+    const { wellnessMoodName } = updateWellnessMoodRo;
+
+    const wellnessMood = await this.wellnessMoodRepository.findWellnessMoodById(wellnessMoodId);
+
+    if (!wellnessMood) {
+      throw new CustomHttpException(
+        `Wellness Mood ${wellnessMoodId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const updatedWellnessMood = await this.wellnessMoodRepository.updateWellnessMoodById(
+      {
+        wellnessMoodName: wellnessMoodName,
+        wellnessMoodUpdatedTime: now,
+      },
+      wellnessMoodId
+    );
+
+    return {
+      wellnessMoodId: updatedWellnessMood.wellnessMoodId,
+      wellnessMoodName: updatedWellnessMood.wellnessMoodName,
+      wellnessMoodPosition: updatedWellnessMood.wellnessMoodPosition,
     };
   }
 }
