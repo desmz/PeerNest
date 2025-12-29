@@ -10,7 +10,7 @@ export const CREATE_WELLNESS_MOOD_METHOD: TApiMethod = 'post';
 export const CREATE_WELLNESS_MOOD_URL = '/sys/wellness-moods';
 
 export const createWellnessMoodFields = {
-  wellnessMoodName: 'WellnessMood Name',
+  wellnessMoodName: 'Wellness mood Name',
 } as const;
 
 export const createWellnessMoodRoSchema = z.object({

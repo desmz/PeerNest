@@ -75,15 +75,21 @@ export class InterestRepository {
     }
   }
 
-  async findInterestById(id: string, tx?: TKyselyTransaction) {
+  async findInterestById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const interest = await db
-        .selectFrom('interest')
-        .where('interestId', '=', id)
-        .selectAll()
-        .executeTakeFirst();
+      let query = db.selectFrom('interest').where('interestId', '=', id).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('interestDeletedTime', 'is', null);
+      }
+
+      const interest = await query.executeTakeFirst();
 
       return interest;
     } catch (error) {
@@ -95,15 +101,21 @@ export class InterestRepository {
     }
   }
 
-  async findInterestByName(name: string, tx?: TKyselyTransaction) {
+  async findInterestByName(
+    name: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const interest = await db
-        .selectFrom('interest')
-        .where('interestName', '=', name)
-        .selectAll()
-        .executeTakeFirst();
+      let query = db.selectFrom('interest').where('interestName', '=', name).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('interestDeletedTime', 'is', null);
+      }
+
+      const interest = await query.executeTakeFirst();
 
       return interest;
     } catch (error) {

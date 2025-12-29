@@ -29,6 +29,9 @@ import {
   updateWellnessMoodRoSchema,
   type TUpdateWellnessMoodRo,
   type TUpdateWellnessMoodVo,
+  createWellnessSymptomRoSchema,
+  type TCreateWellnessSymptomRo,
+  type TCreateWellnessSymptomVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -149,5 +152,15 @@ export class SystemController {
     updateWellnessMoodRo: TUpdateWellnessMoodRo
   ): Promise<TUpdateWellnessMoodVo> {
     return this.systemService.updateWellnessMood(updateWellnessMoodParams, updateWellnessMoodRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Post('wellness-symptoms')
+  @HttpCode(HttpStatus.CREATED)
+  async createWellnessSymptom(
+    @Body(new ZodValidationPipe(createWellnessSymptomRoSchema))
+    createWellnessSymptomRo: TCreateWellnessSymptomRo
+  ): Promise<TCreateWellnessSymptomVo> {
+    return this.systemService.createWellnessSymptom(createWellnessSymptomRo);
   }
 }

@@ -73,6 +73,15 @@ export const wellnessSymptomIdSchema = (field = 'Wellness Symptom Id') => {
     .startsWith(IdPrefix.WellnessSymptom, zStartWith(field, IdPrefix.WellnessSymptom));
 };
 
+export const wellnessSymptomCategoryIdSchema = (field = 'Wellness Symptom Category Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(
+      IdPrefix.WellnessSymptomCategory,
+      zStartWith(field, IdPrefix.WellnessSymptomCategory)
+    );
+};
+
 export const wellnessFactorIdSchema = (field = 'Wellness Factor Id') => {
   return z
     .string(zString(field))

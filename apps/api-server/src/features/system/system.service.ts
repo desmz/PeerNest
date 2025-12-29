@@ -6,6 +6,8 @@ import {
   TCreatePersonalGoalVo,
   TCreateWellnessMoodRo,
   TCreateWellnessMoodVo,
+  TCreateWellnessSymptomRo,
+  TCreateWellnessSymptomVo,
   TGetDomainsVo,
   TGetInterestsVo,
   TGetPersonalGoalsVo,
@@ -28,6 +30,7 @@ import {
   generateInterestId,
   generatePersonalGoalId,
   generateWellnessMoodId,
+  generateWellnessSymptomId,
   HttpErrorCode,
 } from '@peernest/core';
 
@@ -41,6 +44,7 @@ import {
   WellnessFactorCategoryRepository,
   WellnessMoodRepository,
   WellnessSymptomCategoryRepository,
+  WellnessSymptomRepository,
 } from '@/persistence/repos/system';
 
 @Injectable()
@@ -52,6 +56,7 @@ export class SystemService {
     private readonly pronounRepository: PronounRepository,
     private readonly wellnessMoodRepository: WellnessMoodRepository,
     private readonly wellnessFactorCategoryRepository: WellnessFactorCategoryRepository,
+    private readonly wellnessSymptomRepository: WellnessSymptomRepository,
     private readonly wellnessSymptomCategoryRepository: WellnessSymptomCategoryRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
@@ -382,6 +387,55 @@ export class SystemService {
       wellnessMoodId: updatedWellnessMood.wellnessMoodId,
       wellnessMoodName: updatedWellnessMood.wellnessMoodName,
       wellnessMoodPosition: updatedWellnessMood.wellnessMoodPosition,
+    };
+  }
+
+  async createWellnessSymptom(
+    createWellnessSymptomRo: TCreateWellnessSymptomRo
+  ): Promise<TCreateWellnessSymptomVo> {
+    const { wellnessSymptomName, wellnessSymptomWellnessSymptomCategoryId: categoryId } =
+      createWellnessSymptomRo;
+
+    const wellnessSymptomCategory =
+      await this.wellnessSymptomCategoryRepository.findWellnessSymptomCategoryById(categoryId);
+
+    if (!wellnessSymptomCategory) {
+      throw new CustomHttpException(
+        `Wellness Symptom Category ${categoryId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const wellnessSymptomMaxPosition = await this.wellnessSymptomRepository.findMaxPosition();
+
+    const existingWellnessSymptom =
+      await this.wellnessSymptomRepository.findWellnessSymptomByName(wellnessSymptomName);
+
+    if (existingWellnessSymptom) {
+      throw new CustomHttpException(
+        `Wellness Symptom ${wellnessSymptomName} already exist`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const now = new Date();
+    const wellnessSymptom = await this.wellnessSymptomRepository.createWellnessSymptom({
+      wellnessSymptomId: generateWellnessSymptomId(),
+      wellnessSymptomName: wellnessSymptomName,
+      wellnessSymptomWellnessSymptomCategoryId: categoryId,
+      wellnessSymptomPosition: wellnessSymptomMaxPosition + 1,
+      wellnessSymptomCreatedTime: now,
+    });
+
+    return {
+      wellnessSymptomId: wellnessSymptom.wellnessSymptomId,
+      wellnessSymptomName: wellnessSymptom.wellnessSymptomName,
+      wellnessSymptomPosition: wellnessSymptom.wellnessSymptomPosition,
+      wellnessSymptomCategory: {
+        wellnessSymptomCategoryId: wellnessSymptomCategory.wellnessSymptomCategoryId,
+        wellnessSymptomCategoryName: wellnessSymptomCategory.wellnessSymptomCategoryName,
+        wellnessSymptomCategoryPosition: wellnessSymptomCategory.wellnessSymptomCategoryPosition,
+      },
     };
   }
 }

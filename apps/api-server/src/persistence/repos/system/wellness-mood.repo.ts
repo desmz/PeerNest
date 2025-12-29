@@ -79,15 +79,21 @@ export class WellnessMoodRepository {
     }
   }
 
-  async findWellnessMoodById(id: string, tx?: TKyselyTransaction) {
+  async findWellnessMoodById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const wellnessMood = await db
-        .selectFrom('wellnessMood')
-        .where('wellnessMoodId', '=', id)
-        .selectAll()
-        .executeTakeFirst();
+      let query = db.selectFrom('wellnessMood').where('wellnessMoodId', '=', id).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('wellnessMoodDeletedTime', 'is', null);
+      }
+
+      const wellnessMood = query.executeTakeFirst();
 
       return wellnessMood;
     } catch (error) {
@@ -99,15 +105,21 @@ export class WellnessMoodRepository {
     }
   }
 
-  async findWellnessMoodByName(name: string, tx?: TKyselyTransaction) {
+  async findWellnessMoodByName(
+    name: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const wellnessMood = await db
-        .selectFrom('wellnessMood')
-        .where('wellnessMoodName', '=', name)
-        .selectAll()
-        .executeTakeFirst();
+      let query = db.selectFrom('wellnessMood').where('wellnessMoodName', '=', name).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('wellnessMoodDeletedTime', 'is', null);
+      }
+
+      const wellnessMood = await query.executeTakeFirst();
 
       return wellnessMood;
     } catch (error) {

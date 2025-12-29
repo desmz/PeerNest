@@ -79,15 +79,21 @@ export class PersonalGoalRepository {
     }
   }
 
-  async findPersonalGoalById(id: string, tx?: TKyselyTransaction) {
+  async findPersonalGoalById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const personalGoal = await db
-        .selectFrom('personalGoal')
-        .where('personalGoalId', '=', id)
-        .selectAll()
-        .executeTakeFirst();
+      let query = db.selectFrom('personalGoal').where('personalGoalId', '=', id).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('personalGoalDeletedTime', 'is', null);
+      }
+
+      const personalGoal = await query.executeTakeFirst();
 
       return personalGoal;
     } catch (error) {
@@ -99,15 +105,21 @@ export class PersonalGoalRepository {
     }
   }
 
-  async findPersonalGoalByTitle(title: string, tx?: TKyselyTransaction) {
+  async findPersonalGoalByTitle(
+    title: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const personalGoal = await db
-        .selectFrom('personalGoal')
-        .where('personalGoalTitle', '=', title)
-        .selectAll()
-        .executeTakeFirst();
+      let query = db.selectFrom('personalGoal').where('personalGoalTitle', '=', title).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('personalGoalDeletedTime', 'is', null);
+      }
+
+      const personalGoal = await query.executeTakeFirst();
 
       return personalGoal;
     } catch (error) {
