@@ -18,6 +18,10 @@ import {
   createPersonalGoalRoSchema,
   type TCreatePersonalGoalRo,
   type TCreatePersonalGoalVo,
+  type TUpdatePersonalGoalParams,
+  updatePersonalGoalRoSchema,
+  type TUpdatePersonalGoalRo,
+  type TUpdatePersonalGoalVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -106,5 +110,16 @@ export class SystemController {
     createPersonalGoalRo: TCreatePersonalGoalRo
   ): Promise<TCreatePersonalGoalVo> {
     return this.systemService.createPersonalGoal(createPersonalGoalRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Put('personal-goals/:personalGoalId')
+  @HttpCode(HttpStatus.OK)
+  async updatePersonalGoal(
+    @Param() updatePersonalGoalParams: TUpdatePersonalGoalParams,
+    @Body(new ZodValidationPipe(updatePersonalGoalRoSchema))
+    updatePersonalGoalRo: TUpdatePersonalGoalRo
+  ): Promise<TUpdatePersonalGoalVo> {
+    return this.systemService.updatePersonalGoal(updatePersonalGoalParams, updatePersonalGoalRo);
   }
 }

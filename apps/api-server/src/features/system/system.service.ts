@@ -15,6 +15,9 @@ import {
   TUpdateInterestParams,
   TUpdateInterestRo,
   TUpdateInterestVo,
+  TUpdatePersonalGoalParams,
+  TUpdatePersonalGoalRo,
+  TUpdatePersonalGoalVo,
 } from '@peernest/contract';
 import { generateInterestId, generatePersonalGoalId, HttpErrorCode } from '@peernest/core';
 
@@ -271,6 +274,40 @@ export class SystemService {
       personalGoalName: personalGoal.personalGoalName,
       personalGoalDescription: personalGoal.personalGoalDescription,
       personalGoalPosition: personalGoal.personalGoalPosition,
+    };
+  }
+
+  async updatePersonalGoal(
+    updatePersonalGoalParams: TUpdatePersonalGoalParams,
+    updatePersonalGoalRo: TUpdatePersonalGoalRo
+  ): Promise<TUpdatePersonalGoalVo> {
+    const { personalGoalId } = updatePersonalGoalParams;
+    const { personalGoalTitle } = updatePersonalGoalRo;
+
+    const personalGoal = await this.personalGoalRepository.findPersonalGoalById(personalGoalId);
+
+    if (!personalGoal) {
+      throw new CustomHttpException(
+        `PersonalGoal ${personalGoalId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const updatedPersonalGoal = await this.personalGoalRepository.updatePersonalGoalById(
+      {
+        personalGoalTitle: personalGoalTitle,
+        personalGoalUpdatedTime: now,
+      },
+      personalGoalId
+    );
+
+    return {
+      personalGoalId: updatedPersonalGoal.personalGoalId,
+      personalGoalTitle: updatedPersonalGoal.personalGoalTitle,
+      personalGoalName: updatedPersonalGoal.personalGoalName,
+      personalGoalDescription: updatedPersonalGoal.personalGoalDescription,
+      personalGoalPosition: updatedPersonalGoal.personalGoalPosition,
     };
   }
 }

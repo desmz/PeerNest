@@ -6,6 +6,7 @@ import {
   TInsertablePersonalGoal,
   TKyselyTransaction,
   TSelectablePersonalGoal,
+  TUpdatablePersonalGoal,
 } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
@@ -42,6 +43,58 @@ export class PersonalGoalRepository {
         `[${PersonalGoalRepository.repoName}] | Fail to create personal goal`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, personalGoalObj }
+      );
+    }
+  }
+
+  async updatePersonalGoalById(
+    personalGoalPayload: TUpdatablePersonalGoal,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = personalGoalPayload.personalGoalUpdatedTime
+        ? personalGoalPayload.personalGoalUpdatedTime
+        : new Date();
+
+      const personalGoal = await db
+        .updateTable('personalGoal')
+        .set({
+          ...personalGoalPayload,
+          personalGoalUpdatedTime: now,
+        })
+        .where('personalGoalId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return personalGoal!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${PersonalGoalRepository.repoName}] | Fail to update personal goal by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, personalGoalPayload, id }
+      );
+    }
+  }
+
+  async findPersonalGoalById(id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const personalGoal = await db
+        .selectFrom('personalGoal')
+        .where('personalGoalId', '=', id)
+        .selectAll()
+        .executeTakeFirst();
+
+      return personalGoal;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${PersonalGoalRepository.repoName}] | Fail to find personalGoal by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
       );
     }
   }
