@@ -25,6 +25,9 @@ import {
   TUpdateWellnessMoodParams,
   TUpdateWellnessMoodRo,
   TUpdateWellnessMoodVo,
+  TUpdateWellnessSymptomParams,
+  TUpdateWellnessSymptomRo,
+  TUpdateWellnessSymptomVo,
 } from '@peernest/contract';
 import {
   generateInterestId,
@@ -435,6 +438,44 @@ export class SystemService {
         wellnessSymptomCategoryId: wellnessSymptomCategory.wellnessSymptomCategoryId,
         wellnessSymptomCategoryName: wellnessSymptomCategory.wellnessSymptomCategoryName,
         wellnessSymptomCategoryPosition: wellnessSymptomCategory.wellnessSymptomCategoryPosition,
+      },
+    };
+  }
+
+  async updateWellnessSymptom(
+    updateWellnessSymptomParams: TUpdateWellnessSymptomParams,
+    updateWellnessSymptomRo: TUpdateWellnessSymptomRo
+  ): Promise<TUpdateWellnessSymptomVo> {
+    const { wellnessSymptomId } = updateWellnessSymptomParams;
+    const { wellnessSymptomName } = updateWellnessSymptomRo;
+
+    const wellnessSymptom =
+      await this.wellnessSymptomRepository.findWellnessSymptomById(wellnessSymptomId);
+
+    if (!wellnessSymptom) {
+      throw new CustomHttpException(
+        `Wellness Symptom ${wellnessSymptomId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const updatedWellnessSymptom = await this.wellnessSymptomRepository.updateWellnessSymptomById(
+      {
+        wellnessSymptomName: wellnessSymptomName,
+        wellnessSymptomUpdatedTime: now,
+      },
+      wellnessSymptomId
+    );
+
+    return {
+      wellnessSymptomId: updatedWellnessSymptom.wellnessSymptomId,
+      wellnessSymptomName: updatedWellnessSymptom.wellnessSymptomName,
+      wellnessSymptomPosition: updatedWellnessSymptom.wellnessSymptomPosition,
+      wellnessSymptomCategory: {
+        wellnessSymptomCategoryId: wellnessSymptom.wellnessSymptomCategoryId,
+        wellnessSymptomCategoryName: wellnessSymptom.wellnessSymptomCategoryName,
+        wellnessSymptomCategoryPosition: wellnessSymptom.wellnessSymptomCategoryPosition,
       },
     };
   }

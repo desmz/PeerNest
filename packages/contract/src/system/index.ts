@@ -13,3 +13,4 @@ export * from './get-wellness-symptoms';
 export * from './update-interest';
 export * from './update-personal-goal';
 export * from './update-wellness-mood';
+export * from './update-wellness-symptom';

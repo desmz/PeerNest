@@ -5,6 +5,7 @@ import {
   KyselyService,
   TInsertableWellnessSymptom,
   TKyselyTransaction,
+  TUpdatableWellnessSymptom,
 } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
@@ -48,6 +49,72 @@ export class WellnessSymptomRepository {
     }
   }
 
+  async updateWellnessSymptomById(
+    wellnessSymptomPayload: TUpdatableWellnessSymptom,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = wellnessSymptomPayload.wellnessSymptomUpdatedTime
+        ? wellnessSymptomPayload.wellnessSymptomUpdatedTime
+        : new Date();
+
+      const wellnessSymptom = await db
+        .updateTable('wellnessSymptom')
+        .set({
+          ...wellnessSymptomPayload,
+          wellnessSymptomUpdatedTime: now,
+        })
+        .where('wellnessSymptomId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return wellnessSymptom!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessSymptomRepository.repoName}] | Fail to update wellness symptom by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, wellnessSymptomPayload, id }
+      );
+    }
+  }
+
+  async findWellnessSymptomById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db
+        .selectFrom('wellnessSymptom')
+        .innerJoin(
+          'wellnessSymptomCategory',
+          'wellnessSymptomCategory.wellnessSymptomCategoryId',
+          'wellnessSymptom.wellnessSymptomWellnessSymptomCategoryId'
+        )
+        .selectAll()
+        .where('wellnessSymptomId', '=', id);
+
+      if (!options?.includedDeleted) {
+        query = query.where('wellnessSymptomDeletedTime', 'is', null);
+      }
+
+      const wellnessSymptom = await query.executeTakeFirst();
+
+      return wellnessSymptom;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessSymptomRepository.repoName}] | Fail to find wellness symptom by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
+      );
+    }
+  }
+
   async findWellnessSymptomByName(
     name: string,
     options?: { includedDeleted?: boolean },
@@ -58,6 +125,11 @@ export class WellnessSymptomRepository {
 
       let query = db
         .selectFrom('wellnessSymptom')
+        .innerJoin(
+          'wellnessSymptomCategory',
+          'wellnessSymptomCategory.wellnessSymptomCategoryId',
+          'wellnessSymptom.wellnessSymptomWellnessSymptomCategoryId'
+        )
         .selectAll()
         .where('wellnessSymptomName', '=', name);
 
