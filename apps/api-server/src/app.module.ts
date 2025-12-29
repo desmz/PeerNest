@@ -7,6 +7,7 @@ import { ConfigModule } from '@/configs/config.module';
 import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { AuthModule } from '@/features/auth/auth.module';
 import { JwtAuthGuard } from '@/features/auth/guards/jwt.guard';
+import { RolesGuard } from '@/features/auth/guards/roles.guard';
 import { CommentModule } from '@/features/comment/comment.module';
 import { DiscussionModule } from '@/features/discussion/discussion.module';
 import { FriendshipModule } from '@/features/friendship/friendship.module';
@@ -41,6 +42,10 @@ export const AppModules = {
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
   exports: [],

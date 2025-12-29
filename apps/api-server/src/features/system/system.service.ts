@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  TCreateInterestRo,
+  TCreateInterestVo,
   TGetDomainsVo,
   TGetInterestsVo,
   TGetPersonalGoalsVo,
@@ -9,7 +11,7 @@ import {
   TGetWellnessMoodsVo,
   TGetWellnessSymptomsVo,
 } from '@peernest/contract';
-import { HttpErrorCode } from '@peernest/core';
+import { generateInterestId, HttpErrorCode } from '@peernest/core';
 
 import { CustomHttpException } from '@/custom.exception';
 import {
@@ -170,5 +172,34 @@ export class SystemService {
         wellnessFactorPosition: wellnessFactor.wellnessFactorPosition,
       })),
     }));
+  }
+
+  async createInterest(createInterestRo: TCreateInterestRo): Promise<TCreateInterestVo> {
+    const { interestName } = createInterestRo;
+
+    const interestMaxPosition = await this.interestRepository.findMaxPosition();
+
+    const existingInterest = await this.interestRepository.findInterestByName(interestName);
+
+    if (existingInterest) {
+      throw new CustomHttpException(
+        `Interest ${interestName} already exist`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const now = new Date();
+    const interest = await this.interestRepository.createInterest({
+      interestId: generateInterestId(),
+      interestName: interestName,
+      interestPosition: interestMaxPosition + 1,
+      interestCreatedTime: now,
+    });
+
+    return {
+      interestId: interest.interestId,
+      interestName: interest.interestName,
+      interestPosition: interest.interestPosition,
+    };
   }
 }

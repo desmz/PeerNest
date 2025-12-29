@@ -1,14 +1,22 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import {
-  TGetDomainsVo,
-  TGetInterestsVo,
-  TGetPersonalGoalsVo,
-  TGetPronounsVo,
-  TGetUniversityVo,
-  TGetWellnessFactorsVo,
-  TGetWellnessMoodsVo,
-  TGetWellnessSymptomsVo,
+  createInterestRoSchema,
+  type TCreateInterestRo,
+  type TCreateInterestVo,
+  type TGetDomainsVo,
+  type TGetInterestsVo,
+  type TGetPersonalGoalsVo,
+  type TGetPronounsVo,
+  type TGetUniversityVo,
+  type TGetWellnessFactorsVo,
+  type TGetWellnessMoodsVo,
+  type TGetWellnessSymptomsVo,
 } from '@peernest/contract';
+import { UserRole } from '@peernest/core';
+
+import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
+
+import { Roles } from '../auth/decorators/roles.decorator';
 
 import { SystemService } from './system.service';
 
@@ -62,5 +70,14 @@ export class SystemController {
   @HttpCode(HttpStatus.OK)
   async getWellnessFactors(): Promise<TGetWellnessFactorsVo> {
     return this.systemService.getWellnessFactors();
+  }
+
+  @Roles(UserRole.Admin)
+  @Post('interests')
+  @HttpCode(HttpStatus.CREATED)
+  async createInterest(
+    @Body(new ZodValidationPipe(createInterestRoSchema)) createInterestRo: TCreateInterestRo
+  ): Promise<TCreateInterestVo> {
+    return this.systemService.createInterest(createInterestRo);
   }
 }
