@@ -24,6 +24,9 @@ import {
   TUpdatePersonalGoalParams,
   TUpdatePersonalGoalRo,
   TUpdatePersonalGoalVo,
+  TUpdateWellnessFactorParams,
+  TUpdateWellnessFactorRo,
+  TUpdateWellnessFactorVo,
   TUpdateWellnessMoodParams,
   TUpdateWellnessMoodRo,
   TUpdateWellnessMoodVo,
@@ -530,6 +533,44 @@ export class SystemService {
         wellnessFactorCategoryId: wellnessFactorCategory.wellnessFactorCategoryId,
         wellnessFactorCategoryName: wellnessFactorCategory.wellnessFactorCategoryName,
         wellnessFactorCategoryPosition: wellnessFactorCategory.wellnessFactorCategoryPosition,
+      },
+    };
+  }
+
+  async updateWellnessFactor(
+    updateWellnessFactorParams: TUpdateWellnessFactorParams,
+    updateWellnessFactorRo: TUpdateWellnessFactorRo
+  ): Promise<TUpdateWellnessFactorVo> {
+    const { wellnessFactorId } = updateWellnessFactorParams;
+    const { wellnessFactorName } = updateWellnessFactorRo;
+
+    const wellnessFactor =
+      await this.wellnessFactorRepository.findWellnessFactorById(wellnessFactorId);
+
+    if (!wellnessFactor) {
+      throw new CustomHttpException(
+        `Wellness Factor ${wellnessFactorId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const updatedWellnessFactor = await this.wellnessFactorRepository.updateWellnessFactorById(
+      {
+        wellnessFactorName: wellnessFactorName,
+        wellnessFactorUpdatedTime: now,
+      },
+      wellnessFactorId
+    );
+
+    return {
+      wellnessFactorId: updatedWellnessFactor.wellnessFactorId,
+      wellnessFactorName: updatedWellnessFactor.wellnessFactorName,
+      wellnessFactorPosition: updatedWellnessFactor.wellnessFactorPosition,
+      wellnessFactorCategory: {
+        wellnessFactorCategoryId: wellnessFactor.wellnessFactorCategoryId,
+        wellnessFactorCategoryName: wellnessFactor.wellnessFactorCategoryName,
+        wellnessFactorCategoryPosition: wellnessFactor.wellnessFactorCategoryPosition,
       },
     };
   }

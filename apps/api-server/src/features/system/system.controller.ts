@@ -39,6 +39,10 @@ import {
   createWellnessFactorRoSchema,
   type TCreateWellnessFactorRo,
   type TCreateWellnessFactorVo,
+  type TUpdateWellnessFactorParams,
+  updateWellnessFactorRoSchema,
+  type TUpdateWellnessFactorRo,
+  type TUpdateWellnessFactorVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -193,5 +197,19 @@ export class SystemController {
     createWellnessFactorRo: TCreateWellnessFactorRo
   ): Promise<TCreateWellnessFactorVo> {
     return this.systemService.createWellnessFactor(createWellnessFactorRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Put('wellness-factors/:wellnessFactorId')
+  @HttpCode(HttpStatus.OK)
+  async updateWellnessFactor(
+    @Param() updateWellnessFactorParams: TUpdateWellnessFactorParams,
+    @Body(new ZodValidationPipe(updateWellnessFactorRoSchema))
+    updateWellnessFactorRo: TUpdateWellnessFactorRo
+  ): Promise<TUpdateWellnessFactorVo> {
+    return this.systemService.updateWellnessFactor(
+      updateWellnessFactorParams,
+      updateWellnessFactorRo
+    );
   }
 }

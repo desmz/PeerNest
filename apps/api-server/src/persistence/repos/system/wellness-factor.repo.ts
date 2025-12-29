@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { generateWellnessFactorId, HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TInsertableWellnessFactor, TKyselyTransaction } from '@peernest/db';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableWellnessFactor,
+  TKyselyTransaction,
+  TUpdatableWellnessFactor,
+} from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -39,6 +45,72 @@ export class WellnessFactorRepository {
         `[${WellnessFactorRepository.repoName}] | Fail to create wellness factor`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, wellnessFactorObj }
+      );
+    }
+  }
+
+  async updateWellnessFactorById(
+    wellnessFactorPayload: TUpdatableWellnessFactor,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = wellnessFactorPayload.wellnessFactorUpdatedTime
+        ? wellnessFactorPayload.wellnessFactorUpdatedTime
+        : new Date();
+
+      const wellnessFactor = await db
+        .updateTable('wellnessFactor')
+        .set({
+          ...wellnessFactorPayload,
+          wellnessFactorUpdatedTime: now,
+        })
+        .where('wellnessFactorId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return wellnessFactor!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessFactorRepository.repoName}] | Fail to update wellness factor by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, wellnessFactorPayload, id }
+      );
+    }
+  }
+
+  async findWellnessFactorById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db
+        .selectFrom('wellnessFactor')
+        .innerJoin(
+          'wellnessFactorCategory',
+          'wellnessFactorCategory.wellnessFactorCategoryId',
+          'wellnessFactor.wellnessFactorWellnessFactorCategoryId'
+        )
+        .selectAll()
+        .where('wellnessFactorId', '=', id);
+
+      if (!options?.includedDeleted) {
+        query = query.where('wellnessFactorDeletedTime', 'is', null);
+      }
+
+      const wellnessFactor = await query.executeTakeFirst();
+
+      return wellnessFactor;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessFactorRepository.repoName}] | Fail to find wellness factor by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
       );
     }
   }
