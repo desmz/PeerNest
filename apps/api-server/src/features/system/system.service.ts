@@ -10,6 +10,9 @@ import {
   TGetWellnessFactorsVo,
   TGetWellnessMoodsVo,
   TGetWellnessSymptomsVo,
+  TUpdateInterestParams,
+  TUpdateInterestRo,
+  TUpdateInterestVo,
 } from '@peernest/contract';
 import { generateInterestId, HttpErrorCode } from '@peernest/core';
 
@@ -200,6 +203,38 @@ export class SystemService {
       interestId: interest.interestId,
       interestName: interest.interestName,
       interestPosition: interest.interestPosition,
+    };
+  }
+
+  async updateInterest(
+    updateInterestParams: TUpdateInterestParams,
+    updateInterestRo: TUpdateInterestRo
+  ): Promise<TUpdateInterestVo> {
+    const { interestId } = updateInterestParams;
+    const { interestName } = updateInterestRo;
+
+    const interest = await this.interestRepository.findInterestById(interestId);
+
+    if (!interest) {
+      throw new CustomHttpException(
+        `Interest ${interestId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const updatedInterest = await this.interestRepository.updateInterestById(
+      {
+        interestName: interestName,
+        interestUpdatedTime: now,
+      },
+      interestId
+    );
+
+    return {
+      interestId: updatedInterest.interestId,
+      interestName: updatedInterest.interestName,
+      interestPosition: updatedInterest.interestPosition,
     };
   }
 }

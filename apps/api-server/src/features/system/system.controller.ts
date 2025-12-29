@@ -1,6 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
   createInterestRoSchema,
+  type TUpdateInterestRo,
+  type TUpdateInterestVo,
+  updateInterestRoSchema,
   type TCreateInterestRo,
   type TCreateInterestVo,
   type TGetDomainsVo,
@@ -11,6 +14,7 @@ import {
   type TGetWellnessFactorsVo,
   type TGetWellnessMoodsVo,
   type TGetWellnessSymptomsVo,
+  type TUpdateInterestParams,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -79,5 +83,15 @@ export class SystemController {
     @Body(new ZodValidationPipe(createInterestRoSchema)) createInterestRo: TCreateInterestRo
   ): Promise<TCreateInterestVo> {
     return this.systemService.createInterest(createInterestRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Put('interests/:interestId')
+  @HttpCode(HttpStatus.OK)
+  async updateInterest(
+    @Param() updateInterestParams: TUpdateInterestParams,
+    @Body(new ZodValidationPipe(updateInterestRoSchema)) updateInterestRo: TUpdateInterestRo
+  ): Promise<TUpdateInterestVo> {
+    return this.systemService.updateInterest(updateInterestParams, updateInterestRo);
   }
 }

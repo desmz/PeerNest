@@ -6,6 +6,7 @@ import {
   TInsertableInterest,
   TKyselyTransaction,
   TSelectableInterest,
+  TUpdatableInterest,
 } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
@@ -42,6 +43,38 @@ export class InterestRepository {
     }
   }
 
+  async updateInterestById(
+    interestPayload: TUpdatableInterest,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = interestPayload.interestUpdatedTime
+        ? interestPayload.interestUpdatedTime
+        : new Date();
+
+      const interest = await db
+        .updateTable('interest')
+        .set({
+          ...interestPayload,
+          interestUpdatedTime: now,
+        })
+        .where('interestId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return interest!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to update interest by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, interestPayload, id }
+      );
+    }
+  }
+
   async findInterests(
     options?: {
       includedDeleted?: boolean;
@@ -72,6 +105,26 @@ export class InterestRepository {
         `[${InterestRepository.repoName}] | Fail to find interests`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
+      );
+    }
+  }
+
+  async findInterestById(id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const interest = await db
+        .selectFrom('interest')
+        .where('interestId', '=', id)
+        .selectAll()
+        .executeTakeFirst();
+
+      return interest;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to find interest by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
       );
     }
   }
