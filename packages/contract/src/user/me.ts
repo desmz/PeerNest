@@ -1,16 +1,18 @@
-import { IdPrefix } from '@peernest/core';
 import z from 'zod';
 
 import { displayNameSchema, emailSchema } from '../auth/signup';
+import { TApiMethod } from '../types';
 
-export const ME = '/users/me';
+export const ME_METHOD: TApiMethod = 'get';
 
-export const userIdSchema = z.string().startsWith(IdPrefix.User);
+export const ME_URL = '/me';
 
 export const meVoSchema = z.object({
-  id: userIdSchema,
-  email: emailSchema,
   displayName: displayNameSchema,
+  role: z.string().nonempty(),
+  email: emailSchema,
+  avatarUrl: z.string().nonempty(),
+  lastSignedTime: z.date(),
 });
 
 export type TMeVo = z.infer<typeof meVoSchema>;

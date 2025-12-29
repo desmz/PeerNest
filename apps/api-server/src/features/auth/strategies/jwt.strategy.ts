@@ -1,21 +1,24 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { type TMeVo } from '@peernest/contract';
-import { ACCESS_TOKEN_STRATEGY_NAME, HttpErrorCode } from '@peernest/core';
+import { ACCESS_TOKEN_STRATEGY_NAME, HttpErrorCode, UserRole } from '@peernest/core';
+import { ClsService } from 'nestjs-cls';
 import { Strategy } from 'passport-jwt';
 
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { CustomHttpException } from '@/custom.exception';
-import { UserRepository } from '@/features/user/user.repo';
+import { UserRepository } from '@/persistence/repos/user';
+import { IClsStore } from '@/types/cls';
 
 import { TJwtPayload, JwtType } from '../types/jwt-payload.type';
-import { fromCookie } from '../util';
-import { pickUserMe } from '../utils';
+import { fromCookie, pickUserMe } from '../utils';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEGY_NAME) {
   constructor(
     @AuthConfig() authConfig: TAuthConfig,
+    private readonly clsService: ClsService<IClsStore>,
+
     private readonly userRepository: UserRepository
   ) {
     super({
@@ -28,7 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
   async validate(payload: TJwtPayload): Promise<TMeVo> {
     const { sub: userId, type } = payload;
 
-    if (type !== JwtType.ACCESS) {
+    if (type !== JwtType.Access) {
       throw new UnauthorizedException('Must use access token type');
     }
 
@@ -37,11 +40,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
     if (!user) {
       throw new CustomHttpException('User is unauthorized', HttpErrorCode.UNAUTHORIZED);
     }
-    if (user.deletedTime) {
-      throw new CustomHttpException(`User ${user.email} is disabled`, HttpErrorCode.FREEZE_ACCOUNT);
+    if (user.userDeletedTime) {
+      throw new CustomHttpException(
+        `User ${user.userEmail} is disabled`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
     }
 
-    // set to cls
+    // todo: add ban check
+
+    this.clsService.set('user.email', user.userEmail);
+    this.clsService.set('user.id', user.userId);
+    this.clsService.set('user.role', user.roleName as UserRole);
 
     return pickUserMe(user);
   }

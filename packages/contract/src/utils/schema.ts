@@ -1,5 +1,3 @@
-import { isEmptyObject } from '@peernest/core';
-import { type ZodRawShape, type ZodObject } from 'zod';
 import { CheckTypeParams } from 'zod/v4/core';
 
 // utils functions
@@ -19,19 +17,38 @@ export const zBoolean = (field: string): CheckTypeParams => zDataType(field, 'bo
 
 export const zNumber = (field: string): CheckTypeParams => zDataType(field, 'number');
 
+export const zInt = (field: string): CheckTypeParams => zDataType(field, 'integer');
+
 export const zArray = (field: string): CheckTypeParams => zDataType(field, 'array');
+
+export const zDate = (field: string): CheckTypeParams => zDataType(field, 'date');
+
+export const zIsoDuration = (field: string): CheckTypeParams =>
+  zDataType(field, 'ISO duration. (exp: P0Y0M0DT6H30M0S)');
 
 // constraint error functions
 export const zNonEmpty = (field: string): CheckTypeParams => ({
   message: `${field} must not be empty`,
 });
 
-export const zMin = (field: string, min: number): CheckTypeParams => ({
-  message: `${field} must be at least ${min} characters`,
+export const zStartWith = (field: string, prefix: string): CheckTypeParams => ({
+  message: `${field} must start with "${prefix}"`,
 });
 
-export const zMax = (field: string, max: number): CheckTypeParams => ({
-  message: `${field} must be at most ${max} characters`,
+export const zMin = (field: string, min: number, unit = 'characters'): CheckTypeParams => ({
+  message: `${field} must be at least ${min} ${unit}`,
+});
+
+export const zMax = (field: string, max: number, unit = 'characters'): CheckTypeParams => ({
+  message: `${field} must be at most ${max} ${unit}`,
+});
+
+export const zArrayMin = (field: string, min: number): CheckTypeParams => ({
+  error: `${field} must be at least ${min} items`,
+});
+
+export const zArrayMax = (field: string, max: number): CheckTypeParams => ({
+  error: `${field} must be at most ${max} items`,
 });
 
 export const zEmail = (field: string): CheckTypeParams => ({
@@ -42,15 +59,6 @@ export const zEnum = (field: string): CheckTypeParams => ({
   message: `${field} is not a valid enum`,
 });
 
-export const zNonEmptyObject = <T extends ZodRawShape>(objectSchema: ZodObject<T>) =>
-  objectSchema.superRefine((obj, ctx) => {
-    // const keys = Object.keys(obj).filter((key) => Boolean(obj[key as keyof typeof obj]));
-    // keys.length === 0
-
-    if (isEmptyObject(obj)) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Object cannot be empty',
-      });
-    }
-  });
+export const zPositive = (field: string): CheckTypeParams => ({
+  message: `${field} must be a positive number`,
+});

@@ -1,23 +1,34 @@
-import { Controller, Get, HttpCode, HttpStatus, Req } from '@nestjs/common';
-import { type TMeVo } from '@peernest/contract';
-import { type Request } from 'express';
+import { Controller, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
+import {
+  findUsersQueryParamsSchema,
+  type TFindUsersVo,
+  type TFindUsersQueryParams,
+  type TGetUserProfileParams,
+  TGetUserProfileVo,
+} from '@peernest/contract';
 
-import { Public } from '@/features/auth/decorators/public.decorator';
+import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
+
+import { UserService } from './user.service';
 
 @Controller('api/users')
 export class UserController {
-  // constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
-  @Public()
   @Get()
   @HttpCode(HttpStatus.OK)
-  async testing() {
-    return { testing: 'Hello world' };
+  async findUsers(
+    @Query(new ZodValidationPipe(findUsersQueryParamsSchema))
+    findUsersQueryParams: TFindUsersQueryParams
+  ): Promise<TFindUsersVo> {
+    return this.userService.findUsers(findUsersQueryParams);
   }
 
-  @Get('/me')
+  @Get(':userId/profile')
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@Req() req: Request): Promise<TMeVo> {
-    return req.user as TMeVo;
+  async getUserProfile(
+    @Param() getUserProfileParams: TGetUserProfileParams
+  ): Promise<TGetUserProfileVo> {
+    return this.userService.getUserProfile(getUserProfileParams);
   }
 }

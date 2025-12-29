@@ -4,6 +4,7 @@
  */
 
 import type { ColumnType } from 'kysely';
+import type { IPostgresInterval } from 'postgres-interval';
 
 export type AuthAalLevel = 'aal1' | 'aal2' | 'aal3';
 
@@ -36,6 +37,12 @@ export type Generated<T> =
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
+export type Interval = ColumnType<
+  IPostgresInterval,
+  IPostgresInterval | number | string,
+  IPostgresInterval | number | string
+>;
+
 export type Json = JsonValue;
 
 export type JsonArray = JsonValue[];
@@ -53,6 +60,32 @@ export type Numeric = ColumnType<string, number | string, number | string>;
 export type StorageBuckettype = 'ANALYTICS' | 'STANDARD' | 'VECTOR';
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export interface Account {
+  accountCreatedTime: Generated<Timestamp>;
+  accountDeletedTime: Timestamp | null;
+  accountId: Generated<string>;
+  accountProvider: string;
+  accountProviderUserId: string;
+  accountType: string;
+  accountUpdatedTime: Timestamp | null;
+  accountUserId: string;
+}
+
+export interface Attachment {
+  attachmentCreatedTime: Generated<Timestamp>;
+  attachmentDeletedTime: Timestamp | null;
+  attachmentHeight: Int8 | null;
+  attachmentId: Generated<string>;
+  attachmentMimetype: string;
+  attachmentName: string;
+  attachmentOwnerId: string | null;
+  attachmentPath: string;
+  attachmentSize: Int8;
+  attachmentStatus: string;
+  attachmentUpdatedTime: Timestamp | null;
+  attachmentWidth: Int8 | null;
+}
 
 export interface AuthAuditLogEntries {
   createdAt: Timestamp | null;
@@ -147,6 +180,7 @@ export interface AuthOauthAuthorizations {
   createdAt: Generated<Timestamp>;
   expiresAt: Generated<Timestamp>;
   id: string;
+  nonce: string | null;
   redirectUri: string;
   resource: string | null;
   responseType: Generated<AuthOauthResponseType>;
@@ -169,6 +203,13 @@ export interface AuthOauthClients {
   redirectUris: string;
   registrationType: AuthOauthRegistrationType;
   updatedAt: Generated<Timestamp>;
+}
+
+export interface AuthOauthClientStates {
+  codeVerifier: string | null;
+  createdAt: Timestamp;
+  id: string;
+  providerType: string;
 }
 
 export interface AuthOauthConsents {
@@ -249,6 +290,7 @@ export interface AuthSessions {
    * Holds a HMAC-SHA256 key used to sign refresh tokens for this session.
    */
   refreshTokenHmacKey: string | null;
+  scopes: string | null;
   tag: string | null;
   updatedAt: Timestamp | null;
   userAgent: string | null;
@@ -315,6 +357,112 @@ export interface AuthUsers {
   updatedAt: Timestamp | null;
 }
 
+export interface CheckIn {
+  checkInCheckInTime: Generated<Timestamp>;
+  checkInCreatedTime: Generated<Timestamp>;
+  checkInId: Generated<string>;
+  checkInMoodRating: Int8;
+  checkInSleepQualityRating: Int8 | null;
+  checkInSleepTime: Interval | null;
+  checkInUpdatedTime: Timestamp | null;
+  checkInUserId: string;
+}
+
+export interface CheckInHealthMeasurement {
+  checkInHealthMeasurementCheckInId: string;
+  checkInHealthMeasurementHeartRate: Int8 | null;
+  checkInHealthMeasurementId: Generated<string>;
+  checkInHealthMeasurementStepCount: Int8 | null;
+  checkInHealthMeasurementWeight: Numeric | null;
+}
+
+export interface CheckInWellnessFactor {
+  checkInWellnessFactorCheckInId: string;
+  checkInWellnessFactorId: Generated<string>;
+  checkInWellnessFactorWellnessFactorId: string;
+}
+
+export interface CheckInWellnessMood {
+  checkInWellnessMoodCheckInId: string;
+  checkInWellnessMoodId: Generated<string>;
+  checkInWellnessMoodWellnessMoodId: string;
+}
+
+export interface CheckInWellnessSymptom {
+  checkInWellnessSymptomCheckInId: string;
+  checkInWellnessSymptomId: Generated<string>;
+  checkInWellnessSymptomWellnessSymptomId: string;
+}
+
+export interface Comment {
+  commentAuthorId: string;
+  commentContent: string;
+  commentCreatedTime: Generated<Timestamp>;
+  commentDeletedTime: Timestamp | null;
+  commentDiscussionId: string;
+  commentId: Generated<string>;
+  commentParentCommentId: string | null;
+  commentUpdatedTime: Timestamp | null;
+}
+
+export interface Conversation {
+  conversationCreatedTime: Generated<Timestamp>;
+  conversationId: Generated<string>;
+  conversationType: string;
+  conversationUpdatedTime: Timestamp | null;
+}
+
+export interface ConversationParticipant {
+  conversationParticipantClosedTime: Timestamp | null;
+  conversationParticipantConversationId: string;
+  conversationParticipantId: Generated<string>;
+  conversationParticipantJoinedTime: Generated<Timestamp>;
+  conversationParticipantParticipantId: string;
+  conversationParticipantRole: string;
+}
+
+export interface Discussion {
+  discussionArchivedBy: string | null;
+  discussionArchivedTime: Timestamp | null;
+  discussionAuthorId: string;
+  discussionContent: string;
+  discussionCreatedTime: Generated<Timestamp>;
+  discussionDeletedTime: Timestamp | null;
+  discussionId: Generated<string>;
+  discussionSearchTsv: string | null;
+  discussionStatus: string;
+  discussionTitle: string;
+  discussionUpdatedTime: Timestamp | null;
+}
+
+export interface DiscussionAttachment {
+  discussionAttachmentAttachmentId: string;
+  discussionAttachmentDiscussionId: string;
+  discussionAttachmentId: Generated<string>;
+}
+
+export interface DiscussionInterest {
+  discussionInterestDiscussionId: string;
+  discussionInterestId: Generated<string>;
+  discussionInterestInterestId: string;
+  discussionInterestPosition: Numeric;
+}
+
+export interface DiscussionPersonalGoal {
+  discussionPersonalGoalDiscussionId: string;
+  discussionPersonalGoalId: Generated<string>;
+  discussionPersonalGoalPersonalGoalId: string;
+  discussionPersonalGoalPosition: Numeric;
+}
+
+export interface Domain {
+  domainCreatedTime: Generated<Timestamp>;
+  domainDeletedTime: Timestamp | null;
+  domainId: Generated<string>;
+  domainName: string;
+  domainUpdatedTime: Timestamp | null;
+}
+
 export interface ExtensionsPgStatStatements {
   calls: Int8 | null;
   dbid: number | null;
@@ -372,6 +520,44 @@ export interface ExtensionsPgStatStatementsInfo {
   statsReset: Timestamp | null;
 }
 
+export interface FriendRequest {
+  friendRequestCreatedTime: Generated<Timestamp>;
+  friendRequestFromId: string;
+  friendRequestId: Generated<string>;
+  friendRequestMatchedBySystem: Generated<boolean>;
+  friendRequestResolvedTime: Timestamp | null;
+  friendRequestStatus: string;
+  friendRequestToId: string;
+}
+
+export interface Interest {
+  interestCreatedTime: Generated<Timestamp>;
+  interestDeletedTime: Timestamp | null;
+  interestId: Generated<string>;
+  interestName: string;
+  interestPosition: Numeric;
+  interestUpdatedTime: Timestamp | null;
+}
+
+export interface PersonalGoal {
+  personalGoalCreatedTime: Generated<Timestamp>;
+  personalGoalDeletedTime: Timestamp | null;
+  personalGoalDescription: string | null;
+  personalGoalId: Generated<string>;
+  personalGoalName: string;
+  personalGoalPosition: Numeric;
+  personalGoalTitle: string;
+  personalGoalUpdatedTime: Timestamp | null;
+}
+
+export interface Pronoun {
+  pronounCreatedTime: Generated<Timestamp>;
+  pronounDeletedTime: Timestamp | null;
+  pronounId: Generated<string>;
+  pronounName: string;
+  pronounUpdatedTime: Timestamp | null;
+}
+
 export interface RealtimeMessages {
   event: string | null;
   extension: string;
@@ -396,6 +582,23 @@ export interface RealtimeSubscription {
   filters: Generated<string[]>;
   id: Generated<Int8>;
   subscriptionId: string;
+}
+
+export interface Relationship {
+  relationshipCreatedTime: Generated<Timestamp>;
+  relationshipId: Generated<string>;
+  relationshipType: string;
+  relationshipUserIdA: string;
+  relationshipUserIdB: string;
+}
+
+export interface Role {
+  roleCreatedTime: Generated<Timestamp>;
+  roleDeletedTime: Timestamp | null;
+  roleId: Generated<string>;
+  roleName: string;
+  roleRank: Int8;
+  roleUpdatedTime: Timestamp | null;
 }
 
 export interface StorageBuckets {
@@ -503,13 +706,102 @@ export interface StorageVectorIndexes {
   updatedAt: Generated<Timestamp>;
 }
 
+export interface University {
+  universityCountry: string;
+  universityCreatedTime: Generated<Timestamp>;
+  universityDeletedTime: Timestamp | null;
+  universityId: Generated<string>;
+  universityName: string;
+  universityUpdatedTime: Timestamp | null;
+}
+
 export interface User {
-  createdTime: Generated<Timestamp>;
-  deletedTime: Timestamp | null;
-  displayName: string;
-  email: string;
-  id: Generated<string>;
-  updatedTime: Generated<Timestamp>;
+  userAvatarUrl: string;
+  userCreatedTime: Generated<Timestamp>;
+  userDeletedTime: Timestamp | null;
+  userDisplayName: string;
+  userDisplayNameTsv: string | null;
+  userEmail: string;
+  userId: Generated<string>;
+  userLastSignedTime: Timestamp;
+  userPasswordHash: string | null;
+  userRoleId: string | null;
+  userUpdatedTime: Timestamp | null;
+}
+
+export interface UserCommentLike {
+  userCommentLikeCommentId: string;
+  userCommentLikeCreatedTime: Generated<Timestamp>;
+  userCommentLikeId: Generated<string>;
+  userCommentLikeUserId: string;
+}
+
+export interface UserCommentReport {
+  userCommentReportCommentId: string;
+  userCommentReportId: Generated<string>;
+  userCommentReportReportedTime: Generated<Timestamp>;
+  userCommentReportReporterId: string;
+  userCommentReportResolvedTime: Timestamp | null;
+  userCommentReportResolverId: string | null;
+  userCommentReportStatus: string;
+}
+
+export interface UserDiscussionLike {
+  userDiscussionLikeCreatedTime: Generated<Timestamp>;
+  userDiscussionLikeDiscussionId: string;
+  userDiscussionLikeId: Generated<string>;
+  userDiscussionLikeUserId: string;
+}
+
+export interface UserDiscussionReport {
+  userDiscussionReportDiscussionId: string;
+  userDiscussionReportId: Generated<string>;
+  userDiscussionReportReportedTime: Generated<Timestamp>;
+  userDiscussionReportReporterId: string;
+  userDiscussionReportResolvedTime: Timestamp | null;
+  userDiscussionReportResolverId: string | null;
+  userDiscussionReportStatus: string;
+}
+
+export interface UserInfo {
+  userInfoBio: string | null;
+  userInfoCreatedTime: Generated<Timestamp>;
+  userInfoDeletedTime: Timestamp | null;
+  userInfoDomainId: string | null;
+  userInfoId: Generated<string>;
+  userInfoLookingFor: string | null;
+  userInfoPronounId: string | null;
+  userInfoUniversityId: string | null;
+  userInfoUpdatedTime: Timestamp | null;
+  userInfoUserId: string;
+}
+
+export interface UserInfoInterest {
+  userInfoInterestCreatedTime: Generated<Timestamp>;
+  userInfoInterestId: Generated<string>;
+  userInfoInterestInterestId: string;
+  userInfoInterestPosition: Numeric;
+  userInfoInterestUpdatedTime: Timestamp | null;
+  userInfoInterestUserInfoId: string;
+}
+
+export interface UserInfoPersonalGoal {
+  userInfoPersonalGoalCreatedTime: Generated<Timestamp>;
+  userInfoPersonalGoalId: Generated<string>;
+  userInfoPersonalGoalPersonalGoalId: string;
+  userInfoPersonalGoalPosition: Numeric;
+  userInfoPersonalGoalUpdatedTime: Timestamp | null;
+  userInfoPersonalGoalUserInfoId: string;
+}
+
+export interface UserToken {
+  userTokenCreatedTime: Generated<Timestamp>;
+  userTokenExpiredTime: Timestamp;
+  userTokenId: Generated<string>;
+  userTokenTokenHash: string;
+  userTokenType: string;
+  userTokenUsedTime: Timestamp | null;
+  userTokenUserId: string;
 }
 
 export interface VaultDecryptedSecrets {
@@ -535,7 +827,56 @@ export interface VaultSecrets {
   updatedAt: Generated<Timestamp>;
 }
 
+export interface WellnessFactor {
+  wellnessFactorCreatedTime: Generated<Timestamp>;
+  wellnessFactorDeletedTime: Timestamp | null;
+  wellnessFactorId: Generated<string>;
+  wellnessFactorName: string;
+  wellnessFactorPosition: Numeric;
+  wellnessFactorUpdatedTime: Timestamp | null;
+  wellnessFactorWellnessFactorCategoryId: string;
+}
+
+export interface WellnessFactorCategory {
+  wellnessFactorCategoryCreatedTime: Generated<Timestamp>;
+  wellnessFactorCategoryDeletedTime: Timestamp | null;
+  wellnessFactorCategoryId: Generated<string>;
+  wellnessFactorCategoryName: string;
+  wellnessFactorCategoryPosition: Numeric;
+  wellnessFactorCategoryUpdatedTime: Timestamp | null;
+}
+
+export interface WellnessMood {
+  wellnessMoodCreatedTime: Generated<Timestamp>;
+  wellnessMoodDeletedTime: Timestamp | null;
+  wellnessMoodId: Generated<string>;
+  wellnessMoodName: string;
+  wellnessMoodPosition: Numeric;
+  wellnessMoodUpdatedTime: Timestamp | null;
+}
+
+export interface WellnessSymptom {
+  wellnessSymptomCreatedTime: Generated<Timestamp>;
+  wellnessSymptomDeletedTime: Timestamp | null;
+  wellnessSymptomId: Generated<string>;
+  wellnessSymptomName: string;
+  wellnessSymptomPosition: Numeric;
+  wellnessSymptomUpdatedTime: Timestamp | null;
+  wellnessSymptomWellnessSymptomCategoryId: string;
+}
+
+export interface WellnessSymptomCategory {
+  wellnessSymptomCategoryCreatedTime: Generated<Timestamp>;
+  wellnessSymptomCategoryDeletedTime: Timestamp | null;
+  wellnessSymptomCategoryId: Generated<string>;
+  wellnessSymptomCategoryName: string;
+  wellnessSymptomCategoryPosition: Numeric;
+  wellnessSymptomCategoryUpdatedTime: Timestamp | null;
+}
+
 export interface DB {
+  account: Account;
+  attachment: Attachment;
   'auth.auditLogEntries': AuthAuditLogEntries;
   'auth.flowState': AuthFlowState;
   'auth.identities': AuthIdentities;
@@ -545,6 +886,7 @@ export interface DB {
   'auth.mfaFactors': AuthMfaFactors;
   'auth.oauthAuthorizations': AuthOauthAuthorizations;
   'auth.oauthClients': AuthOauthClients;
+  'auth.oauthClientStates': AuthOauthClientStates;
   'auth.oauthConsents': AuthOauthConsents;
   'auth.oneTimeTokens': AuthOneTimeTokens;
   'auth.refreshTokens': AuthRefreshTokens;
@@ -555,11 +897,30 @@ export interface DB {
   'auth.ssoDomains': AuthSsoDomains;
   'auth.ssoProviders': AuthSsoProviders;
   'auth.users': AuthUsers;
+  checkIn: CheckIn;
+  checkInHealthMeasurement: CheckInHealthMeasurement;
+  checkInWellnessFactor: CheckInWellnessFactor;
+  checkInWellnessMood: CheckInWellnessMood;
+  checkInWellnessSymptom: CheckInWellnessSymptom;
+  comment: Comment;
+  conversation: Conversation;
+  conversationParticipant: ConversationParticipant;
+  discussion: Discussion;
+  discussionAttachment: DiscussionAttachment;
+  discussionInterest: DiscussionInterest;
+  discussionPersonalGoal: DiscussionPersonalGoal;
+  domain: Domain;
   'extensions.pgStatStatements': ExtensionsPgStatStatements;
   'extensions.pgStatStatementsInfo': ExtensionsPgStatStatementsInfo;
+  friendRequest: FriendRequest;
+  interest: Interest;
+  personalGoal: PersonalGoal;
+  pronoun: Pronoun;
   'realtime.messages': RealtimeMessages;
   'realtime.schemaMigrations': RealtimeSchemaMigrations;
   'realtime.subscription': RealtimeSubscription;
+  relationship: Relationship;
+  role: Role;
   'storage.buckets': StorageBuckets;
   'storage.bucketsAnalytics': StorageBucketsAnalytics;
   'storage.bucketsVectors': StorageBucketsVectors;
@@ -569,7 +930,21 @@ export interface DB {
   'storage.s3MultipartUploads': StorageS3MultipartUploads;
   'storage.s3MultipartUploadsParts': StorageS3MultipartUploadsParts;
   'storage.vectorIndexes': StorageVectorIndexes;
+  university: University;
   user: User;
+  userCommentLike: UserCommentLike;
+  userCommentReport: UserCommentReport;
+  userDiscussionLike: UserDiscussionLike;
+  userDiscussionReport: UserDiscussionReport;
+  userInfo: UserInfo;
+  userInfoInterest: UserInfoInterest;
+  userInfoPersonalGoal: UserInfoPersonalGoal;
+  userToken: UserToken;
   'vault.decryptedSecrets': VaultDecryptedSecrets;
   'vault.secrets': VaultSecrets;
+  wellnessFactor: WellnessFactor;
+  wellnessFactorCategory: WellnessFactorCategory;
+  wellnessMood: WellnessMood;
+  wellnessSymptom: WellnessSymptom;
+  wellnessSymptomCategory: WellnessSymptomCategory;
 }

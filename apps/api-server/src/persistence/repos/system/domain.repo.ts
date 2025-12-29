@@ -1,0 +1,46 @@
+import { Injectable } from '@nestjs/common';
+import { HttpErrorCode } from '@peernest/core';
+import { dbOrTx, KyselyService, TKyselyTransaction, TSelectableDomain } from '@peernest/db';
+
+import { CustomHttpException } from '@/custom.exception';
+
+@Injectable()
+export class DomainRepository {
+  private static repoName = 'DOMAIN_REPOSITORY';
+
+  constructor(private readonly kyselyService: KyselyService) {}
+
+  async findDomains(
+    options?: {
+      includedDeleted?: boolean;
+      orderBy?: keyof TSelectableDomain | undefined;
+      ordering?: 'asc' | 'desc' | undefined;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const { includedDeleted, orderBy, ordering } = options || {};
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db.selectFrom('domain').selectAll();
+
+      if (!includedDeleted) {
+        query = query.where('domainDeletedTime', 'is', null);
+      }
+
+      if (orderBy) {
+        query = query.orderBy(orderBy, ordering || 'asc');
+      }
+
+      const domains = await query.execute();
+
+      return domains;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DomainRepository.repoName}] | Fail to find domains`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
+      );
+    }
+  }
+}

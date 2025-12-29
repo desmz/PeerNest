@@ -1,0 +1,174 @@
+major_id,major,major_category
+1,food science,agriculture & natural resources
+2,agriculture production & management,agriculture & natural resources
+3,general agriculture,agriculture & natural resources
+4,agricultural economics,agriculture & natural resources
+5,natural resources management,agriculture & natural resources
+6,forestry,agriculture & natural resources
+7,soil science,agriculture & natural resources
+8,plant science & agronomy,agriculture & natural resources
+9,animal sciences,agriculture & natural resources
+10,miscellaneous agriculture,agriculture & natural resources
+11,miscellaneous fine arts,arts
+12,commercial art & graphic design,arts
+13,film video & photographic arts,arts
+14,music,arts
+15,fine arts,arts
+16,visual & performing arts,arts
+17,studio arts,arts
+18,drama & theater arts,arts
+19,pharmacology,biology & life science
+20,cognitive science & biopsychology,biology & life science
+21,molecular biology,biology & life science
+22,genetics,biology & life science
+23,microbiology,biology & life science
+24,biochemical sciences,biology & life science
+25,botany,biology & life science
+26,environmental science,biology & life science
+27,physiology,biology & life science
+28,neuroscience,biology & life science
+29,miscellaneous biology,biology & life science
+30,biology,biology & life science
+31,ecology,biology & life science
+32,zoology,biology & life science
+33,actuarial science,business
+34,management information systems & statistics,business
+35,operations logistics & e-commerce,business
+36,finance,business
+37,business economics,business
+38,accounting,business
+39,general business,business
+40,international business,business
+41,miscellaneous business & medical administration,business
+42,business management & administration,business
+43,marketing & marketing research,business
+44,human resources & personnel management,business
+45,hospitality management,business
+46,communications,communications & journalism
+47,journalism,communications & journalism
+48,advertising & public relations,communications & journalism
+49,mass media,communications & journalism
+50,computer science,computers & mathematics
+51,mathematics,computers & mathematics
+52,computer & information systems,computers & mathematics
+53,information sciences,computers & mathematics
+54,statistics & decision science,computers & mathematics
+55,applied mathematics,computers & mathematics
+56,mathematics & computer science,computers & mathematics
+57,computer programming & data processing,computers & mathematics
+58,computer administration management & security,computers & mathematics
+59,computer networking & telecommunications,computers & mathematics
+60,communication technologies,computers & mathematics
+61,school student counseling,education
+62,special needs education,education
+63,general education,education
+64,social science or history teacher education,education
+65,mathematics teacher education,education
+66,educational administration & supervision,education
+67,language & drama education,education
+68,miscellaneous education,education
+69,secondary teacher education,education
+70,art & music education,education
+71,elementary education,education
+72,science & computer teacher education,education
+73,physical & health education teaching,education
+74,teacher education: multiple levels,education
+75,early childhood education,education
+76,library science,education
+77,petroleum engineering,engineering
+78,mining & mineral engineering,engineering
+79,metallurgical engineering,engineering
+80,naval architecture & marine engineering,engineering
+81,chemical engineering,engineering
+82,nuclear engineering,engineering
+83,mechanical engineering,engineering
+84,electrical engineering,engineering
+85,computer engineering,engineering
+86,aerospace engineering,engineering
+87,biomedical engineering,engineering
+88,materials science,engineering
+89,engineering mechanics physics & science,engineering
+90,biological engineering,engineering
+91,industrial & manufacturing engineering,engineering
+92,general engineering,engineering
+93,architectural engineering,engineering
+94,electrical engineering technology,engineering
+95,materials engineering & materials science,engineering
+96,civil engineering,engineering
+97,miscellaneous engineering,engineering
+98,environmental engineering,engineering
+99,engineering technologies,engineering
+100,geological & geophysical engineering,engineering
+101,industrial production technologies,engineering
+102,engineering & industrial management,engineering
+103,architecture,engineering
+104,miscellaneous engineering technologies,engineering
+105,mechanical engineering related technologies,engineering
+106,nursing,health
+107,medical technologies technicians,health
+108,medical assisting services,health
+109,pharmacy pharmaceutical sciences & administration,health
+110,miscellaneous health medical professions,health
+111,nutrition sciences,health
+112,health & medical administrative services,health
+113,community & public health,health
+114,health & medical preparatory programs,health
+115,treatment therapy professions,health
+116,general medical & health services,health
+117,communication disorders sciences & services,health
+118,united states history,humanities & liberal arts
+119,area ethnic & civilization studies,humanities & liberal arts
+120,history,humanities & liberal arts
+121,french german latin & other common foreign language studies,humanities & liberal arts
+122,intercultural & international studies,humanities & liberal arts
+123,linguistics & comparative language & literature,humanities & liberal arts
+124,philosophy & religious studies,humanities & liberal arts
+125,english language & literature,humanities & liberal arts
+126,liberal arts,humanities & liberal arts
+127,art history & criticism,humanities & liberal arts
+128,humanities,humanities & liberal arts
+129,theology & religious vocations,humanities & liberal arts
+130,anthropology & archeology,humanities & liberal arts
+131,other foreign languages,humanities & liberal arts
+132,composition & rhetoric,humanities & liberal arts
+133,construction services,industrial arts & consumer services
+134,military technologies,industrial arts & consumer services
+135,"electrical, mechanical, & precision technologies & production",industrial arts & consumer services
+136,transportation sciences & technologies,industrial arts & consumer services
+137,physical fitness parks recreation & leisure,industrial arts & consumer services
+138,family & consumer sciences,industrial arts & consumer services
+139,cosmetology services & culinary arts,industrial arts & consumer services
+140,multi/interdisciplinary studies,interdisciplinary
+141,court reporting,law & public policy
+142,public policy,law & public policy
+143,pre-law & legal studies,law & public policy
+144,public administration,law & public policy
+145,criminal justice & fire protection,law & public policy
+146,astronomy & astrophysics,physical sciences
+147,"nuclear, industrial radiology, & biological technologies",physical sciences
+148,physics,physical sciences
+149,oceanography,physical sciences
+150,physical sciences,physical sciences
+151,chemistry,physical sciences
+152,geology & earth science,physical sciences
+153,geosciences,physical sciences
+154,multi-disciplinary or general science,physical sciences
+155,atmospheric sciences & meteorology,physical sciences
+156,industrial & organizational psychology,psychology & social work
+157,social psychology,psychology & social work
+158,psychology,psychology & social work
+159,social work,psychology & social work
+160,miscellaneous psychology,psychology & social work
+161,human services & community organization,psychology & social work
+162,educational psychology,psychology & social work
+163,clinical psychology,psychology & social work
+164,counseling psychology,psychology & social work
+165,economics,social science
+166,international relations,social science
+167,miscellaneous social sciences,social science
+168,political science & government,social science
+169,geography,social science
+170,criminology,social science
+171,sociology,social science
+172,interdisciplinary social sciences,social science
+173,general social sciences,social science

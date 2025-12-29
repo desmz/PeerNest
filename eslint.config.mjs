@@ -1,7 +1,7 @@
 import nx from '@nx/eslint-plugin';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import * as tsParser from '@typescript-eslint/parser';
-import importPlugin from 'eslint-plugin-import';
+import perfectionist from 'eslint-plugin-perfectionist';
 
 import prettierConfig from './prettier-config.eslint.mjs';
 
@@ -69,6 +69,7 @@ export default [
       '@typescript-eslint/no-empty-function': ['error', { allow: ['private-constructors'] }],
       '@typescript-eslint/consistent-type-exports': 'error',
       // '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/no-non-null-assertion': 'off',
 
       // Note: you must disable the base rule as it can report incorrect errors, https://typescript-eslint.io/rules/no-unused-vars/#options
       'no-unused-vars': 'off',
@@ -168,7 +169,7 @@ export default [
   // import order
   {
     plugins: {
-      import: importPlugin,
+      perfectionist,
     },
     files: [
       '**/*.ts',
@@ -180,25 +181,72 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
-    // Override or add rules here
     rules: {
-      'import/order': [
+      'perfectionist/sort-imports': [
         'error',
         {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
-          pathGroups: [
-            {
-              pattern: '@/**',
-              group: 'internal',
-              position: 'before',
-            },
+          type: 'alphabetical',
+          order: 'asc',
+          fallbackSort: { type: 'unsorted' },
+          ignoreCase: true,
+          specialCharacters: 'keep',
+          internalPattern: ['^~/.+', '^@/.+'],
+          partitionByComment: false,
+          partitionByNewLine: false,
+          newlinesBetween: 1,
+          maxLineLength: undefined,
+          groups: [
+            'type-import',
+            'value-builtin',
+            'value-external',
+            'type-internal',
+            'value-internal',
+            ['value-parent', 'type-parent'],
+            ['value-sibling', 'type-sibling'],
+            ['value-index', 'type-index'],
+            'ts-equals-import',
+            'unknown',
           ],
-          'newlines-between': 'always',
-          alphabetize: { order: 'asc', caseInsensitive: true },
+          customGroups: [],
+          environment: 'node',
         },
       ],
-      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
+
+  // export order
+  {
+    plugins: {
+      perfectionist,
+    },
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.cts',
+      '**/*.mts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
+    rules: {
+      'perfectionist/sort-exports': [
+        'error',
+        {
+          type: 'alphabetical',
+          order: 'asc',
+          fallbackSort: { type: 'unsorted' },
+          ignoreCase: true,
+          specialCharacters: 'keep',
+          partitionByComment: false,
+          partitionByNewLine: false,
+          newlinesBetween: 'ignore',
+          groups: [],
+          customGroups: [],
+        },
+      ],
+    },
+  },
+
   ...prettierConfig,
 ];

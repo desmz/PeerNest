@@ -1,0 +1,5 @@
+role_id,role_name,role_rank
+role-019af64e-59b2-70f4-b6d5-73fd31c02688,user,0
+role-019af64e-59b4-7144-9ff5-e441ce1bc780,admin,100
+role-019af64e-59b4-7144-9ff5-e442edc41555,moderator,80
+role-019af64e-59b4-7144-9ff5-e44398e4d49e,counselor,50

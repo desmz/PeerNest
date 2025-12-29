@@ -25,7 +25,7 @@ export default {
         'feat', // add or remove a new feature to the app
         'fix', // fix a bug in the app
         'perf', // rewrite/restructure your code, however do not change any app behavior
-        'refactor', // special refactor commits, that improve performance
+        'refactor', // special refactor commits that improve performance, reorganizing modules
         'revert', // revert a previous commit
         'security', // commit related to security
         'style', // commit do not affect the meaning (white-space, formatting, missing semi-colons, etc)

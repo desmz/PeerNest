@@ -15,6 +15,12 @@ module.exports = {
       module: /pg[\\/]lib[\\/]native/,
       message: /Can't resolve 'pg-native'/,
     },
+    {
+      module: /node_modules\/(bmp-ts|jimp)\//,
+    },
+    {
+      message: /Critical dependency: the request of a dependency is an expression/,
+    },
   ],
   output: {
     path: join(__dirname, 'dist'),

@@ -24,10 +24,10 @@
       "name": "contract",
       "path": "./packages/contract",
     },
-    // {
-    //   "name": "transactional",
-    //   "path": "./packages/transactional",
-    // },
+    {
+      "name": "transactional",
+      "path": "./packages/transactional",
+    },
     // {
     //   "name": "ui-lib",
     //   "path": "./packages/ui-lib",
@@ -63,7 +63,7 @@
       "./packages/core",
       "./packages/db",
       "./packages/contract",
-      // "./packages/transactional",
+      "./packages/transactional",
       // "./packages/ui-lib",
       // "./packages/eslint-config-bases",
     ],
@@ -73,7 +73,27 @@
       "**/*.code-search": true,
       "**/dist": true,
     },
-    "cSpell.words": ["peernest", "kysely", "uuidv7"],
+    "cSpell.words": [
+      "peernest",
+      "kysely",
+      "uuidv7",
+      "updateable",
+      "insertable",
+      "varchar",
+      "tsvector",
+      "timestamptz",
+      "aggs",
+      "unaccent",
+      "mantine",
+      "presign",
+    ],
+    "peacock.remoteColor": "#374d6a",
+    "github.copilot.enable": {
+      "*": false,
+      "plaintext": false,
+      "markdown": true,
+      "scminput": false,
+    },
     "workbench.colorCustomizations": {
       "activityBar.activeBackground": "#48658c",
       "activityBar.background": "#48658c",
@@ -94,12 +114,12 @@
       "titleBar.inactiveBackground": "#374d6a99",
       "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.remoteColor": "#374d6a",
-    "github.copilot.enable": {
-      "*": false,
-      "plaintext": false,
-      "markdown": true,
-      "scminput": false,
-    },
+    "cssVariables.lookupFiles": [
+      "**/*.css",
+      "**/*.scss",
+      "**/*.sass",
+      "**/*.less",
+      "**/node_modules/@mantine/core/styles.css",
+    ],
   },
 }

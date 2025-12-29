@@ -1,17 +1,26 @@
 import { z } from 'zod';
 
-import { emailSchema, passwordSchema } from './signup';
+import { TApiMethod } from '../types';
+import { zNonEmpty, zString } from '../utils';
 
-export const SIGN_IN = '/auth/signin';
+import { emailSchema } from './signup';
+
+export const SIGN_IN_METHOD: TApiMethod = 'post';
+
+export const SIGN_IN_URL = '/auth/signin';
 
 export const signInFields = {
   email: 'Email ',
   password: 'Password',
 } as const;
 
+export function loosePasswordSchema(field: string) {
+  return z.string(zString(field)).nonempty(zNonEmpty(field));
+}
+
 export const signInRoSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: loosePasswordSchema(signInFields.password),
 });
 
 export type TSignInRo = z.infer<typeof signInRoSchema>;

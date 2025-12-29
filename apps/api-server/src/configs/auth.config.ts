@@ -5,6 +5,10 @@ import { AUTH_COOKIE_MAX_AGE, AUTH_COOKIE_NAME } from '@peernest/core';
 import ms, { StringValue } from 'ms';
 
 export const authConfig = registerAs('auth', () => ({
+  generalToken: {
+    expiresIn: (envObj.GENERAL_TOKEN_EXPIRES_IN ?? '5m') as StringValue,
+  },
+  socialProviders: envObj.SOCIAL_AUTH_PROVIDERS,
   accessToken: {
     secret:
       envObj.AUTH_JWT_ACCESS_SECRET ??
@@ -14,6 +18,11 @@ export const authConfig = registerAs('auth', () => ({
   cookie: {
     name: AUTH_COOKIE_NAME,
     maxAge: ms(AUTH_COOKIE_MAX_AGE ?? '10m'),
+  },
+  google: {
+    clientId: envObj.BACKEND_GOOGLE_CLIENT_ID,
+    clientSecret: envObj.BACKEND_GOOGLE_CLIENT_SECRET,
+    callbackUrl: envObj.BACKEND_GOOGLE_CALLBACK_URL,
   },
   // resetPasswordToken: {
   //   secret:

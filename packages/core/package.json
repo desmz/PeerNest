@@ -13,12 +13,22 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./utils/id-generator": {
+      "types": "./dist/utils/id-generator.d.ts",
+      "import": "./dist/utils/id-generator.js",
+      "default": "./dist/utils/id-generator.js"
     }
   },
   "dependencies": {
     "@swc/helpers": "~0.5.11",
+    "bcryptjs": "^3.0.3",
+    "dayjs": "^1.11.19",
     "nanoid": "^5.1.6",
     "uuidv7": "^1.1.0",
     "zod": "4.1.13"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0"
   }
 }

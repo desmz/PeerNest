@@ -6,14 +6,18 @@ import {
 } from '@peernest/core';
 import { z } from 'zod';
 
-import { zEmail, zMax, zMin, zString } from '../utils/schema';
+import { TApiMethod } from '../types';
+import { zEmail, zMax, zMin, zNonEmpty, zString } from '../utils';
 
-export const SIGN_UP = '/auth/signup';
+export const SIGN_UP_METHOD: TApiMethod = 'post';
+
+export const SIGN_UP_URL = '/auth/signup';
 
 export const signUpFields = {
   email: 'Email ',
   displayName: 'Display Name',
   password: 'Password',
+  confirmPassword: 'Confirm Password',
 } as const;
 
 export const emailSchema = z.email(zEmail(signUpFields.email));
@@ -46,10 +50,18 @@ export const passwordSchema = z
     message: `${signUpFields.password} must contain at least one special character`,
   });
 
-export const signUpRoSchema = z.object({
-  email: emailSchema,
-  displayName: displayNameSchema,
-  password: passwordSchema,
-});
+export const signUpRoSchema = z
+  .object({
+    email: emailSchema,
+    displayName: displayNameSchema,
+    password: passwordSchema,
+    confirmPassword: z
+      .string(zString(signUpFields.confirmPassword))
+      .nonempty(zNonEmpty(signUpFields.confirmPassword)),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export type TSignUpRo = z.infer<typeof signUpRoSchema>;

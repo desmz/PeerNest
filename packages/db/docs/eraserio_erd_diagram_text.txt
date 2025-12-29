@@ -18,7 +18,7 @@ user [color: blue] {
   id varchar pk
   display_name varchar
   display_name_tsv tsvector
-  password_hash varchar
+  password_hash varchar?
   role_id varchar fk
   email varchar
   avatar_url text
@@ -49,9 +49,10 @@ user.id < account.user_id
 
 attachment [color:blue] {
   id varchar pk
-  owner_id varchar fk
+  owner_id varchar?
   path text
   name varchar
+  status varchar // pending, ready, deleted
   size int
   mimetype varchar
   width int?
@@ -68,7 +69,7 @@ user_token [color: blue] {
   token_hash varchar
   created_time timestamptz
   expired_time timestamptz
-  used_time timestamptz
+  used_time timestamptz?
 }
 
 user.id < user_token.user_id
@@ -91,7 +92,7 @@ university [color: blue] {
   deleted_time timestamptz?
 }
 
-university.id - user_info.university_id
+university.id < user_info.university_id
 
 domain [color: blue] {
   id varchar pk
@@ -101,7 +102,7 @@ domain [color: blue] {
   deleted_time timestamptz?
 }
 
-domain.id - user_info.domain_id
+domain.id < user_info.domain_id
 
 user_info [color: blue] {
   id varchar pk
@@ -117,7 +118,7 @@ user_info [color: blue] {
 }
 
 user.id - user_info.user_id
-pronoun.id - user_info.pronoun_id
+pronoun.id < user_info.pronoun_id
 
 interest [color: blue] {
   id varchar pk
@@ -256,8 +257,8 @@ comment.parent_comment_id < comment.id
  
 user_comment_report [color: green] {
   id varchar pk
-  comment_id varchar fk
   reporter_id varchar fk
+  comment_id varchar fk
   status varchar // reported, deleted, released 
   reported_time timestamptz
   resolver_id varchar? fk
@@ -373,7 +374,7 @@ user.id < relationship.user_id_b
 
 conversation [color: blue] {
   id varchar pk
-  type varchar // direct
+  type varchar // direct, moderation
   created_time timestamptz
   updated_time timestamptz?
 }
@@ -408,6 +409,7 @@ conversation_participant [color: green] {
   role varchar // member, mod, admin, counselor
   last_read_message_id varchar? fk
   joined_time timestamptz
+  closed_time timestamptz?
 
   // unique(conversation_id, participant_id)
 }
@@ -593,7 +595,7 @@ user.id < role_change_action.target_user_id
 role.id < role_change_action.old_role_id
 role.id < role_change_action.new_role_id
 user.id < role_change_action.processed_by
-role_application.id < role_change_action.role_application_id
+role_application.id - role_change_action.role_application_id
 
 achievement_category [color: blue] {
   id varchar pk

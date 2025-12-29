@@ -14,6 +14,8 @@ export default function HomePage() {
     await signOut();
   }
 
+  // this is just testing purpose
+
   return (
     <>
       <Helmet>
@@ -29,15 +31,15 @@ export default function HomePage() {
         <pre>{JSON.stringify(currentUser, null, 2)}</pre>
         <br />
 
-        {/* {currentUser?.avatarUrl && (
+        {currentUser?.avatarUrl && (
           <img
-            src={currentUser.avatarUrl}
+            src={`${currentUser.avatarUrl}?v=${currentUser.lastSignedTime}`}
             width={40}
             height={40}
             alt='avatar url'
             referrerPolicy='no-referrer'
           />
-        )} */}
+        )}
 
         <button type='button' onClick={onSignOutClick} disabled={isLoading}>
           Sign out
