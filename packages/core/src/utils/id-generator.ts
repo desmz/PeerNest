@@ -45,6 +45,12 @@ export enum IdPrefix {
   CheckInWellnessSymptom = 'ckiwnst',
   CheckInWellnessFactor = 'ckiwnft',
   CheckInHealthMeasurement = 'ckihmsm',
+  BanRequest = 'brq',
+  BanRequestProof = 'brqp',
+  BanAction = 'bat',
+  RoleApplication = 'rapct',
+  RoleAttachment = 'ratm',
+  RoleChangeAction = 'rcat',
 }
 
 export function generateUuid() {
@@ -193,4 +199,28 @@ export function generateCheckInWellnessFactorId() {
 
 export function generateCheckInHealthMeasurementId() {
   return IdPrefix.CheckInHealthMeasurement + '-' + generateUuid();
+}
+
+export function generateBanRequestId() {
+  return IdPrefix.BanRequest + '-' + generateUuid();
+}
+
+export function generateBanRequestProofId() {
+  return IdPrefix.BanRequestProof + '-' + generateUuid();
+}
+
+export function generateBanActionId() {
+  return IdPrefix.BanAction + '-' + generateUuid();
+}
+
+export function generateRoleApplicationId() {
+  return IdPrefix.RoleApplication + '-' + generateUuid();
+}
+
+export function generateRoleAttachmentId() {
+  return IdPrefix.RoleAttachment + '-' + generateUuid();
+}
+
+export function generateRoleChangeActionId() {
+  return IdPrefix.RoleChangeAction + '-' + generateUuid();
 }

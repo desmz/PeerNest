@@ -357,6 +357,38 @@ export interface AuthUsers {
   updatedAt: Timestamp | null;
 }
 
+export interface BanAction {
+  banActionBanEndTime: Timestamp | null;
+  banActionBannedBy: string;
+  banActionBannedUserId: string;
+  banActionBanRequestId: string | null;
+  banActionBanStartTime: Generated<Timestamp>;
+  banActionCreatedTime: Generated<Timestamp>;
+  banActionId: Generated<string>;
+  banActionReason: string;
+  banActionUpdatedTime: Timestamp | null;
+}
+
+export interface BanRequest {
+  banRequestBannedUserId: string;
+  banRequestCreatedTime: Generated<Timestamp>;
+  banRequestId: Generated<string>;
+  banRequestProofReferenceRaw: string;
+  banRequestReason: string;
+  banRequestRequesterId: string;
+  banRequestResolvedTime: Timestamp | null;
+  banRequestResolverId: string | null;
+  banRequestStatus: string;
+}
+
+export interface BanRequestProof {
+  banRequestProofBanRequestId: string;
+  banRequestProofId: Generated<string>;
+  banRequestProofReferenceRaw: string;
+  banRequestProofResourceId: string;
+  banRequestProofResourceType: string;
+}
+
 export interface CheckIn {
   checkInCheckInTime: Generated<Timestamp>;
   checkInCreatedTime: Generated<Timestamp>;
@@ -427,6 +459,7 @@ export interface Discussion {
   discussionAuthorId: string;
   discussionContent: string;
   discussionCreatedTime: Generated<Timestamp>;
+  discussionDeletedBy: string | null;
   discussionDeletedTime: Timestamp | null;
   discussionId: Generated<string>;
   discussionSearchTsv: string | null;
@@ -599,6 +632,38 @@ export interface Role {
   roleName: string;
   roleRank: Int8;
   roleUpdatedTime: Timestamp | null;
+}
+
+export interface RoleApplication {
+  roleApplicationApplicantId: string;
+  roleApplicationAppliedRoleId: string;
+  roleApplicationCreatedTime: Generated<Timestamp>;
+  roleApplicationDeletedTime: Timestamp | null;
+  roleApplicationDescription: string | null;
+  roleApplicationId: Generated<string>;
+  roleApplicationProcessedBy: string | null;
+  roleApplicationProcessedTime: Timestamp | null;
+  roleApplicationStatus: string;
+  roleApplicationUpdatedTime: Timestamp | null;
+}
+
+export interface RoleAttachment {
+  roleAttachmentAttachmentId: string;
+  roleAttachmentId: Generated<string>;
+  roleAttachmentRoleApplicationId: string;
+}
+
+export interface RoleChangeAction {
+  roleChangeActionCreatedTime: Generated<Timestamp>;
+  roleChangeActionDeletedTime: Timestamp | null;
+  roleChangeActionId: Generated<string>;
+  roleChangeActionNewRoleId: string;
+  roleChangeActionOldRoleId: string;
+  roleChangeActionProcessedBy: string;
+  roleChangeActionRoleApplicationId: string | null;
+  roleChangeActionTargetUserId: string;
+  roleChangeActionType: string;
+  roleChangeActionUpdatedTime: Timestamp | null;
 }
 
 export interface StorageBuckets {
@@ -897,6 +962,9 @@ export interface DB {
   'auth.ssoDomains': AuthSsoDomains;
   'auth.ssoProviders': AuthSsoProviders;
   'auth.users': AuthUsers;
+  banAction: BanAction;
+  banRequest: BanRequest;
+  banRequestProof: BanRequestProof;
   checkIn: CheckIn;
   checkInHealthMeasurement: CheckInHealthMeasurement;
   checkInWellnessFactor: CheckInWellnessFactor;
@@ -921,6 +989,9 @@ export interface DB {
   'realtime.subscription': RealtimeSubscription;
   relationship: Relationship;
   role: Role;
+  roleApplication: RoleApplication;
+  roleAttachment: RoleAttachment;
+  roleChangeAction: RoleChangeAction;
   'storage.buckets': StorageBuckets;
   'storage.bucketsAnalytics': StorageBucketsAnalytics;
   'storage.bucketsVectors': StorageBucketsVectors;
