@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { generateUserDiscussionReportId, HttpErrorCode } from '@peernest/core';
+import {
+  generateUserDiscussionReportId,
+  HttpErrorCode,
+  UserDiscussionReportStatus,
+} from '@peernest/core';
 import {
   dbOrTx,
   KyselyService,
   TInsertableUserDiscussionReport,
   TKyselyTransaction,
+  TUpdatableUserDiscussionReport,
 } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
@@ -53,6 +58,62 @@ export class UserDiscussionReportRepository {
         `[${UserDiscussionReportRepository.repoName}] | Fail to create user-discussion-report`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, userDiscussionReportObj, options }
+      );
+    }
+  }
+
+  async updateUserDiscussionReportById(
+    userDiscussionReportPayload: TUpdatableUserDiscussionReport,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const userDiscussionReport = await db
+        .updateTable('userDiscussionReport')
+        .set(userDiscussionReportPayload)
+        .where('userDiscussionReportId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return userDiscussionReport!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserDiscussionReportRepository.repoName}] | Fail to update user-discussion-report by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userDiscussionReportPayload, id }
+      );
+    }
+  }
+
+  async findUserDiscussionReportById(
+    id: string,
+    options?: { statuses?: UserDiscussionReportStatus[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { statuses } = options || {};
+
+      let query = db
+        .selectFrom('userDiscussionReport')
+        .selectAll()
+        .where('userDiscussionReportId', '=', id);
+
+      if (statuses && statuses.length > 0) {
+        query = query.where('userDiscussionReportStatus', 'in', statuses);
+      }
+
+      const userDiscussionReport = await query.executeTakeFirst();
+
+      return userDiscussionReport;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserDiscussionReportRepository.repoName}] | Fail to find user-discussion-report by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id, options }
       );
     }
   }

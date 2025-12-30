@@ -3,6 +3,7 @@ export * from './auth';
 export * from './comment';
 export * from './discussion';
 export * from './friendship';
+export * from './moderation';
 export * from './system';
 export type * from './types';
 export * from './user';
