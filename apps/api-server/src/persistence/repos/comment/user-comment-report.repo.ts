@@ -60,9 +60,9 @@ export class UserCommentReportRepository {
     }
   }
 
-  async updateUserCommentReportById(
+  async updateUserCommentReportByCommentId(
     userCommentReportPayload: TUpdatableUserCommentReport,
-    id: string,
+    commentId: string,
     tx?: TKyselyTransaction
   ) {
     try {
@@ -71,16 +71,16 @@ export class UserCommentReportRepository {
       const userCommentReport = await db
         .updateTable('userCommentReport')
         .set(userCommentReportPayload)
-        .where('userCommentReportId', '=', id)
+        .where('userCommentReportId', '=', commentId)
         .returningAll()
         .executeTakeFirst();
 
       return userCommentReport!;
     } catch (error) {
       throw new CustomHttpException(
-        `[${UserCommentReportRepository.repoName}] | Fail to update user-comment-report by id`,
+        `[${UserCommentReportRepository.repoName}] | Fail to update user-comment-report by comment id`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userCommentReportPayload, id }
+        { error, userCommentReportPayload, commentId }
       );
     }
   }

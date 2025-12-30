@@ -72,13 +72,13 @@ export class ReportService {
       }
 
       const now = new Date();
-      await this.userDiscussionReportRepository.updateUserDiscussionReportById(
+      await this.userDiscussionReportRepository.updateUserDiscussionReportByDiscussionId(
         {
           userDiscussionReportStatus: UserDiscussionReportStatus.Released,
           userDiscussionReportResolverId: userId,
           userDiscussionReportResolvedTime: now,
         },
-        reportId
+        userDiscussionReport.userDiscussionReportDiscussionId
       );
     } else {
       const userCommentReport = await this.userCommentReportRepository.findUserCommentReportById(
@@ -103,13 +103,13 @@ export class ReportService {
       }
 
       const now = new Date();
-      await this.userCommentReportRepository.updateUserCommentReportById(
+      await this.userCommentReportRepository.updateUserCommentReportByCommentId(
         {
           userCommentReportStatus: UserCommentReportStatus.Released,
           userCommentReportResolverId: userId,
           userCommentReportResolvedTime: now,
         },
-        reportId
+        userCommentReport.userCommentReportCommentId
       );
     }
   }
@@ -143,13 +143,13 @@ export class ReportService {
 
       const now = new Date();
       await executeTx(this.kyselyService.db, async (tx) => {
-        await this.userDiscussionReportRepository.updateUserDiscussionReportById(
+        await this.userDiscussionReportRepository.updateUserDiscussionReportByDiscussionId(
           {
             userDiscussionReportStatus: UserDiscussionReportStatus.Deleted,
             userDiscussionReportResolverId: userId,
             userDiscussionReportResolvedTime: now,
           },
-          reportId,
+          userDiscussionReport.userDiscussionReportDiscussionId,
           tx
         );
 
@@ -188,13 +188,13 @@ export class ReportService {
       const now = new Date();
 
       await executeTx(this.kyselyService.db, async (tx) => {
-        await this.userCommentReportRepository.updateUserCommentReportById(
+        await this.userCommentReportRepository.updateUserCommentReportByCommentId(
           {
             userCommentReportStatus: UserCommentReportStatus.Deleted,
             userCommentReportResolverId: userId,
             userCommentReportResolvedTime: now,
           },
-          reportId,
+          userCommentReport.userCommentReportCommentId,
           tx
         );
 

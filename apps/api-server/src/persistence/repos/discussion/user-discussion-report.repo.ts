@@ -68,9 +68,9 @@ export class UserDiscussionReportRepository {
     }
   }
 
-  async updateUserDiscussionReportById(
+  async updateUserDiscussionReportByDiscussionId(
     userDiscussionReportPayload: TUpdatableUserDiscussionReport,
-    id: string,
+    discussionId: string,
     tx?: TKyselyTransaction
   ) {
     try {
@@ -79,16 +79,16 @@ export class UserDiscussionReportRepository {
       const userDiscussionReport = await db
         .updateTable('userDiscussionReport')
         .set(userDiscussionReportPayload)
-        .where('userDiscussionReportId', '=', id)
+        .where('userDiscussionReportDiscussionId', '=', discussionId)
         .returningAll()
         .executeTakeFirst();
 
       return userDiscussionReport!;
     } catch (error) {
       throw new CustomHttpException(
-        `[${UserDiscussionReportRepository.repoName}] | Fail to update user-discussion-report by id`,
+        `[${UserDiscussionReportRepository.repoName}] | Fail to update user-discussion-report by discussion id`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userDiscussionReportPayload, id }
+        { error, userDiscussionReportPayload, discussionId }
       );
     }
   }
