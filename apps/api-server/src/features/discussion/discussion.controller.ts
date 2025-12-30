@@ -33,9 +33,13 @@ import {
   findDiscussionsQueryParamsSchema,
   type TFindDiscussionsQueryParams,
   type TFindDiscussionsVo,
+  type TArchiveDiscussionParams,
 } from '@peernest/contract';
+import { UserRole } from '@peernest/core';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
+
+import { Roles } from '../auth/decorators/roles.decorator';
 
 import { DiscussionService } from './discussion.service';
 
@@ -113,5 +117,14 @@ export class DiscussionController {
     findDiscussionsQueryParams: TFindDiscussionsQueryParams
   ): Promise<TFindDiscussionsVo> {
     return this.discussionService.findDiscussions(findDiscussionsQueryParams);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Post(':discussionId/archive')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async archiveDiscussion(
+    @Param() archiveDiscussionParams: TArchiveDiscussionParams
+  ): Promise<void> {
+    await this.discussionService.archiveDiscussion(archiveDiscussionParams);
   }
 }

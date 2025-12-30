@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  TArchiveDiscussionParams,
   TDeleteDiscussionParams,
   TEditDiscussionParams,
   TEditDiscussionRo,
@@ -615,5 +616,39 @@ export class DiscussionService {
       count: formattedDiscussionAggs.length,
       discussions: formattedDiscussionAggs,
     } as TFindDiscussionsVo;
+  }
+
+  async archiveDiscussion(archiveDiscussionParams: TArchiveDiscussionParams): Promise<void> {
+    const { discussionId } = archiveDiscussionParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active, DiscussionStatus.Archived],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionStatus === DiscussionStatus.Archived) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} is already in ${DiscussionStatus.Archived} mode`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const now = new Date();
+    await this.discussionRepository.updateDiscussionById(
+      {
+        discussionStatus: DiscussionStatus.Archived,
+        discussionArchivedTime: now,
+        discussionArchivedBy: userId,
+      },
+      discussionId
+    );
   }
 }
