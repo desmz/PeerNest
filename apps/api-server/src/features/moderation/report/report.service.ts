@@ -1,9 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { TDeleteReportedContentParams, TReleaseReportedContentParams } from '@peernest/contract';
+import {
+  TDeleteReportedContentParams,
+  TFindReportedContentsQueryParams,
+  TFindReportedContentsVo,
+  TReleaseReportedContentParams,
+  TReportedContent,
+  TReportedContentBase,
+} from '@peernest/contract';
 import {
   DiscussionStatus,
+  FindReportedContentsTypeOption,
   HttpErrorCode,
   IdPrefix,
+  ReportedContentStatus,
+  UploadType,
   UserCommentReportStatus,
   UserDiscussionReportStatus,
 } from '@peernest/core';
@@ -11,6 +21,9 @@ import { executeTx, KyselyService } from '@peernest/db';
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
+import StorageAdapter from '@/features/attachment/plugins/adapter';
+import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
+import { getFullStorageUrl } from '@/features/attachment/utils';
 import { CommentRepository, UserCommentReportRepository } from '@/persistence/repos/comment';
 import {
   DiscussionRepository,
@@ -21,6 +34,7 @@ import { IClsStore } from '@/types/cls';
 @Injectable()
 export class ReportService {
   constructor(
+    @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     private readonly kyselyService: KyselyService,
     private readonly clsService: ClsService<IClsStore>,
 
@@ -194,5 +208,110 @@ export class ReportService {
         );
       });
     }
+  }
+
+  async findReportedContents(
+    findReportedContentsQueryParams: TFindReportedContentsQueryParams
+  ): Promise<TFindReportedContentsVo> {
+    const reportedContents = await this.userDiscussionReportRepository.findReportedContents(
+      findReportedContentsQueryParams
+    );
+
+    const formattedReportedContent = await Promise.all(
+      reportedContents.map(async (reportedContent): Promise<TReportedContent> => {
+        const reportedContentBase: TReportedContentBase = {
+          reportId: reportedContent.reportId,
+          type: reportedContent.type as FindReportedContentsTypeOption,
+          reportStatus: reportedContent.reportStatus as ReportedContentStatus,
+          reportedTime: reportedContent.reportedTime,
+          reporter: reportedContent.reporter,
+        };
+
+        let attachmentUrl: string | null = null;
+
+        if (reportedContent.attachmentPath) {
+          const bucket = StorageAdapter.getBucket(UploadType.Discussion);
+
+          const respHeaders: Record<string, string> = {};
+
+          if (reportedContent.attachmentMimetype) {
+            respHeaders['Content-Type'] = reportedContent.attachmentMimetype;
+          }
+
+          attachmentUrl = await this.storageAdapter.getPreviewUrl(
+            bucket,
+            reportedContent.attachmentPath,
+            undefined,
+            respHeaders
+          );
+        }
+
+        const {
+          discussionAuthor,
+          discussionInterests,
+          discussionGoals,
+          commentAuthor,
+          commentDiscussion,
+        } = reportedContent;
+
+        return reportedContent.type === FindReportedContentsTypeOption.Discussion
+          ? {
+              ...reportedContentBase,
+              target: {
+                discussionId: reportedContent.discussionId!,
+                discussionTitle: reportedContent.discussionTitle!,
+                discussionContent: reportedContent.discussionContent!,
+                discussionStatus: reportedContent.discussionStatus as DiscussionStatus,
+                discussionCreatedTime: reportedContent.discussionCreatedTime!,
+                discussionUpdatedTime: reportedContent.discussionUpdatedTime,
+                author: {
+                  userId: discussionAuthor.userId!,
+                  userDisplayName: discussionAuthor.userDisplayName!,
+                  userAvatarUrl: getFullStorageUrl(discussionAuthor.userAvatarUrl!),
+                  roleName: discussionAuthor.roleName!,
+                },
+                interests: discussionInterests!.map((interest) => ({
+                  interestId: interest.interestId,
+                  interestName: interest.interestName,
+                  interestPosition: interest.interestPosition,
+                })),
+                goals: discussionGoals!.map((goals) => ({
+                  personalGoalId: goals.personalGoalId,
+                  personalGoalTitle: goals.personalGoalTitle,
+                  personalGoalName: goals.personalGoalName,
+                  personalGoalDescription: goals.personalGoalDescription,
+                  personalGoalPosition: goals.personalGoalPosition,
+                })),
+                attachmentUrl: attachmentUrl,
+              },
+            }
+          : {
+              ...reportedContentBase,
+              target: {
+                commentId: reportedContent.commentId!,
+                discussionId: reportedContent.commentDiscussionId!,
+                commentParentCommentId: reportedContent.commentParentCommentId,
+                commentContent: reportedContent.commentContent!,
+                commentCreatedTime: reportedContent.commentCreatedTime!,
+                commentUpdatedTime: reportedContent.commentUpdatedTime!,
+                author: {
+                  userId: commentAuthor.userId!,
+                  userDisplayName: commentAuthor.userDisplayName!,
+                  userAvatarUrl: getFullStorageUrl(commentAuthor.userAvatarUrl!),
+                  roleName: commentAuthor.roleName!,
+                },
+                discussion: {
+                  discussionId: commentDiscussion.discussionId!,
+                  discussionTitle: commentDiscussion.discussionTitle!,
+                },
+              },
+            };
+      })
+    );
+
+    return {
+      count: formattedReportedContent.length,
+      reportedContents: formattedReportedContent,
+    };
   }
 }

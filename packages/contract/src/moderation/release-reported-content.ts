@@ -1,8 +1,8 @@
-import { IdPrefix } from '@peernest/core';
 import z from 'zod';
 
 import { TApiMethod } from '../types';
-import { zNonEmptyString } from '../utils';
+
+import { reportIdSchema } from './find-reported-contents';
 
 export const RELEASE_REPORTED_CONTENT_METHOD: TApiMethod = 'post';
 
@@ -13,14 +13,7 @@ export const releaseReportedContentParamFields = {
 } as const;
 
 export const releaseReportedContentParamsSchema = z.object({
-  reportId: zNonEmptyString(releaseReportedContentParamFields.reportId).refine(
-    (value) =>
-      value.startsWith(IdPrefix.UserDiscussionReport) ||
-      value.startsWith(IdPrefix.UserCommentReport),
-    {
-      error: `${releaseReportedContentParamFields.reportId} must start with ${IdPrefix.UserDiscussionReport} or ${IdPrefix.UserCommentReport}`,
-    }
-  ),
+  reportId: reportIdSchema(releaseReportedContentParamFields.reportId),
 });
 
 export type TReleaseReportedContentParams = z.infer<typeof releaseReportedContentParamsSchema>;

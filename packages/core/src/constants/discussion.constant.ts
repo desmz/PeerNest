@@ -6,16 +6,22 @@ export enum DiscussionStatus {
   Deleted = 'deleted',
 }
 
-export enum UserDiscussionReportStatus {
+export enum ReportedContentStatus {
   Reported = 'reported',
   Deleted = 'deleted',
   Released = 'released',
 }
 
+export enum UserDiscussionReportStatus {
+  Reported = ReportedContentStatus.Reported,
+  Deleted = ReportedContentStatus.Deleted,
+  Released = ReportedContentStatus.Released,
+}
+
 export enum UserCommentReportStatus {
-  Reported = 'reported',
-  Deleted = 'deleted',
-  Released = 'released',
+  Reported = ReportedContentStatus.Reported,
+  Deleted = ReportedContentStatus.Deleted,
+  Released = ReportedContentStatus.Released,
 }
 
 export enum FindDiscussionCommentsSortOption {

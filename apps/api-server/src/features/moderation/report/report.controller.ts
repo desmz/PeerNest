@@ -1,7 +1,10 @@
-import { Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import {
   deleteReportedContentParamsSchema,
+  findReportedContentsQueryParamsSchema,
   releaseReportedContentParamsSchema,
+  type TFindReportedContentsQueryParams,
+  type TFindReportedContentsVo,
   type TDeleteReportedContentParams,
   type TReleaseReportedContentParams,
 } from '@peernest/contract';
@@ -34,5 +37,15 @@ export class ReportController {
     deleteReportedContentParams: TDeleteReportedContentParams
   ): Promise<void> {
     await this.reportService.deleteReportedContent(deleteReportedContentParams);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async findReportedContents(
+    @Query(new ZodValidationPipe(findReportedContentsQueryParamsSchema))
+    findReportedContentsQueryParams: TFindReportedContentsQueryParams
+  ): Promise<TFindReportedContentsVo> {
+    return this.reportService.findReportedContents(findReportedContentsQueryParams);
   }
 }

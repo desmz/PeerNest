@@ -1,8 +1,8 @@
-import { IdPrefix } from '@peernest/core';
 import z from 'zod';
 
 import { TApiMethod } from '../types';
-import { zNonEmptyString } from '../utils';
+
+import { reportIdSchema } from './find-reported-contents';
 
 export const DELETE_REPORTED_CONTENT_METHOD: TApiMethod = 'post';
 
@@ -13,14 +13,7 @@ export const deleteReportedContentParamFields = {
 } as const;
 
 export const deleteReportedContentParamsSchema = z.object({
-  reportId: zNonEmptyString(deleteReportedContentParamFields.reportId).refine(
-    (value) =>
-      value.startsWith(IdPrefix.UserDiscussionReport) ||
-      value.startsWith(IdPrefix.UserCommentReport),
-    {
-      error: `${deleteReportedContentParamFields.reportId} must start with ${IdPrefix.UserDiscussionReport} or ${IdPrefix.UserCommentReport}`,
-    }
-  ),
+  reportId: reportIdSchema(deleteReportedContentParamFields.reportId),
 });
 
 export type TDeleteReportedContentParams = z.infer<typeof deleteReportedContentParamsSchema>;

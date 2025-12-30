@@ -6,6 +6,7 @@ export * from './datetime.constant';
 export * from './discussion.constant';
 export * from './friend-request.constant';
 export * from './relationship.constant';
+export * from './report.constant';
 export * from './role.constant';
 export * from './storage.constant';
 export * from './user.constant';
