@@ -15,6 +15,7 @@ import {
   TGetDiscussionVo,
   TLikeDiscussionParams,
   TReportDiscussionParams,
+  TUnarchiveDiscussionParams,
   TUnlikeDiscussionParams,
   type TCreateDiscussionRo,
   type TCreateDiscussionVo,
@@ -647,6 +648,37 @@ export class DiscussionService {
         discussionStatus: DiscussionStatus.Archived,
         discussionArchivedTime: now,
         discussionArchivedBy: userId,
+      },
+      discussionId
+    );
+  }
+
+  async unarchiveDiscussion(unarchiveDiscussionParams: TUnarchiveDiscussionParams): Promise<void> {
+    const { discussionId } = unarchiveDiscussionParams;
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active, DiscussionStatus.Archived],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionStatus === DiscussionStatus.Active) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} is not in ${DiscussionStatus.Archived} mode`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    await this.discussionRepository.updateDiscussionById(
+      {
+        discussionStatus: DiscussionStatus.Active,
+        discussionArchivedTime: null,
+        discussionArchivedBy: null,
       },
       discussionId
     );

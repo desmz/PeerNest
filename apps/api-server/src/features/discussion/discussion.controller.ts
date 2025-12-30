@@ -34,6 +34,7 @@ import {
   type TFindDiscussionsQueryParams,
   type TFindDiscussionsVo,
   type TArchiveDiscussionParams,
+  type TUnarchiveDiscussionParams,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -126,5 +127,14 @@ export class DiscussionController {
     @Param() archiveDiscussionParams: TArchiveDiscussionParams
   ): Promise<void> {
     await this.discussionService.archiveDiscussion(archiveDiscussionParams);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Post(':discussionId/unarchive')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unarchiveDiscussion(
+    @Param() unarchiveDiscussionParams: TUnarchiveDiscussionParams
+  ): Promise<void> {
+    await this.discussionService.unarchiveDiscussion(unarchiveDiscussionParams);
   }
 }

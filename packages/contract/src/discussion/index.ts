@@ -7,4 +7,5 @@ export * from './find-discussions';
 export * from './get-discussion';
 export * from './like-discussion';
 export * from './report-discussion';
+export * from './unarchive-discussion';
 export * from './unlike-discussion';
