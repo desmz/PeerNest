@@ -248,6 +248,7 @@ comment [color: blue] {
   created_time timestamptz
   updated_time timestamptz?
   deleted_time timestamptz?
+  deleted_by varchar? fk
 
   // index(author_id, discussion_id)
 }

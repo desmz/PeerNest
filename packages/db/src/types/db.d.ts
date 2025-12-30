@@ -430,6 +430,7 @@ export interface Comment {
   commentAuthorId: string;
   commentContent: string;
   commentCreatedTime: Generated<Timestamp>;
+  commentDeletedBy: string | null;
   commentDeletedTime: Timestamp | null;
   commentDiscussionId: string;
   commentId: Generated<string>;
