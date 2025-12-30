@@ -35,6 +35,9 @@ import {
   type TFindDiscussionsVo,
   type TArchiveDiscussionParams,
   type TUnarchiveDiscussionParams,
+  findArchivedDiscussionsQueryParamsSchema,
+  type TFindArchivedDiscussionsQueryParams,
+  type TFindArchivedDiscussionVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -54,6 +57,16 @@ export class DiscussionController {
     @Body(new ZodValidationPipe(createDiscussionRoSchema)) createDiscussionRo: TCreateDiscussionRo
   ): Promise<TCreateDiscussionVo> {
     return this.discussionService.createDiscussion(createDiscussionRo);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Get('archived')
+  @HttpCode(HttpStatus.OK)
+  async findArchivedDiscussions(
+    @Query(new ZodValidationPipe(findArchivedDiscussionsQueryParamsSchema))
+    findArchivedDiscussionsQueryParams: TFindArchivedDiscussionsQueryParams
+  ): Promise<TFindArchivedDiscussionVo> {
+    return this.discussionService.findArchivedDiscussions(findArchivedDiscussionsQueryParams);
   }
 
   @Get(':discussionId')

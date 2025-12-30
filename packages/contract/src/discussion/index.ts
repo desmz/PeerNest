@@ -2,6 +2,7 @@ export * from './archive-discussion';
 export * from './create-discussion';
 export * from './delete-discussion';
 export * from './edit-discussion';
+export * from './find-archived-discussions';
 export * from './find-discussion-comments';
 export * from './find-discussions';
 export * from './get-discussion';

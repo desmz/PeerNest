@@ -5,6 +5,8 @@ import {
   TEditDiscussionParams,
   TEditDiscussionRo,
   TEditDiscussionVo,
+  TFindArchivedDiscussionsQueryParams,
+  TFindArchivedDiscussionVo,
   TFindDiscussionCommentsParams,
   TFindDiscussionCommentsQueryParams,
   TFindDiscussionCommentsVo,
@@ -391,13 +393,9 @@ export class DiscussionService {
 
     let attachmentUrl: string | null = null;
     if (attachment) {
-      const bucket = StorageAdapter.getBucket(UploadType.Discussion);
-      attachmentUrl = await this.storageAdapter.getPreviewUrl(
-        bucket,
+      attachmentUrl = await this.getAttachmentUrl(
         attachment.attachmentPath,
-        undefined,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        { 'Content-Type': attachment.attachmentMimetype }
+        attachment.attachmentMimetype
       );
     }
 
@@ -600,15 +598,7 @@ export class DiscussionService {
             ...author,
             userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
           },
-          attachmentUrl: attachmentPath
-            ? await this.storageAdapter.getPreviewUrl(
-                StorageAdapter.getBucket(UploadType.Discussion),
-                attachmentPath,
-                undefined,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                { 'Content-Type': attachmentMimetype }
-              )
-            : null,
+          attachmentUrl: await this.getAttachmentUrl(attachmentPath, attachmentMimetype),
         })
       )
     );
@@ -682,5 +672,54 @@ export class DiscussionService {
       },
       discussionId
     );
+  }
+
+  async findArchivedDiscussions(
+    findArchivedDiscussionsQueryParams: TFindArchivedDiscussionsQueryParams
+  ): Promise<TFindArchivedDiscussionVo> {
+    const discussionAggs = await this.discussionRepository.findArchivedDiscussions(
+      findArchivedDiscussionsQueryParams
+    );
+
+    const formattedDiscussions = await Promise.all(
+      discussionAggs.map(
+        async ({ attachmentMimetype, attachmentPath, author, ...otherDiscussionAgg }) => ({
+          ...otherDiscussionAgg,
+          author: {
+            ...author,
+            userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
+          },
+          attachmentUrl: await this.getAttachmentUrl(attachmentPath, attachmentMimetype),
+        })
+      )
+    );
+
+    return {
+      count: formattedDiscussions.length,
+      discussions: formattedDiscussions,
+    } as TFindArchivedDiscussionVo;
+  }
+
+  private async getAttachmentUrl(attachmentPath: string | null, attachmentMimetype: string | null) {
+    if (!attachmentPath) {
+      return null;
+    }
+
+    const bucket = StorageAdapter.getBucket(UploadType.Discussion);
+
+    const respHeaders: Record<string, string> = {};
+
+    if (attachmentMimetype) {
+      respHeaders['Content-Type'] = attachmentMimetype;
+    }
+
+    const attachmentUrl = await this.storageAdapter.getPreviewUrl(
+      bucket,
+      attachmentPath,
+      undefined,
+      respHeaders
+    );
+
+    return attachmentUrl;
   }
 }

@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { TFindDiscussionsQueryParams } from '@peernest/contract';
+import {
+  TFindArchivedDiscussionsQueryParams,
+  TFindDiscussionsQueryParams,
+} from '@peernest/contract';
 import {
   DiscussionStatus,
+  FindArchivedDiscussionsSortOption,
   FindDiscussionsSortOption,
   generateDiscussionId,
   HttpErrorCode,
@@ -554,7 +558,6 @@ export class DiscussionRepository {
               'attachment.attachmentMimetype',
             ])
         )
-        //todo: add discussion score cte
         .selectFrom('base_discussion')
         .innerJoin('discussion', 'discussion.discussionId', 'base_discussion.discussionId')
         .innerJoin('user', 'user.userId', 'discussion.discussionAuthorId')
@@ -660,6 +663,191 @@ export class DiscussionRepository {
     } catch (error) {
       throw new CustomHttpException(
         `[${DiscussionRepository.repoName}] | Fail to find discussions`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
+      );
+    }
+  }
+
+  async findArchivedDiscussions(
+    options?: TFindArchivedDiscussionsQueryParams,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { sort, limit = 500, offset = 0 } = options || {};
+
+      let query = db
+        .with('base_discussion', (eb) =>
+          eb
+            .selectFrom('discussion')
+            .where('discussionStatus', '=', DiscussionStatus.Archived)
+            .select(['discussion.discussionId'])
+            .distinct()
+        )
+        .with('discussion_stat', (eb) =>
+          eb
+            .selectFrom('discussion')
+            .leftJoin(
+              'userDiscussionLike',
+              'userDiscussionLike.userDiscussionLikeDiscussionId',
+              'discussion.discussionId'
+            )
+            .leftJoin('comment', 'comment.commentDiscussionId', 'discussion.discussionId')
+            .where('discussion.discussionDeletedTime', 'is', null)
+            .groupBy('discussion.discussionId')
+            .select((eb) => [
+              'discussion.discussionId',
+              eb.fn
+                .coalesce(
+                  eb.fn.count<number>('userDiscussionLike.userDiscussionLikeId').distinct(),
+                  eb.val(0)
+                )
+                .as('likeCount'),
+              eb.fn
+                .coalesce(eb.fn.count<number>('comment.commentId').distinct(), eb.val(0))
+                .as('commentCount'),
+            ])
+        )
+        .with('discussion_interest_agg', (eb) =>
+          eb
+            .selectFrom('discussionInterest')
+            .innerJoin(
+              'interest',
+              'interest.interestId',
+              'discussionInterest.discussionInterestInterestId'
+            )
+            .where('discussionInterest.discussionInterestDiscussionId', 'in', (eb) =>
+              eb.selectFrom('base_discussion').select('base_discussion.discussionId')
+            )
+            .groupBy('discussionInterest.discussionInterestDiscussionId')
+            .select((eb) => [
+              'discussionInterest.discussionInterestDiscussionId as discussionId',
+              eb.fn
+                .jsonAgg(
+                  jsonBuildObject({
+                    interestId: eb.ref('interest.interestId'),
+                    interestName: eb.ref('interest.interestName'),
+                    interestPosition: eb.ref('discussionInterest.discussionInterestPosition'),
+                  })
+                )
+                .orderBy(eb.ref('discussionInterest.discussionInterestPosition'), 'asc')
+                .as('interests'),
+            ])
+        )
+        .with('discussion_goal_agg', (eb) =>
+          eb
+            .selectFrom('discussionPersonalGoal')
+            .innerJoin(
+              'personalGoal',
+              'personalGoal.personalGoalId',
+              'discussionPersonalGoal.discussionPersonalGoalPersonalGoalId'
+            )
+            .where('discussionPersonalGoal.discussionPersonalGoalDiscussionId', 'in', (eb) =>
+              eb.selectFrom('base_discussion').select('base_discussion.discussionId')
+            )
+            .groupBy('discussionPersonalGoal.discussionPersonalGoalDiscussionId')
+            .select((eb) => [
+              'discussionPersonalGoal.discussionPersonalGoalDiscussionId as discussionId',
+              eb.fn
+                .jsonAgg(
+                  jsonBuildObject({
+                    personalGoalId: eb.ref('personalGoal.personalGoalId'),
+                    personalGoalTitle: eb.ref('personalGoal.personalGoalTitle'),
+                    personalGoalName: eb.ref('personalGoal.personalGoalName'),
+                    personalGoalDescription: eb.ref('personalGoal.personalGoalDescription'),
+                    personalGoalPosition: eb.ref(
+                      'discussionPersonalGoal.discussionPersonalGoalPosition'
+                    ),
+                  })
+                )
+                .orderBy(eb.ref('discussionPersonalGoal.discussionPersonalGoalPosition'), 'asc')
+                .as('goals'),
+            ])
+        )
+        .with('discussion_attachment', (eb) =>
+          eb
+            .selectFrom('discussionAttachment')
+            .innerJoin(
+              'attachment',
+              'attachment.attachmentId',
+              'discussionAttachment.discussionAttachmentAttachmentId'
+            )
+            .where('discussionAttachment.discussionAttachmentDiscussionId', 'in', (eb) =>
+              eb.selectFrom('base_discussion').select('base_discussion.discussionId')
+            )
+            .select([
+              'discussionAttachment.discussionAttachmentDiscussionId as discussionId',
+              'attachment.attachmentPath',
+              'attachment.attachmentMimetype',
+            ])
+        )
+        .selectFrom('base_discussion')
+        .innerJoin('discussion', 'discussion.discussionId', 'base_discussion.discussionId')
+        .innerJoin('user', 'user.userId', 'discussion.discussionAuthorId')
+        .innerJoin('role', 'role.roleId', 'user.userRoleId')
+        .leftJoin('discussion_stat', 'discussion_stat.discussionId', 'discussion.discussionId')
+        .leftJoin(
+          'discussion_interest_agg',
+          'discussion_interest_agg.discussionId',
+          'base_discussion.discussionId'
+        )
+        .leftJoin(
+          'discussion_goal_agg',
+          'discussion_goal_agg.discussionId',
+          'base_discussion.discussionId'
+        )
+        .leftJoin(
+          'discussion_attachment',
+          'discussion_attachment.discussionId',
+          'base_discussion.discussionId'
+        )
+        .select((eb) => [
+          'discussion.discussionId',
+          'discussion.discussionTitle',
+          'discussion.discussionContent',
+          'discussion.discussionStatus',
+          'discussion.discussionCreatedTime',
+          'discussion.discussionUpdatedTime',
+          'discussion.discussionArchivedBy',
+          'discussion.discussionArchivedTime',
+          jsonBuildObject({
+            userId: eb.ref('user.userId'),
+            userDisplayName: eb.ref('user.userDisplayName'),
+            userAvatarUrl: eb.ref('user.userAvatarUrl'),
+            roleName: eb.ref('role.roleName'),
+          }).as('author'),
+          'discussion_interest_agg.interests',
+          'discussion_goal_agg.goals',
+          'discussion_stat.likeCount',
+          'discussion_stat.commentCount',
+          'discussion_attachment.attachmentPath',
+          'discussion_attachment.attachmentMimetype',
+        ]);
+
+      switch (sort) {
+        case FindArchivedDiscussionsSortOption.Oldest:
+          query = query.orderBy('discussion.discussionCreatedTime', 'asc');
+          break;
+        default:
+          query = query.orderBy('discussion.discussionCreatedTime', 'desc');
+      }
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      if (offset) {
+        query = query.offset(offset);
+      }
+
+      const discussionAggs = await query.execute();
+
+      return discussionAggs;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to find archived discussions`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
       );

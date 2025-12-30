@@ -39,3 +39,8 @@ export const MAX_DISCUSSION_INTEREST_TAGS = 3;
 export const MAX_DISCUSSION_GOAL_TAGS = 3;
 
 export const ALLOWED_DELETE_DISCUSSION_USER_ROLE = [UserRole.Admin, UserRole.Moderator];
+
+export enum FindArchivedDiscussionsSortOption {
+  Oldest = 'oldest',
+  Newest = 'newest',
+}
