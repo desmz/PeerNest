@@ -19,6 +19,7 @@ import {
   type TCreateDiscussionVo,
 } from '@peernest/contract';
 import {
+  ALLOWED_DELETE_DISCUSSION_USER_ROLE,
   AttachmentStatus,
   DiscussionStatus,
   generateDiscussionAttachmentId,
@@ -417,6 +418,7 @@ export class DiscussionService {
     const { discussionId } = deleteDiscussionParams;
 
     const userId = this.clsService.get('user.id');
+    const userRole = this.clsService.get('user.role');
 
     const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
       statuses: [DiscussionStatus.Active],
@@ -429,9 +431,12 @@ export class DiscussionService {
       );
     }
 
-    if (discussion.discussionAuthorId !== userId) {
+    if (
+      discussion.discussionAuthorId !== userId &&
+      !ALLOWED_DELETE_DISCUSSION_USER_ROLE.includes(userRole)
+    ) {
       throw new CustomHttpException(
-        `You are not the author of this discussion`,
+        `You must be the author or have the role of ${ALLOWED_DELETE_DISCUSSION_USER_ROLE.join(', ')} to delete the discussion`,
         HttpErrorCode.RESTRICTED_RESOURCE
       );
     }
@@ -440,6 +445,7 @@ export class DiscussionService {
     await this.discussionRepository.updateDiscussionById(
       {
         discussionStatus: DiscussionStatus.Deleted,
+        discussionDeletedBy: userId,
         discussionDeletedTime: now,
       },
       discussionId

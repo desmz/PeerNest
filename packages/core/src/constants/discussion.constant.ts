@@ -1,3 +1,5 @@
+import { UserRole } from './role.constant';
+
 export enum DiscussionStatus {
   Active = 'active',
   Archived = 'archived',
@@ -35,3 +37,5 @@ export const MIN_DISCUSSION_CONTENT_LEN = 1;
 export const MAX_DISCUSSION_CONTENT_LEN = 5000;
 export const MAX_DISCUSSION_INTEREST_TAGS = 3;
 export const MAX_DISCUSSION_GOAL_TAGS = 3;
+
+export const ALLOWED_DELETE_DISCUSSION_USER_ROLE = [UserRole.Admin, UserRole.Moderator];
