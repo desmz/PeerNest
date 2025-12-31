@@ -17,6 +17,7 @@ import {
   UserDiscussionReportRepository,
 } from './repos/discussion';
 import { FriendRequestRepository, RelationshipRepository } from './repos/friendship';
+import { RoleApplicationRepository, RoleAttachmentRepository } from './repos/role-management';
 import {
   DomainRepository,
   InterestRepository,
@@ -86,6 +87,8 @@ const repositories: Provider[] = [
   BanActionRepository,
   BanRequestRepository,
   BanRequestProofRepository,
+  RoleApplicationRepository,
+  RoleAttachmentRepository,
 ];
 
 @Module({

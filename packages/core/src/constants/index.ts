@@ -8,6 +8,7 @@ export * from './discussion.constant';
 export * from './friend-request.constant';
 export * from './relationship.constant';
 export * from './report.constant';
+export * from './role-management.constant';
 export * from './role.constant';
 export * from './storage.constant';
 export * from './user.constant';

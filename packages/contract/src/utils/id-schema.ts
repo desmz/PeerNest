@@ -3,6 +3,10 @@ import z from 'zod';
 
 import { zStartWith, zString } from './schema';
 
+export const roleIdSchema = (field = 'Role Id') => {
+  return z.string(zString(field)).startsWith(IdPrefix.Role, zStartWith(field, IdPrefix.Role));
+};
+
 export const userIdSchema = (field = 'User Id') => {
   return z.string(zString(field)).startsWith(IdPrefix.User, zStartWith(field, IdPrefix.User));
 };

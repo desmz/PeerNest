@@ -33,9 +33,39 @@ export class RoleRepository {
       return role;
     } catch (error) {
       throw new CustomHttpException(
-        `[${RoleRepository.repoName}] | Fail to find role by id`,
+        `[${RoleRepository.repoName}] | Fail to find role by name`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, name }
+      );
+    }
+  }
+
+  async findRoleById(
+    id: string,
+    option?: {
+      includedDeleted?: boolean;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const { includedDeleted } = option || {};
+
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db.selectFrom('role').selectAll().where('roleId', '=', id);
+
+      if (!includedDeleted) {
+        query = query.where('roleDeletedTime', 'is', null);
+      }
+
+      const role = await query.executeTakeFirst();
+
+      return role;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${RoleRepository.repoName}] | Fail to find role by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id }
       );
     }
   }

@@ -13,6 +13,7 @@ import { DiscussionModule } from '@/features/discussion/discussion.module';
 import { FriendshipModule } from '@/features/friendship/friendship.module';
 import { MailSenderModule } from '@/features/mail-sender/mail-sender.module';
 import { ModerationModule } from '@/features/moderation/moderation.module';
+import { RoleManagementModule } from '@/features/role-management/role-management.module';
 import { SystemModule } from '@/features/system/system.module';
 import { UserModule } from '@/features/user/user.module';
 import { WellnessModule } from '@/features/wellness/wellness.module';
@@ -39,6 +40,7 @@ export const AppModules = {
     CommentModule,
     WellnessModule,
     ModerationModule,
+    RoleManagementModule,
   ],
   providers: [
     {
