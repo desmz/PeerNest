@@ -22,3 +22,8 @@ export const COMMENT_REFERENCE_REGEX = new RegExp(
   `\\[\\[(${IdPrefix.Comment}-[a-z0-9-]+)\\]\\]`,
   'g'
 );
+
+export enum FindBanUsersStatus {
+  Banned = 'banned',
+  Review = 'review',
+}

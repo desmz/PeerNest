@@ -145,6 +145,10 @@ export class DiscussionRepository {
 
       const { includedDeleted, statuses } = options || {};
 
+      if (ids.length === 0) {
+        return [];
+      }
+
       let query = db
         .selectFrom('discussion')
         .leftJoin(

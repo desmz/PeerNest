@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import {
   approveBanRequestRoSchema,
   createBanRequestRoSchema,
@@ -9,6 +9,9 @@ import {
   banUserRoSchema,
   type TBanUserRo,
   type TUnBanUserParams,
+  findBanUsersQueryParamsSchema,
+  type TFindBanUsersQueryParams,
+  type TFindBanUsersVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -62,5 +65,15 @@ export class BanController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async unbanUser(@Param() unbanUserParams: TUnBanUserParams): Promise<void> {
     await this.banService.unbanUser(unbanUserParams);
+  }
+
+  @Roles(UserRole.Moderator, UserRole.Admin)
+  @Get('bans')
+  @HttpCode(HttpStatus.OK)
+  async findBanUsers(
+    @Query(new ZodValidationPipe(findBanUsersQueryParamsSchema))
+    findBanUsersQueryParams: TFindBanUsersQueryParams
+  ): Promise<TFindBanUsersVo> {
+    return this.banService.findBanUsers(findBanUsersQueryParams);
   }
 }

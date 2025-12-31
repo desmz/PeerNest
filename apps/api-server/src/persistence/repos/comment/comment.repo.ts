@@ -128,6 +128,10 @@ export class CommentRepository {
 
       const { includedDeleted } = options || {};
 
+      if (ids.length === 0) {
+        return [];
+      }
+
       let query = db.selectFrom('comment').selectAll().where('comment.commentId', 'in', ids);
 
       if (!includedDeleted) {

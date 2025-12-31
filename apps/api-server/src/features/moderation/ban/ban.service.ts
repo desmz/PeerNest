@@ -2,8 +2,12 @@ import { Injectable } from '@nestjs/common';
 import {
   TApproveBanRequestParams,
   TApproveBanRequestRo,
+  TBanUserBase,
   TBanUserRo,
+  TBanUserSchema,
   TCreateBanRequestRo,
+  TFindBanUsersQueryParams,
+  TFindBanUsersVo,
   TRejectBanRequestParams,
   TUnBanUserParams,
 } from '@peernest/contract';
@@ -13,6 +17,7 @@ import {
   COMMENT_REFERENCE_REGEX,
   DISCUSSION_REFERENCE_REGEX,
   DiscussionStatus,
+  FindBanUsersStatus,
   generateBanActionId,
   generateBanRequestId,
   generateBanRequestProofId,
@@ -21,7 +26,9 @@ import {
 import { executeTx, KyselyService, TInsertableBanRequestProof } from '@peernest/db';
 import { ClsService } from 'nestjs-cls';
 
+import { AppConfig, type TAppConfig } from '@/configs/app.config';
 import { CustomHttpException } from '@/custom.exception';
+import { getFullStorageUrl } from '@/features/attachment/utils';
 import {
   BanActionRepository,
   BanRequestProofRepository,
@@ -35,6 +42,7 @@ import { IClsStore } from '@/types/cls';
 @Injectable()
 export class BanService {
   constructor(
+    @AppConfig() private readonly appConfig: TAppConfig,
     private readonly clsService: ClsService<IClsStore>,
     private readonly kyselyService: KyselyService,
 
@@ -365,5 +373,79 @@ export class BanService {
     );
 
     // todo: send notification (all mods and admins)
+  }
+
+  async findBanUsers(findBanUsersQueryParams: TFindBanUsersQueryParams): Promise<TFindBanUsersVo> {
+    const now = new Date();
+    const banUserObjs = await this.banActionRepository.findBanUsers({
+      ...findBanUsersQueryParams,
+      banEndTime: now,
+    });
+
+    const formattedBanUserObjs = banUserObjs.map((banUserObj): TBanUserSchema => {
+      const banUserBase: TBanUserBase = {
+        banId: banUserObj.banId,
+        status: banUserObj.status as FindBanUsersStatus,
+        bannedUser: {
+          userId: banUserObj.bannedUserId,
+          userDisplayName: banUserObj.bannedUserDisplayname,
+          userAvatarUrl: getFullStorageUrl(banUserObj.bannedUserAvatarUrl),
+          roleName: banUserObj.bannedUserRoleName,
+          pronoun: banUserObj.bannedUserPronoun,
+          university: banUserObj.bannedUserUniversity,
+          domain: banUserObj.bannedUserDomain,
+          userInfoLookingFor: banUserObj.bannedUserLookingFor,
+          interests: banUserObj.bannedUserInterest,
+          personalGoals: banUserObj.bannedUserPersonalGoal,
+        },
+      };
+
+      return banUserObj.status === FindBanUsersStatus.Review
+        ? {
+            ...banUserBase,
+            banRequestRequesterId: banUserObj.banRequestRequesterId!,
+            banRequestRequesterName: banUserObj.banRequestRequesterName!,
+            banRequestStatus: banUserObj.banRequestStatus!,
+            banRequestReason: banUserObj.banRequestReason!,
+            banRequestCreatedTime: banUserObj.banRequestCreatedTime!,
+            proofs: banUserObj.banRequestProofs.map((proof) =>
+              this.buildProofUrl(
+                proof.banRequestProofResourceId,
+                proof.banRequestProofResourceType as BanRequestProofResourceType
+              )
+            ),
+          }
+        : {
+            ...banUserBase,
+            banActionBannedBy: banUserObj.banActionBannedBy!,
+            bannedByUserName: banUserObj.bannedByUserName!,
+            banActionReason: banUserObj.banActionReason!,
+            banActionBanStartTime: banUserObj.banActionBanStartTime!,
+            proofs: banUserObj.banActionProofs.map((proof) =>
+              this.buildProofUrl(
+                proof.banRequestProofResourceId,
+                proof.banRequestProofResourceType as BanRequestProofResourceType
+              )
+            ),
+          };
+    });
+
+    return {
+      count: formattedBanUserObjs.length,
+      bannedUsers: formattedBanUserObjs,
+    };
+  }
+
+  private buildProofUrl(resourceId: string, resourceType: BanRequestProofResourceType) {
+    const publicOrigin = this.appConfig.publicOrigin;
+
+    // todo: complete the comment frontend url
+
+    switch (resourceType) {
+      case BanRequestProofResourceType.Discussion:
+        return `${publicOrigin}/discussions/${resourceId}`;
+      case BanRequestProofResourceType.Comment:
+        return `${publicOrigin}/comments/${resourceId}`;
+    }
   }
 }
