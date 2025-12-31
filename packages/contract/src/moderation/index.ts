@@ -1,3 +1,4 @@
+export * from './create-ban-request';
 export * from './delete-reported-content';
 export * from './find-reported-contents';
 export * from './release-reported-content';

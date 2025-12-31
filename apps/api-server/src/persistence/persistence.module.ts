@@ -1,6 +1,7 @@
 import { Module, Provider } from '@nestjs/common';
 
 import { AttachmentRepository } from './repos/attachment';
+import { BanActionRepository, BanRequestProofRepository, BanRequestRepository } from './repos/ban';
 import {
   CommentRepository,
   UserCommentLikeRepository,
@@ -82,6 +83,9 @@ const repositories: Provider[] = [
   CheckInWellnessSymptomRepository,
   CheckInWellnessFactorRepository,
   CheckInHealthMeasurementRepository,
+  BanActionRepository,
+  BanRequestRepository,
+  BanRequestProofRepository,
 ];
 
 @Module({

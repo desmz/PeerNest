@@ -118,6 +118,34 @@ export class CommentRepository {
     }
   }
 
+  async findCommentsByIds(
+    ids: string[],
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { includedDeleted } = options || {};
+
+      let query = db.selectFrom('comment').selectAll().where('comment.commentId', 'in', ids);
+
+      if (!includedDeleted) {
+        query = query.where('commentDeletedTime', 'is', null);
+      }
+
+      const comments = await query.execute();
+
+      return comments;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CommentRepository.repoName}] | Fail to find comments by ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids, options }
+      );
+    }
+  }
+
   async findCommentAggByIds(
     ids: {
       commentId: string;

@@ -135,6 +135,47 @@ export class DiscussionRepository {
     }
   }
 
+  async findDiscussionsByIds(
+    ids: string[],
+    options?: { includedDeleted?: boolean; statuses?: DiscussionStatus[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { includedDeleted, statuses } = options || {};
+
+      let query = db
+        .selectFrom('discussion')
+        .leftJoin(
+          'discussionAttachment',
+          'discussionAttachment.discussionAttachmentDiscussionId',
+          'discussion.discussionId'
+        )
+        .selectAll('discussion')
+        .select('discussionAttachment.discussionAttachmentAttachmentId as attachmentId')
+        .where('discussion.discussionId', 'in', ids);
+
+      if (!includedDeleted) {
+        query = query.where('discussion.discussionDeletedTime', 'is', null);
+      }
+
+      if (statuses && statuses.length > 0) {
+        query = query.where('discussion.discussionStatus', 'in', statuses);
+      }
+
+      const discussions = await query.execute();
+
+      return discussions;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to find discussions by ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids, options }
+      );
+    }
+  }
+
   async findDiscussionAggByIds(
     ids: {
       discussionId: string;

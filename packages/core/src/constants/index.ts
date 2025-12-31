@@ -1,5 +1,6 @@
 export * from './attachment.constant';
 export * from './auth.constant';
+export * from './ban.contant';
 export * from './comment.constant';
 export * from './conversation.constant';
 export * from './datetime.constant';
