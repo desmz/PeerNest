@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { TApplyRoleRo, TApproveRoleApplicationParams } from '@peernest/contract';
+import {
+  TApplyRoleRo,
+  TApproveRoleApplicationParams,
+  TRejectRoleApplicationParams,
+} from '@peernest/contract';
 import {
   ALLOWED_APPLIED_ROLES,
   AttachmentStatus,
@@ -224,5 +228,68 @@ export class RoleManagementService {
         tx
       );
     });
+  }
+
+  async rejectRoleApplication(
+    rejectRoleApplicationParams: TRejectRoleApplicationParams
+  ): Promise<void> {
+    const { roleApplicationId } = rejectRoleApplicationParams;
+
+    const userId = this.clsService.get('user.id');
+    const userRoleRank = this.clsService.get('user.roleRank');
+
+    const roleApplication =
+      await this.roleApplicationRepository.findRoleApplicationById(roleApplicationId);
+
+    if (!roleApplication) {
+      throw new CustomHttpException(
+        `Role application ${roleApplicationId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (roleApplication.roleApplicationStatus !== RoleApplicationStatus.Pending) {
+      throw new CustomHttpException(
+        `Role application is not in ${RoleApplicationStatus.Pending} status`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    if (roleApplication.roleApplicationApplicantId === userId) {
+      throw new CustomHttpException(
+        'You cannot reject your own role application',
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const appliedRole = await this.roleRepository.findRoleById(
+      roleApplication.roleApplicationAppliedRoleId
+    );
+
+    if (!appliedRole) {
+      throw new CustomHttpException(
+        `Role ${roleApplication.roleApplicationAppliedRoleId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const appliedRoleRank = parseInt(appliedRole.roleRank);
+    if (appliedRoleRank > userRoleRank) {
+      throw new CustomHttpException(
+        `You does not have permission to perform this operation`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const now = new Date();
+    await this.roleApplicationRepository.updateRoleApplicationById(
+      {
+        roleApplicationStatus: RoleApplicationStatus.Rejected,
+        roleApplicationProcessedTime: now,
+        roleApplicationProcessedBy: userId,
+        roleApplicationUpdatedTime: now,
+      },
+      roleApplicationId
+    );
   }
 }
