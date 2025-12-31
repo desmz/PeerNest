@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { TCreateBanRequestRo } from '@peernest/contract';
+import {
+  TApproveBanRequestParams,
+  TApproveBanRequestRo,
+  TCreateBanRequestRo,
+} from '@peernest/contract';
 import {
   BanRequestProofResourceType,
   BanRequestStatus,
   COMMENT_REFERENCE_REGEX,
   DISCUSSION_REFERENCE_REGEX,
   DiscussionStatus,
+  generateBanActionId,
   generateBanRequestId,
   generateBanRequestProofId,
   HttpErrorCode,
@@ -56,7 +61,6 @@ export class BanService {
       );
     }
 
-    // todo: test this
     const now = new Date();
     const isBanned = await this.banActionRepository.validateIfUserIsBanned(bannedUserId, now);
 
@@ -148,6 +152,78 @@ export class BanService {
 
       await this.banRequestProofRepository.createBanRequestProofs(
         [...discussionProofs, ...commentProofs],
+        tx
+      );
+    });
+  }
+
+  async approveBanRequest(
+    approveBanRequestParams: TApproveBanRequestParams,
+    approveBanRequestRo: TApproveBanRequestRo
+  ): Promise<void> {
+    const { banRequestId } = approveBanRequestParams;
+    const { banEndTime } = approveBanRequestRo;
+
+    const userId = this.clsService.get('user.id');
+
+    const banRequest = await this.banRequestRepository.findBanRequestByBannedId(banRequestId);
+
+    if (!banRequest) {
+      throw new CustomHttpException(
+        `Ban request ${banRequestId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (banRequest.banRequestStatus !== BanRequestStatus.Pending) {
+      throw new CustomHttpException(
+        `Ban request ${banRequestId} is not in ${BanRequestStatus.Pending} mode`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const bannedUserId = banRequest.banRequestBannedUserId;
+    const now = new Date();
+    const isBanned = await this.banActionRepository.validateIfUserIsBanned(bannedUserId, now);
+
+    if (isBanned) {
+      throw new CustomHttpException(
+        `User ${bannedUserId} is already banned`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const requesterId = banRequest.banRequestRequesterId;
+    if (userId === requesterId) {
+      throw new CustomHttpException(
+        `You cannot approve your own ban request`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const banActionId = generateBanActionId();
+    await executeTx(this.kyselyService.db, async (tx) => {
+      await this.banActionRepository.createBanAction(
+        {
+          banActionId: banActionId,
+          banActionBannedUserId: bannedUserId,
+          banActionBanRequestId: banRequestId,
+          banActionBannedBy: userId,
+          banActionReason: banRequest.banRequestReason,
+          banActionCreatedTime: now,
+          banActionBanStartTime: now,
+          banActionBanEndTime: banEndTime,
+        },
+        tx
+      );
+
+      await this.banRequestRepository.updateBanRequestById(
+        {
+          banRequestStatus: BanRequestStatus.Approved,
+          banRequestResolverId: userId,
+          banRequestResolvedTime: now,
+        },
+        banRequestId,
         tx
       );
     });

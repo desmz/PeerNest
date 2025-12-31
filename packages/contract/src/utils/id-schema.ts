@@ -106,3 +106,9 @@ export const checkInHealthMeasurementIdSchema = (field = 'Check In Health Measur
       zStartWith(field, IdPrefix.CheckInHealthMeasurement)
     );
 };
+
+export const banRequestIdSchema = (field = 'Ban Request Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.BanRequest, zStartWith(field, IdPrefix.BanRequest));
+};
