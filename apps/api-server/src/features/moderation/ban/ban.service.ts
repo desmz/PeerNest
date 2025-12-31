@@ -3,6 +3,7 @@ import {
   TApproveBanRequestParams,
   TApproveBanRequestRo,
   TCreateBanRequestRo,
+  TRejectBanRequestParams,
 } from '@peernest/contract';
 import {
   BanRequestProofResourceType,
@@ -155,6 +156,8 @@ export class BanService {
         tx
       );
     });
+
+    // todo: send notification
   }
 
   async approveBanRequest(
@@ -227,5 +230,49 @@ export class BanService {
         tx
       );
     });
+
+    // todo: send notification
+  }
+
+  async rejectBanRequest(rejectBanRequestParams: TRejectBanRequestParams): Promise<void> {
+    const { banRequestId } = rejectBanRequestParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const banRequest = await this.banRequestRepository.findBanRequestByBannedId(banRequestId);
+
+    if (!banRequest) {
+      throw new CustomHttpException(
+        `Ban request ${banRequestId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (banRequest.banRequestStatus !== BanRequestStatus.Pending) {
+      throw new CustomHttpException(
+        `Ban request ${banRequestId} is not in ${BanRequestStatus.Pending} mode`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const requesterId = banRequest.banRequestRequesterId;
+    if (userId === requesterId) {
+      throw new CustomHttpException(
+        `You cannot reject your own ban request`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const now = new Date();
+    await this.banRequestRepository.updateBanRequestById(
+      {
+        banRequestStatus: BanRequestStatus.Rejected,
+        banRequestResolverId: userId,
+        banRequestResolvedTime: now,
+      },
+      banRequestId
+    );
+
+    // todo: send notification
   }
 }

@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/com
 import {
   approveBanRequestRoSchema,
   createBanRequestRoSchema,
+  type TRejectBanRequestParams,
   type TApproveBanRequestParams,
   type TApproveBanRequestRo,
   type TCreateBanRequestRo,
@@ -35,5 +36,12 @@ export class BanController {
     approveBanRequestRo: TApproveBanRequestRo
   ): Promise<void> {
     await this.banService.approveBanRequest(approveBanRequestParams, approveBanRequestRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Post('ban-requests/:banRequestId/reject')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async rejectBanRequest(@Param() rejectBanRequestParams: TRejectBanRequestParams): Promise<void> {
+    await this.banService.rejectBanRequest(rejectBanRequestParams);
   }
 }
