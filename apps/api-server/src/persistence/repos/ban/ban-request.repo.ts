@@ -71,6 +71,38 @@ export class BanRequestRepository {
     }
   }
 
+  async updateBanRequestsByBannedUserId(
+    banRequestPayload: TUpdatableBanRequest,
+    bannedUserId: string,
+    options?: { banRequestStatuses: BanRequestStatus[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { banRequestStatuses } = options || {};
+
+      let query = await db
+        .updateTable('banRequest')
+        .set(banRequestPayload)
+        .where('banRequestBannedUserId', '=', bannedUserId);
+
+      if (banRequestStatuses && banRequestStatuses.length > 0) {
+        query = query.where('banRequestStatus', 'in', banRequestStatuses);
+      }
+
+      const banRequests = await query.returningAll().execute();
+
+      return banRequests!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${BanRequestRepository.repoName}] | Fail to update ban requests by banned user id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, banRequestPayload, bannedUserId }
+      );
+    }
+  }
+
   async findBanRequestByBannedUserId(
     bannedUserId: string,
     options?: { banRequestStatuses: BanRequestStatus[] },

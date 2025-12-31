@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   TApproveBanRequestParams,
   TApproveBanRequestRo,
+  TBanUserRo,
   TCreateBanRequestRo,
   TRejectBanRequestParams,
 } from '@peernest/contract';
@@ -272,6 +273,63 @@ export class BanService {
       },
       banRequestId
     );
+
+    // todo: send notification
+  }
+
+  async banUser(banUserRo: TBanUserRo): Promise<void> {
+    const { banEndTime, bannedUserId, reason } = banUserRo;
+
+    const userId = this.clsService.get('user.id');
+
+    const bannedUser = await this.userRepository.findUserById(bannedUserId);
+
+    if (!bannedUser) {
+      throw new CustomHttpException(`User ${bannedUserId} does not exist`, HttpErrorCode.NOT_FOUND);
+    }
+
+    if (bannedUserId === userId) {
+      throw new CustomHttpException('You cannot ban yourself', HttpErrorCode.RESTRICTED_RESOURCE);
+    }
+
+    const now = new Date();
+    const isBanned = await this.banActionRepository.validateIfUserIsBanned(bannedUserId, now);
+
+    if (isBanned) {
+      throw new CustomHttpException(
+        `User ${bannedUserId} is already banned`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const banActionId = generateBanActionId();
+    await executeTx(this.kyselyService.db, async (tx) => {
+      await this.banActionRepository.createBanAction(
+        {
+          banActionId: banActionId,
+          banActionBannedUserId: bannedUserId,
+          banActionBannedBy: userId,
+          banActionReason: reason,
+          banActionCreatedTime: now,
+          banActionBanStartTime: now,
+          banActionBanEndTime: banEndTime,
+        },
+        tx
+      );
+
+      await this.banRequestRepository.updateBanRequestsByBannedUserId(
+        {
+          banRequestStatus: BanRequestStatus.Approved,
+          banRequestResolverId: userId,
+          banRequestResolvedTime: now,
+        },
+        bannedUserId,
+        {
+          banRequestStatuses: [BanRequestStatus.Pending],
+        },
+        tx
+      );
+    });
 
     // todo: send notification
   }
