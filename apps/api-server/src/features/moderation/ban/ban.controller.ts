@@ -8,6 +8,7 @@ import {
   type TCreateBanRequestRo,
   banUserRoSchema,
   type TBanUserRo,
+  type TUnBanUserParams,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -54,5 +55,12 @@ export class BanController {
     @Body(new ZodValidationPipe(banUserRoSchema)) banUserRo: TBanUserRo
   ): Promise<void> {
     await this.banService.banUser(banUserRo);
+  }
+
+  @Roles(UserRole.Admin)
+  @Post('bans/:banActionId/unban')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unbanUser(@Param() unbanUserParams: TUnBanUserParams): Promise<void> {
+    await this.banService.unbanUser(unbanUserParams);
   }
 }

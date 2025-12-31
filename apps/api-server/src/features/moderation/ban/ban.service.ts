@@ -5,6 +5,7 @@ import {
   TBanUserRo,
   TCreateBanRequestRo,
   TRejectBanRequestParams,
+  TUnBanUserParams,
 } from '@peernest/contract';
 import {
   BanRequestProofResourceType,
@@ -332,5 +333,37 @@ export class BanService {
     });
 
     // todo: send notification
+  }
+
+  async unbanUser(unbanUserParams: TUnBanUserParams): Promise<void> {
+    const { banActionId } = unbanUserParams;
+
+    const banAction = await this.banActionRepository.findBanActionById(banActionId);
+
+    if (!banAction) {
+      throw new CustomHttpException(
+        `Ban action ${banActionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const banEndTime = banAction.banActionBanEndTime;
+    if (banEndTime && banEndTime < now) {
+      throw new CustomHttpException(
+        `Ban action ${banActionId} is already unbanned`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    await this.banActionRepository.updateBanActionById(
+      {
+        banActionBanEndTime: now,
+        banActionUpdatedTime: now,
+      },
+      banActionId
+    );
+
+    // todo: send notification (all mods and admins)
   }
 }
