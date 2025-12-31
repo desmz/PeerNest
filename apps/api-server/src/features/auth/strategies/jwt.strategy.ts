@@ -62,6 +62,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
     this.clsService.set('user.email', user.userEmail);
     this.clsService.set('user.id', user.userId);
     this.clsService.set('user.role', user.roleName as UserRole);
+    this.clsService.set('user.roleRank', parseInt(user.roleRank));
 
     return pickUserMe(user);
   }

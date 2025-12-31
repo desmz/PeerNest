@@ -5,6 +5,7 @@ import {
   KyselyService,
   TInsertableRoleApplication,
   TKyselyTransaction,
+  TUpdatableRoleApplication,
 } from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
@@ -48,6 +49,38 @@ export class RoleApplicationRepository {
     }
   }
 
+  async updateRoleApplicationById(
+    roleApplicationPayload: TUpdatableRoleApplication,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = roleApplicationPayload.roleApplicationUpdatedTime
+        ? roleApplicationPayload.roleApplicationUpdatedTime
+        : new Date();
+
+      const roleApplication = await db
+        .updateTable('roleApplication')
+        .set({
+          ...roleApplicationPayload,
+          roleApplicationUpdatedTime: now,
+        })
+        .where('roleApplicationId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return roleApplication!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${RoleApplicationRepository.repoName}] | Fail to update role application by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id, roleApplicationPayload }
+      );
+    }
+  }
+
   async findRoleApplicationByIds(
     ids: { applicantId: string; appliedRoleId: string },
     options?: { includedDeleted?: boolean; statuses: RoleApplicationStatus[] },
@@ -82,6 +115,38 @@ export class RoleApplicationRepository {
         `[${RoleApplicationRepository.repoName}] | Fail to find role application by ids`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, ids, options }
+      );
+    }
+  }
+
+  async findRoleApplicationById(
+    id: string,
+    options?: { includedDeleted?: boolean; statuses: RoleApplicationStatus[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { statuses, includedDeleted } = options || {};
+
+      let query = db.selectFrom('roleApplication').selectAll().where('roleApplicationId', '=', id);
+
+      if (statuses && statuses.length > 0) {
+        query = query.where('roleApplicationStatus', 'in', statuses);
+      }
+
+      if (!includedDeleted) {
+        query = query.where('roleApplicationDeletedTime', 'is', null);
+      }
+
+      const roleApplication = await query.executeTakeFirst();
+
+      return roleApplication;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${RoleApplicationRepository.repoName}] | Fail to find role application by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id, options }
       );
     }
   }

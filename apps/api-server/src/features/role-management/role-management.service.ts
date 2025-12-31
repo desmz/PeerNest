@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { TApplyRoleRo } from '@peernest/contract';
+import { TApplyRoleRo, TApproveRoleApplicationParams } from '@peernest/contract';
 import {
   ALLOWED_APPLIED_ROLES,
   AttachmentStatus,
   generateRoleApplicationId,
   generateRoleAttachmentId,
+  generateRoleChangeActionId,
   HttpErrorCode,
   RoleApplicationStatus,
+  RoleChangeActionType,
   UserRole,
 } from '@peernest/core';
 import { executeTx, KyselyService } from '@peernest/db';
@@ -17,8 +19,9 @@ import { AttachmentRepository } from '@/persistence/repos/attachment';
 import {
   RoleApplicationRepository,
   RoleAttachmentRepository,
+  RoleChangeActionRepository,
 } from '@/persistence/repos/role-management';
-import { RoleRepository } from '@/persistence/repos/user';
+import { RoleRepository, UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
 @Injectable()
@@ -30,7 +33,9 @@ export class RoleManagementService {
     private readonly attachmentRepository: AttachmentRepository,
     private readonly roleRepository: RoleRepository,
     private readonly roleApplicationRepository: RoleApplicationRepository,
-    private readonly roleAttachmentRepository: RoleAttachmentRepository
+    private readonly roleAttachmentRepository: RoleAttachmentRepository,
+    private readonly roleChangeActionRepository: RoleChangeActionRepository,
+    private readonly userRepository: UserRepository
   ) {}
 
   async applyRole(applyRoleRo: TApplyRoleRo): Promise<void> {
@@ -116,6 +121,108 @@ export class RoleManagementService {
           tx
         );
       }
+    });
+  }
+
+  async approveRoleApplication(
+    approveRoleApplicationParams: TApproveRoleApplicationParams
+  ): Promise<void> {
+    const { roleApplicationId } = approveRoleApplicationParams;
+
+    const userId = this.clsService.get('user.id');
+    const userRoleRank = this.clsService.get('user.roleRank');
+
+    const roleApplication =
+      await this.roleApplicationRepository.findRoleApplicationById(roleApplicationId);
+
+    if (!roleApplication) {
+      throw new CustomHttpException(
+        `Role application ${roleApplicationId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (roleApplication.roleApplicationStatus !== RoleApplicationStatus.Pending) {
+      throw new CustomHttpException(
+        `Role application is not in ${RoleApplicationStatus.Pending} status`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    if (roleApplication.roleApplicationApplicantId === userId) {
+      throw new CustomHttpException(
+        'You cannot approve your own role application',
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const appliedRole = await this.roleRepository.findRoleById(
+      roleApplication.roleApplicationAppliedRoleId
+    );
+
+    if (!appliedRole) {
+      throw new CustomHttpException(
+        `Role ${roleApplication.roleApplicationAppliedRoleId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const appliedRoleRank = parseInt(appliedRole.roleRank);
+    if (appliedRoleRank > userRoleRank) {
+      throw new CustomHttpException(
+        `You does not have permission to perform this operation`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const applicant = await this.userRepository.findUserById(
+      roleApplication.roleApplicationApplicantId
+    );
+
+    if (!applicant) {
+      throw new CustomHttpException(
+        `Applicant ${roleApplication.roleApplicationAppliedRoleId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    await executeTx(this.kyselyService.db, async (tx) => {
+      await this.roleApplicationRepository.updateRoleApplicationById(
+        {
+          roleApplicationStatus: RoleApplicationStatus.Approved,
+          roleApplicationProcessedTime: now,
+          roleApplicationProcessedBy: userId,
+          roleApplicationUpdatedTime: now,
+        },
+        roleApplicationId,
+        tx
+      );
+
+      const roleChangeActionType =
+        appliedRoleRank > parseInt(applicant.roleRank)
+          ? RoleChangeActionType.Promotion
+          : RoleChangeActionType.Demotion;
+
+      await this.roleChangeActionRepository.createRoleChangeAction(
+        {
+          roleChangeActionId: generateRoleChangeActionId(),
+          roleChangeActionTargetUserId: applicant.userId,
+          roleChangeActionOldRoleId: applicant.roleId,
+          roleChangeActionNewRoleId: appliedRole.roleId,
+          roleChangeActionType: roleChangeActionType,
+          roleChangeActionProcessedBy: userId,
+          roleChangeActionRoleApplicationId: roleApplicationId,
+          roleChangeActionCreatedTime: now,
+        },
+        tx
+      );
+
+      await this.userRepository.updateUserById(
+        { userRoleId: appliedRole.roleId, userUpdatedTime: now },
+        applicant.userId,
+        tx
+      );
     });
   }
 }

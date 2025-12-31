@@ -10,3 +10,8 @@ export enum RoleApplicationStatus {
 }
 
 export const ALLOWED_APPLIED_ROLES = [UserRole.Admin, UserRole.Moderator, UserRole.Counselor];
+
+export enum RoleChangeActionType {
+  Demotion = 'demotion',
+  Promotion = 'promotion',
+}

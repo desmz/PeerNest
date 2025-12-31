@@ -122,3 +122,9 @@ export const banActionIdSchema = (field = 'Ban Action Id') => {
     .string(zString(field))
     .startsWith(IdPrefix.BanAction, zStartWith(field, IdPrefix.BanAction));
 };
+
+export const roleApplicationIdSchema = (field = 'Role Application Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.RoleApplication, zStartWith(field, IdPrefix.RoleApplication));
+};
