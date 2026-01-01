@@ -63,6 +63,7 @@ export function pickUserMe(user: TSelectableUser & TSelectableRole): TMeVo {
   return {
     displayName: user.userDisplayName,
     role: user.roleName,
+    roleRank: parseInt(user.roleRank),
     email: user.userEmail,
     avatarUrl: getFullStorageUrl(user.userAvatarUrl),
     lastSignedTime: user.userLastSignedTime,

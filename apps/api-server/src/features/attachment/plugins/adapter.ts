@@ -12,6 +12,7 @@ export default abstract class StorageAdapter {
     switch (type) {
       case UploadType.Avatar:
       case UploadType.Discussion:
+      case UploadType.RoleApplication:
         return storageConfig().publicBucket;
       default:
         throw new CustomHttpException(
@@ -27,6 +28,8 @@ export default abstract class StorageAdapter {
         return 'avatar';
       case UploadType.Discussion:
         return 'discussion';
+      case UploadType.RoleApplication:
+        return 'role-application';
       default:
         throw new CustomHttpException(
           `[${StorageAdapter.storageAdapterName}] | Invalid upload type ${type}`,

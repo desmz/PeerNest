@@ -11,6 +11,35 @@ export class WellnessFactorCategoryRepository {
 
   constructor(private readonly kyselyService: KyselyService) {}
 
+  async findWellnessFactorCategoryById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db
+        .selectFrom('wellnessFactorCategory')
+        .selectAll()
+        .where('wellnessFactorCategoryId', '=', id);
+
+      if (!options?.includedDeleted) {
+        query = query.where('wellnessFactorCategoryDeletedTime', 'is', null);
+      }
+
+      const wellnessFactorCategory = await query.executeTakeFirst();
+
+      return wellnessFactorCategory;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessFactorCategoryRepository.repoName}] | Fail to find wellness factor category by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
+      );
+    }
+  }
+
   async findWellnessFactorCategoryAggs(
     options?: {
       includedDeleted?: boolean;

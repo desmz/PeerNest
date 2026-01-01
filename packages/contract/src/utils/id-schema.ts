@@ -3,6 +3,10 @@ import z from 'zod';
 
 import { zStartWith, zString } from './schema';
 
+export const roleIdSchema = (field = 'Role Id') => {
+  return z.string(zString(field)).startsWith(IdPrefix.Role, zStartWith(field, IdPrefix.Role));
+};
+
 export const userIdSchema = (field = 'User Id') => {
   return z.string(zString(field)).startsWith(IdPrefix.User, zStartWith(field, IdPrefix.User));
 };
@@ -73,10 +77,25 @@ export const wellnessSymptomIdSchema = (field = 'Wellness Symptom Id') => {
     .startsWith(IdPrefix.WellnessSymptom, zStartWith(field, IdPrefix.WellnessSymptom));
 };
 
+export const wellnessSymptomCategoryIdSchema = (field = 'Wellness Symptom Category Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(
+      IdPrefix.WellnessSymptomCategory,
+      zStartWith(field, IdPrefix.WellnessSymptomCategory)
+    );
+};
+
 export const wellnessFactorIdSchema = (field = 'Wellness Factor Id') => {
   return z
     .string(zString(field))
     .startsWith(IdPrefix.WellnessFactor, zStartWith(field, IdPrefix.WellnessFactor));
+};
+
+export const wellnessFactorCategoryIdSchema = (field = 'Wellness Factor Category Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.WellnessFactorCategory, zStartWith(field, IdPrefix.WellnessFactor));
 };
 
 export const checkIdSchema = (field = 'Check In Id') => {
@@ -90,4 +109,22 @@ export const checkInHealthMeasurementIdSchema = (field = 'Check In Health Measur
       IdPrefix.CheckInHealthMeasurement,
       zStartWith(field, IdPrefix.CheckInHealthMeasurement)
     );
+};
+
+export const banRequestIdSchema = (field = 'Ban Request Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.BanRequest, zStartWith(field, IdPrefix.BanRequest));
+};
+
+export const banActionIdSchema = (field = 'Ban Action Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.BanAction, zStartWith(field, IdPrefix.BanAction));
+};
+
+export const roleApplicationIdSchema = (field = 'Role Application Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.RoleApplication, zStartWith(field, IdPrefix.RoleApplication));
 };

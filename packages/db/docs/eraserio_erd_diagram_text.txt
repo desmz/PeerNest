@@ -180,6 +180,7 @@ discussion [color: blue] {
   archived_time timestamptz?
   archived_by varchar? fk
   deleted_time timestamptz?
+  deleted_by varchar? fk
 
   // to_tsvector(title, content)
 }
@@ -247,6 +248,7 @@ comment [color: blue] {
   created_time timestamptz
   updated_time timestamptz?
   deleted_time timestamptz?
+  deleted_by varchar? fk
 
   // index(author_id, discussion_id)
 }
@@ -300,7 +302,7 @@ ban_request [color: blue] {
   requester_id varchar fk
   banned_user_id varchar fk
   status varchar // pending, approved, rejected
-  reasons text
+  reason text
   proof_reference_raw text
   created_time timestamptz
   resolver_id varchar? fk
@@ -586,7 +588,7 @@ role_change_action [color: blue] {
   role_application_id varchar? fk
   created_time timestamptz
   updated_time timestamptz?
-  deleted_time timestamptz
+  deleted_time timestamptz?
 
   // check(old_role_id != new_role_id)
 }

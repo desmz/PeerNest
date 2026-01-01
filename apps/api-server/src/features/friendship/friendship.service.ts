@@ -34,6 +34,7 @@ import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
+import { BanActionRepository } from '@/persistence/repos/ban';
 import {
   ConversationParticipantRepository,
   ConversationRepository,
@@ -50,6 +51,7 @@ export class FriendShipService {
     private readonly clsService: ClsService<IClsStore>,
     private readonly kyselyService: KyselyService,
 
+    private readonly banActionRepository: BanActionRepository,
     private readonly conversationRepository: ConversationRepository,
     private readonly conversationParticipantRepository: ConversationParticipantRepository,
     private readonly friendRequestRepository: FriendRequestRepository,
@@ -83,7 +85,15 @@ export class FriendShipService {
       );
     }
 
-    // todo: add ban check
+    const now = new Date();
+    const isBanned = await this.banActionRepository.validateIfUserIsBanned(toUser.userId, now);
+
+    if (isBanned) {
+      throw new CustomHttpException(
+        `User ${toUser.userDisplayName} have been banned or suspended`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
+    }
 
     const existingFriendRelationship = await this.relationshipRepository.findRelationshipByUserIds(
       {
@@ -127,7 +137,6 @@ export class FriendShipService {
       };
     }
 
-    const now = new Date();
     await this.friendRequestRepository.createFriendRequest({
       friendRequestId: generateFriendRequestId(),
       friendRequestFromId: userId,

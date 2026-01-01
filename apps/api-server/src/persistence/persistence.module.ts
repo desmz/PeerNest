@@ -1,6 +1,7 @@
 import { Module, Provider } from '@nestjs/common';
 
 import { AttachmentRepository } from './repos/attachment';
+import { BanActionRepository, BanRequestProofRepository, BanRequestRepository } from './repos/ban';
 import {
   CommentRepository,
   UserCommentLikeRepository,
@@ -16,6 +17,11 @@ import {
   UserDiscussionReportRepository,
 } from './repos/discussion';
 import { FriendRequestRepository, RelationshipRepository } from './repos/friendship';
+import {
+  RoleApplicationRepository,
+  RoleAttachmentRepository,
+  RoleChangeActionRepository,
+} from './repos/role-management';
 import {
   DomainRepository,
   InterestRepository,
@@ -82,6 +88,12 @@ const repositories: Provider[] = [
   CheckInWellnessSymptomRepository,
   CheckInWellnessFactorRepository,
   CheckInHealthMeasurementRepository,
+  BanActionRepository,
+  BanRequestRepository,
+  BanRequestProofRepository,
+  RoleApplicationRepository,
+  RoleAttachmentRepository,
+  RoleChangeActionRepository,
 ];
 
 @Module({

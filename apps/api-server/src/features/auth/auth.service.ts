@@ -33,6 +33,7 @@ import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
+import { BanActionRepository } from '@/persistence/repos/ban';
 import {
   AccountRepository,
   RoleRepository,
@@ -55,6 +56,7 @@ export class AuthService {
 
     private readonly attachmentRepository: AttachmentRepository,
     private readonly accountRepository: AccountRepository,
+    private readonly banActionRepository: BanActionRepository,
     private readonly roleRepository: RoleRepository,
     private readonly userRepository: UserRepository,
     private readonly userInfoRepository: UserInfoRepository,
@@ -222,13 +224,22 @@ export class AuthService {
       );
     }
 
-    // todo: add ban check
+    const now = new Date();
+    const userId = user.userId;
+    const isBanned = await this.banActionRepository.validateIfUserIsBanned(userId, now);
+
+    if (isBanned) {
+      throw new CustomHttpException(
+        `You have been banned or suspended`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
+    }
 
     await this.userRepository.updateUserById(
       {
-        userLastSignedTime: new Date(),
+        userLastSignedTime: now,
       },
-      user.userId
+      userId
     );
 
     return { accessToken: await this.tokenService.generateAccessToken(user) };
@@ -316,7 +327,17 @@ export class AuthService {
         );
       }
 
-      // todo: add ban check
+      const isBanned = await this.banActionRepository.validateIfUserIsBanned(
+        existingUser.userId,
+        now
+      );
+
+      if (isBanned) {
+        throw new CustomHttpException(
+          `You have been banned or suspended`,
+          HttpErrorCode.FREEZE_ACCOUNT
+        );
+      }
 
       const accounts = await this.accountRepository.findAccountsByUserId(existingUser.userId);
 
@@ -528,7 +549,15 @@ export class AuthService {
       );
     }
 
-    // todo: add ban check
+    const userId = user.userId;
+    const isBanned = await this.banActionRepository.validateIfUserIsBanned(userId, now);
+
+    if (isBanned) {
+      throw new CustomHttpException(
+        `You have been banned or suspended`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
+    }
 
     const passwordHash = await encodePassword(newPassword);
 
@@ -547,7 +576,7 @@ export class AuthService {
           userPasswordHash: passwordHash,
           userLastSignedTime: now,
         },
-        user.userId,
+        userId,
         tx
       );
     });

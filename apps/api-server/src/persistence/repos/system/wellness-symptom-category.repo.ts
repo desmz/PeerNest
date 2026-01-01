@@ -11,6 +11,35 @@ export class WellnessSymptomCategoryRepository {
 
   constructor(private readonly kyselyService: KyselyService) {}
 
+  async findWellnessSymptomCategoryById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db
+        .selectFrom('wellnessSymptomCategory')
+        .selectAll()
+        .where('wellnessSymptomCategoryId', '=', id);
+
+      if (!options?.includedDeleted) {
+        query = query.where('wellnessSymptomCategoryDeletedTime', 'is', null);
+      }
+
+      const wellnessSymptomCategory = await query.executeTakeFirst();
+
+      return wellnessSymptomCategory;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${WellnessSymptomCategoryRepository.repoName}] | Fail to find wellness symptom category by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
+      );
+    }
+  }
+
   async findWellnessSymptomCategoryAggs(
     options?: {
       includedDeleted?: boolean;

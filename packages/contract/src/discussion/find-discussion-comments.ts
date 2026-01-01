@@ -6,7 +6,7 @@ import { commentIdSchema, discussionIdSchema } from '../utils';
 
 import { discussionAuthorVoSchema } from './get-discussion';
 
-export const FIND_DISCUSSION_COMMENTS: TApiMethod = 'get';
+export const FIND_DISCUSSION_COMMENTS_METHOD: TApiMethod = 'get';
 
 export const FIND_DISCUSSION_COMMENTS_URL = '/discussions/{discussionId}/comments';
 

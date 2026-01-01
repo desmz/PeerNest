@@ -37,6 +37,12 @@ import {
   CheckInWellnessFactor,
   CheckInHealthMeasurement,
   CheckInWellnessSymptom,
+  BanRequest,
+  BanRequestProof,
+  BanAction,
+  RoleApplication,
+  RoleAttachment,
+  RoleChangeAction,
 } from './db';
 
 // role
@@ -218,3 +224,33 @@ export type TUpdatableCheckInWellnessFactor = Updateable<Omit<CheckInWellnessFac
 export type TSelectableCheckInHealthMeasurement = Selectable<CheckInHealthMeasurement>;
 export type TInsertableCheckInHealthMeasurement = Insertable<CheckInHealthMeasurement>;
 export type TUpdatableCheckInHealthMeasurement = Updateable<Omit<CheckInHealthMeasurement, 'id'>>;
+
+// ban_request
+export type TSelectableBanRequest = Selectable<BanRequest>;
+export type TInsertableBanRequest = Insertable<BanRequest>;
+export type TUpdatableBanRequest = Updateable<Omit<BanRequest, 'id'>>;
+
+// ban_request_proof
+export type TSelectableBanRequestProof = Selectable<BanRequestProof>;
+export type TInsertableBanRequestProof = Insertable<BanRequestProof>;
+export type TUpdatableBanRequestProof = Updateable<Omit<BanRequestProof, 'id'>>;
+
+// ban_action
+export type TSelectableBanAction = Selectable<BanAction>;
+export type TInsertableBanAction = Insertable<BanAction>;
+export type TUpdatableBanAction = Updateable<Omit<BanAction, 'id'>>;
+
+// role_application
+export type TSelectableRoleApplication = Selectable<RoleApplication>;
+export type TInsertableRoleApplication = Insertable<RoleApplication>;
+export type TUpdatableRoleApplication = Updateable<Omit<RoleApplication, 'id'>>;
+
+// role_attachment
+export type TSelectableRoleAttachment = Selectable<RoleAttachment>;
+export type TInsertableRoleAttachment = Insertable<RoleAttachment>;
+export type TUpdatableRoleAttachment = Updateable<Omit<RoleAttachment, 'id'>>;
+
+// role_change_action
+export type TSelectableRoleChangeAction = Selectable<RoleChangeAction>;
+export type TInsertableRoleChangeAction = Insertable<RoleChangeAction>;
+export type TUpdatableRoleChangeAction = Updateable<Omit<RoleChangeAction, 'id'>>;
