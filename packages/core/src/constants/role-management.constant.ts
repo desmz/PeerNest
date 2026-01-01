@@ -15,3 +15,9 @@ export enum RoleChangeActionType {
   Demotion = 'demotion',
   Promotion = 'promotion',
 }
+
+export enum FindRoleApplicationsNames {
+  Admin = UserRole.Admin,
+  Moderator = UserRole.Moderator,
+  Counselor = UserRole.Counselor,
+}

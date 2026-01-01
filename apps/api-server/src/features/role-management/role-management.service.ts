@@ -3,7 +3,10 @@ import {
   TApplyRoleRo,
   TApproveRoleApplicationParams,
   TChangeUserRoleRo,
+  TFindRoleApplicationsQueryParams,
+  TFindRoleApplicationsVo,
   TRejectRoleApplicationParams,
+  TRoleApplication,
 } from '@peernest/contract';
 import {
   ALLOWED_APPLIED_ROLES,
@@ -14,12 +17,16 @@ import {
   HttpErrorCode,
   RoleApplicationStatus,
   RoleChangeActionType,
+  UploadType,
   UserRole,
 } from '@peernest/core';
 import { executeTx, KyselyService } from '@peernest/db';
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
+import StorageAdapter from '@/features/attachment/plugins/adapter';
+import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
+import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
 import {
   RoleApplicationRepository,
@@ -32,6 +39,7 @@ import { IClsStore } from '@/types/cls';
 @Injectable()
 export class RoleManagementService {
   constructor(
+    @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     private readonly kyselyService: KyselyService,
     private readonly clsService: ClsService<IClsStore>,
 
@@ -397,5 +405,57 @@ export class RoleManagementService {
         tx
       );
     });
+  }
+
+  async findRoleApplications(
+    findRoleApplicationsQueryParams: TFindRoleApplicationsQueryParams
+  ): Promise<TFindRoleApplicationsVo> {
+    const roleApplicationObjs = await this.roleApplicationRepository.findRoleApplications(
+      findRoleApplicationsQueryParams
+    );
+
+    const formattedRoleApplicationObjs = await Promise.all(
+      roleApplicationObjs.map(async (roleApplicationObj): Promise<TRoleApplication> => {
+        return {
+          roleApplicationId: roleApplicationObj.roleApplicationId,
+          roleApplicationStatus: roleApplicationObj.roleApplicationStatus,
+          roleApplicationDescription: roleApplicationObj.roleApplicationDescription,
+          roleApplicationCreatedTime: roleApplicationObj.roleApplicationCreatedTime,
+          roleApplicationAppliedRole: {
+            roleId: roleApplicationObj.roleId,
+            roleName: roleApplicationObj.roleName,
+            roleRank: roleApplicationObj.roleRank,
+          },
+          roleApplicant: {
+            userId: roleApplicationObj.applicantUserId,
+            userDisplayName: roleApplicationObj.applicantUserDisplayname,
+            userAvatarUrl: getFullStorageUrl(roleApplicationObj.applicantUserAvatarUrl),
+            roleName: roleApplicationObj.applicantUserRoleName,
+            pronoun: roleApplicationObj.applicantPronoun,
+            university: roleApplicationObj.applicantUniversity,
+            domain: roleApplicationObj.applicantDomain,
+            userInfoLookingFor: roleApplicationObj.applicantUserLookingFor,
+            interests: roleApplicationObj.applicantInterest,
+            personalGoals: roleApplicationObj.applicantPersonalGoal,
+          },
+          attachments: await Promise.all(
+            roleApplicationObj.attachments.map(
+              (attachment) =>
+                getAttachmentPreviewUrl(
+                  this.storageAdapter,
+                  UploadType.RoleApplication,
+                  attachment.attachmentPath,
+                  attachment.attachmentMimetype
+                ) as Promise<string>
+            )
+          ),
+        };
+      })
+    );
+
+    return {
+      count: formattedRoleApplicationObjs.length,
+      roleApplications: formattedRoleApplicationObjs,
+    };
   }
 }

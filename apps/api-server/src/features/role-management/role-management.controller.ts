@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import {
   applyRoleRoSchema,
   type TApproveRoleApplicationParams,
@@ -6,8 +6,13 @@ import {
   type TRejectRoleApplicationParams,
   changeUserRoleRoSchema,
   type TChangeUserRoleRo,
+  findRoleApplicationsQueryParamsSchema,
+  type TFindRoleApplicationsQueryParams,
+  type TFindRoleApplicationsVo,
 } from '@peernest/contract';
+import { UserRole } from '@peernest/core';
 
+import { Roles } from '@/features/auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
 import { RoleManagementService } from './role-management.service';
@@ -46,5 +51,15 @@ export class RoleManagementController {
     @Body(new ZodValidationPipe(changeUserRoleRoSchema)) changeUserRo: TChangeUserRoleRo
   ): Promise<void> {
     await this.roleManagementService.changeUserRo(changeUserRo);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Get('applications')
+  @HttpCode(HttpStatus.OK)
+  async findRoleApplications(
+    @Query(new ZodValidationPipe(findRoleApplicationsQueryParamsSchema))
+    findRoleApplicationsQueryParams: TFindRoleApplicationsQueryParams
+  ): Promise<TFindRoleApplicationsVo> {
+    return this.roleManagementService.findRoleApplications(findRoleApplicationsQueryParams);
   }
 }

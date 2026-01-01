@@ -48,7 +48,7 @@ import { ClsService } from 'nestjs-cls';
 import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
-import { getFullStorageUrl } from '@/features/attachment/utils';
+import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
 import { CommentRepository } from '@/persistence/repos/comment';
 import {
@@ -393,7 +393,9 @@ export class DiscussionService {
 
     let attachmentUrl: string | null = null;
     if (attachment) {
-      attachmentUrl = await this.getAttachmentUrl(
+      attachmentUrl = await getAttachmentPreviewUrl(
+        this.storageAdapter,
+        UploadType.Discussion,
         attachment.attachmentPath,
         attachment.attachmentMimetype
       );
@@ -598,7 +600,12 @@ export class DiscussionService {
             ...author,
             userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
           },
-          attachmentUrl: await this.getAttachmentUrl(attachmentPath, attachmentMimetype),
+          attachmentUrl: await getAttachmentPreviewUrl(
+            this.storageAdapter,
+            UploadType.Discussion,
+            attachmentPath,
+            attachmentMimetype
+          ),
         })
       )
     );
@@ -689,7 +696,12 @@ export class DiscussionService {
             ...author,
             userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
           },
-          attachmentUrl: await this.getAttachmentUrl(attachmentPath, attachmentMimetype),
+          attachmentUrl: await getAttachmentPreviewUrl(
+            this.storageAdapter,
+            UploadType.Discussion,
+            attachmentPath,
+            attachmentMimetype
+          ),
         })
       )
     );
@@ -698,28 +710,5 @@ export class DiscussionService {
       count: formattedDiscussions.length,
       discussions: formattedDiscussions,
     } as TFindArchivedDiscussionVo;
-  }
-
-  private async getAttachmentUrl(attachmentPath: string | null, attachmentMimetype: string | null) {
-    if (!attachmentPath) {
-      return null;
-    }
-
-    const bucket = StorageAdapter.getBucket(UploadType.Discussion);
-
-    const respHeaders: Record<string, string> = {};
-
-    if (attachmentMimetype) {
-      respHeaders['Content-Type'] = attachmentMimetype;
-    }
-
-    const attachmentUrl = await this.storageAdapter.getPreviewUrl(
-      bucket,
-      attachmentPath,
-      undefined,
-      respHeaders
-    );
-
-    return attachmentUrl;
   }
 }

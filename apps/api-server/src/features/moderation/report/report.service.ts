@@ -23,7 +23,7 @@ import { ClsService } from 'nestjs-cls';
 import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
-import { getFullStorageUrl } from '@/features/attachment/utils';
+import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
 import { CommentRepository, UserCommentReportRepository } from '@/persistence/repos/comment';
 import {
   DiscussionRepository,
@@ -230,19 +230,11 @@ export class ReportService {
         let attachmentUrl: string | null = null;
 
         if (reportedContent.attachmentPath) {
-          const bucket = StorageAdapter.getBucket(UploadType.Discussion);
-
-          const respHeaders: Record<string, string> = {};
-
-          if (reportedContent.attachmentMimetype) {
-            respHeaders['Content-Type'] = reportedContent.attachmentMimetype;
-          }
-
-          attachmentUrl = await this.storageAdapter.getPreviewUrl(
-            bucket,
+          attachmentUrl = await getAttachmentPreviewUrl(
+            this.storageAdapter,
+            UploadType.Discussion,
             reportedContent.attachmentPath,
-            undefined,
-            respHeaders
+            reportedContent.attachmentMimetype
           );
         }
 
