@@ -14,6 +14,7 @@ import {
   TGetInterestsVo,
   TGetPersonalGoalsVo,
   TGetPronounsVo,
+  TGetRolesVo,
   TGetUniversityVo,
   TGetWellnessFactorsVo,
   TGetWellnessMoodsVo,
@@ -56,6 +57,7 @@ import {
   WellnessSymptomCategoryRepository,
   WellnessSymptomRepository,
 } from '@/persistence/repos/system';
+import { RoleRepository } from '@/persistence/repos/user';
 
 @Injectable()
 export class SystemService {
@@ -64,6 +66,7 @@ export class SystemService {
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly pronounRepository: PronounRepository,
+    private readonly roleRepository: RoleRepository,
     private readonly wellnessMoodRepository: WellnessMoodRepository,
     private readonly wellnessFactorRepository: WellnessFactorRepository,
     private readonly wellnessFactorCategoryRepository: WellnessFactorCategoryRepository,
@@ -71,6 +74,20 @@ export class SystemService {
     private readonly wellnessSymptomCategoryRepository: WellnessSymptomCategoryRepository,
     private readonly universityRepository: UniversityRepository
   ) {}
+
+  async getRoles(): Promise<TGetRolesVo> {
+    const roles = await this.roleRepository.findRoles({ orderBy: 'roleRank' });
+
+    if (!roles) {
+      throw new CustomHttpException('Role is not available', HttpErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    return roles.map(({ roleId, roleName, roleRank }) => ({
+      roleId,
+      roleName,
+      roleRank: parseInt(roleRank),
+    }));
+  }
 
   async getPronouns(): Promise<TGetPronounsVo> {
     const pronouns = await this.pronounRepository.findPronouns({ orderBy: 'pronounName' });

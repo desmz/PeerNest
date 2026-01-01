@@ -43,6 +43,7 @@ import {
   updateWellnessFactorRoSchema,
   type TUpdateWellnessFactorRo,
   type TUpdateWellnessFactorVo,
+  TGetRolesVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -55,6 +56,12 @@ import { SystemService } from './system.service';
 @Controller('api/sys')
 export class SystemController {
   constructor(private readonly systemService: SystemService) {}
+
+  @Get('roles')
+  @HttpCode(HttpStatus.OK)
+  async getRoles(): Promise<TGetRolesVo> {
+    return this.systemService.getRoles();
+  }
 
   @Get('pronouns')
   @HttpCode(HttpStatus.OK)
