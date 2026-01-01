@@ -4,6 +4,8 @@ import {
   type TApproveRoleApplicationParams,
   type TApplyRoleRo,
   type TRejectRoleApplicationParams,
+  changeUserRoleRoSchema,
+  type TChangeUserRoleRo,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -36,5 +38,13 @@ export class RoleManagementController {
     @Param() rejectRoleApplicationParams: TRejectRoleApplicationParams
   ): Promise<void> {
     await this.roleManagementService.rejectRoleApplication(rejectRoleApplicationParams);
+  }
+
+  @Post('change')
+  @HttpCode(HttpStatus.CREATED)
+  async changeUserRo(
+    @Body(new ZodValidationPipe(changeUserRoleRoSchema)) changeUserRo: TChangeUserRoleRo
+  ): Promise<void> {
+    await this.roleManagementService.changeUserRo(changeUserRo);
   }
 }

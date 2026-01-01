@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   TApplyRoleRo,
   TApproveRoleApplicationParams,
+  TChangeUserRoleRo,
   TRejectRoleApplicationParams,
 } from '@peernest/contract';
 import {
@@ -185,7 +186,7 @@ export class RoleManagementService {
 
     if (!applicant) {
       throw new CustomHttpException(
-        `Applicant ${roleApplication.roleApplicationAppliedRoleId} does not exist`,
+        `Applicant ${roleApplication.roleApplicationApplicantId} does not exist`,
         HttpErrorCode.NOT_FOUND
       );
     }
@@ -291,5 +292,110 @@ export class RoleManagementService {
       },
       roleApplicationId
     );
+  }
+
+  async changeUserRo(changeUserRo: TChangeUserRoleRo): Promise<void> {
+    const { newRoleId, roleApplicationId, targetUserId } = changeUserRo;
+
+    const userId = this.clsService.get('user.id');
+    const userRoleRank = this.clsService.get('user.roleRank');
+
+    const appliedRole = await this.roleRepository.findRoleById(newRoleId);
+
+    if (!appliedRole) {
+      throw new CustomHttpException(`Role ${newRoleId} does not exist`, HttpErrorCode.NOT_FOUND);
+    }
+
+    const appliedRoleRank = parseInt(appliedRole.roleRank);
+    if (appliedRoleRank > userRoleRank) {
+      throw new CustomHttpException(
+        `You does not have permission to perform this operation`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const applicant = await this.userRepository.findUserById(targetUserId);
+
+    if (!applicant) {
+      throw new CustomHttpException(
+        `Applicant ${targetUserId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (roleApplicationId) {
+      const roleApplication =
+        await this.roleApplicationRepository.findRoleApplicationById(roleApplicationId);
+
+      if (!roleApplication) {
+        throw new CustomHttpException(
+          `Role application ${roleApplicationId} does not exist`,
+          HttpErrorCode.NOT_FOUND
+        );
+      }
+
+      if (roleApplication.roleApplicationStatus !== RoleApplicationStatus.Pending) {
+        throw new CustomHttpException(
+          `Role application is not in ${RoleApplicationStatus.Pending} status`,
+          HttpErrorCode.CONFLICT
+        );
+      }
+    }
+
+    const now = new Date();
+    await executeTx(this.kyselyService.db, async (tx) => {
+      if (roleApplicationId) {
+        await this.roleApplicationRepository.updateRoleApplicationById(
+          {
+            roleApplicationStatus: RoleApplicationStatus.Approved,
+            roleApplicationProcessedTime: now,
+            roleApplicationProcessedBy: userId,
+            roleApplicationUpdatedTime: now,
+          },
+          roleApplicationId,
+          tx
+        );
+      }
+
+      await this.roleApplicationRepository.updateRoleApplicationByIds(
+        {
+          roleApplicationStatus: RoleApplicationStatus.Approved,
+          roleApplicationProcessedTime: now,
+          roleApplicationProcessedBy: userId,
+          roleApplicationUpdatedTime: now,
+        },
+        {
+          applicantId: targetUserId,
+          appliedRoleId: newRoleId,
+        },
+        { statuses: [RoleApplicationStatus.Pending] },
+        tx
+      );
+
+      const roleChangeActionType =
+        appliedRoleRank > parseInt(applicant.roleRank)
+          ? RoleChangeActionType.Promotion
+          : RoleChangeActionType.Demotion;
+
+      await this.roleChangeActionRepository.createRoleChangeAction(
+        {
+          roleChangeActionId: generateRoleChangeActionId(),
+          roleChangeActionTargetUserId: targetUserId,
+          roleChangeActionOldRoleId: applicant.roleId,
+          roleChangeActionNewRoleId: newRoleId,
+          roleChangeActionType: roleChangeActionType,
+          roleChangeActionProcessedBy: userId,
+          roleChangeActionRoleApplicationId: roleApplicationId,
+          roleChangeActionCreatedTime: now,
+        },
+        tx
+      );
+
+      await this.userRepository.updateUserById(
+        { userRoleId: appliedRole.roleId, userUpdatedTime: now },
+        applicant.userId,
+        tx
+      );
+    });
   }
 }

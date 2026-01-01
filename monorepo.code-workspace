@@ -113,7 +113,7 @@
       "titleBar.activeBackground": "#374d6a",
       "titleBar.activeForeground": "#e7e7e7",
       "titleBar.inactiveBackground": "#374d6a99",
-      "titleBar.inactiveForeground": "#e7e7e799",
+      "titleBar.inactiveForeground": "#e7e7e799"
     },
     "cssVariables.lookupFiles": [
       "**/*.css",

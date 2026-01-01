@@ -81,6 +81,48 @@ export class RoleApplicationRepository {
     }
   }
 
+  async updateRoleApplicationByIds(
+    roleApplicationPayload: TUpdatableRoleApplication,
+    ids: { applicantId: string; appliedRoleId: string },
+    options?: { statuses: RoleApplicationStatus[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { applicantId, appliedRoleId } = ids;
+
+      const { statuses } = options || {};
+
+      const now = roleApplicationPayload.roleApplicationUpdatedTime
+        ? roleApplicationPayload.roleApplicationUpdatedTime
+        : new Date();
+
+      let query = db
+        .updateTable('roleApplication')
+        .set({
+          ...roleApplicationPayload,
+          roleApplicationUpdatedTime: now,
+        })
+        .where('roleApplicationApplicantId', '=', applicantId)
+        .where('roleApplicationAppliedRoleId', '=', appliedRoleId);
+
+      if (statuses && statuses.length > 0) {
+        query = query.where('roleApplicationStatus', 'in', statuses);
+      }
+
+      const roleApplication = await query.returningAll().executeTakeFirst();
+
+      return roleApplication!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${RoleApplicationRepository.repoName}] | Fail to update role application by ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids, roleApplicationPayload, options }
+      );
+    }
+  }
+
   async findRoleApplicationByIds(
     ids: { applicantId: string; appliedRoleId: string },
     options?: { includedDeleted?: boolean; statuses: RoleApplicationStatus[] },
