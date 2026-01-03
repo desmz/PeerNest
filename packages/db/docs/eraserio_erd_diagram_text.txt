@@ -545,6 +545,8 @@ counselor_user [color: blue] {
   created_time timestamptz
   updated_time timestamptz?
   released_tine timestamptz?
+
+  check(counselor_id != user_id)
 }
 
 user.id < counselor_user.counselor_id

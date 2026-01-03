@@ -454,6 +454,16 @@ export interface ConversationParticipant {
   conversationParticipantRole: string;
 }
 
+export interface CounselorUser {
+  counselorUserCounselorId: string;
+  counselorUserCreatedTime: Generated<Timestamp>;
+  counselorUserId: Generated<string>;
+  counselorUserNote: string | null;
+  counselorUserReleasedTime: Timestamp | null;
+  counselorUserUpdatedTime: Timestamp | null;
+  counselorUserUserId: string;
+}
+
 export interface Discussion {
   discussionArchivedBy: string | null;
   discussionArchivedTime: Timestamp | null;
@@ -974,6 +984,7 @@ export interface DB {
   comment: Comment;
   conversation: Conversation;
   conversationParticipant: ConversationParticipant;
+  counselorUser: CounselorUser;
   discussion: Discussion;
   discussionAttachment: DiscussionAttachment;
   discussionInterest: DiscussionInterest;

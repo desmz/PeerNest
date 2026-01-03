@@ -51,6 +51,7 @@ export enum IdPrefix {
   RoleApplication = 'rapct',
   RoleAttachment = 'ratm',
   RoleChangeAction = 'rcat',
+  CounselorUser = 'cslusr',
 }
 
 export function generateUuid() {
@@ -223,4 +224,8 @@ export function generateRoleAttachmentId() {
 
 export function generateRoleChangeActionId() {
   return IdPrefix.RoleChangeAction + '-' + generateUuid();
+}
+
+export function generateCounselorUserId() {
+  return IdPrefix.CounselorUser + '-' + generateUuid();
 }
