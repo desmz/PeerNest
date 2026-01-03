@@ -1,0 +1,70 @@
+import { Injectable } from '@nestjs/common';
+import { TAddPercherRo } from '@peernest/contract';
+import { generateCounselorUserId, HttpErrorCode } from '@peernest/core';
+import { ClsService } from 'nestjs-cls';
+
+import { CustomHttpException } from '@/custom.exception';
+import { BanActionRepository } from '@/persistence/repos/ban';
+import { CounselorUserRepository } from '@/persistence/repos/counselor';
+import { UserRepository } from '@/persistence/repos/user';
+import { IClsStore } from '@/types/cls';
+
+@Injectable()
+export class CounselorService {
+  constructor(
+    private readonly clsService: ClsService<IClsStore>,
+
+    private readonly banActionRepository: BanActionRepository,
+    private readonly counselorUserRepository: CounselorUserRepository,
+    private readonly userRepository: UserRepository
+  ) {}
+
+  async addPercher(addPercherRo: TAddPercherRo): Promise<void> {
+    const { note, percherId } = addPercherRo;
+
+    const userId = this.clsService.get('user.id');
+
+    const percher = await this.userRepository.findUserById(percherId);
+
+    if (!percher) {
+      throw new CustomHttpException(`User ${percherId} does not exist`, HttpErrorCode.NOT_FOUND);
+    }
+
+    const now = new Date();
+    const isBanned = await this.banActionRepository.validateIfUserIsBanned(userId, now);
+
+    if (isBanned) {
+      throw new CustomHttpException(
+        `User ${percherId} have been banned or suspended`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
+    }
+
+    if (userId === percherId) {
+      throw new CustomHttpException(
+        `You cannot add yourself as the percher`,
+        HttpErrorCode.RESTRICTED_RESOURCE
+      );
+    }
+
+    const existingCounselorUser = await this.counselorUserRepository.findCounselorUserByIds({
+      counselorId: userId,
+      userId: percherId,
+    });
+
+    if (existingCounselorUser) {
+      throw new CustomHttpException(
+        `You already have an active counseling session with the user ${percherId}`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    await this.counselorUserRepository.createCounselorUser({
+      counselorUserId: generateCounselorUserId(),
+      counselorUserCounselorId: userId,
+      counselorUserUserId: percherId,
+      counselorUserNote: note,
+      counselorUserCreatedTime: now,
+    });
+  }
+}

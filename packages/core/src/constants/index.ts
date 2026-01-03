@@ -3,6 +3,7 @@ export * from './auth.constant';
 export * from './ban.contant';
 export * from './comment.constant';
 export * from './conversation.constant';
+export * from './counselor.constant';
 export * from './datetime.constant';
 export * from './discussion.constant';
 export * from './friend-request.constant';
