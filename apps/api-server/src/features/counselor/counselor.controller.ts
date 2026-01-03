@@ -5,6 +5,7 @@ import {
   type TUpdatePercherNoteRo,
   updatePercherNoteRoSchema,
   type TAddPercherRo,
+  type TReleasePercherParams,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -28,12 +29,19 @@ export class CounselorController {
 
   @Roles(UserRole.Counselor)
   @Patch('me/perchers/:percherId/note')
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updatePercherNote(
     @Param() updatePercherNoteParams: TUpdatePercherNoteParams,
     @Body(new ZodValidationPipe(updatePercherNoteRoSchema))
     updatePercherNoteRo: TUpdatePercherNoteRo
   ): Promise<void> {
     await this.counselorService.updatePercherNote(updatePercherNoteParams, updatePercherNoteRo);
+  }
+
+  @Roles(UserRole.Counselor)
+  @Post('me/perchers/:percherId/release')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async releasePercher(@Param() releasePercherParams: TReleasePercherParams): Promise<void> {
+    await this.counselorService.releasePercher(releasePercherParams);
   }
 }
