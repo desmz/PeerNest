@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TAddPercherRo } from '@peernest/contract';
+import { TAddPercherRo, TUpdatePercherNoteParams, TUpdatePercherNoteRo } from '@peernest/contract';
 import { generateCounselorUserId, HttpErrorCode } from '@peernest/core';
 import { ClsService } from 'nestjs-cls';
 
@@ -66,5 +66,36 @@ export class CounselorService {
       counselorUserNote: note,
       counselorUserCreatedTime: now,
     });
+  }
+
+  async updatePercherNote(
+    updatePercherNoteParams: TUpdatePercherNoteParams,
+    updatePercherNoteRo: TUpdatePercherNoteRo
+  ): Promise<void> {
+    const { percherId } = updatePercherNoteParams;
+    const { note } = updatePercherNoteRo;
+
+    const userId = this.clsService.get('user.id');
+
+    const counselorUser = await this.counselorUserRepository.findCounselorUserByIds({
+      counselorId: userId,
+      userId: percherId,
+    });
+
+    if (!counselorUser) {
+      throw new CustomHttpException(
+        `Active counseling session does not exist`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const now = new Date();
+    await this.counselorUserRepository.updateCounselorUserByIds(
+      {
+        counselorUserNote: note,
+        counselorUserUpdatedTime: now,
+      },
+      { counselorId: userId, userId: percherId }
+    );
   }
 }

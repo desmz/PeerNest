@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { generateCounselorUserId, HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TInsertableCounselorUser, TKyselyTransaction } from '@peernest/db';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableCounselorUser,
+  TKyselyTransaction,
+  TUpdatableCounselorUser,
+} from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -36,6 +42,41 @@ export class CounselorUserRepository {
         `[${CounselorUserRepository.repoName}] | Fail to create counselor-user`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, counselorUserObj }
+      );
+    }
+  }
+
+  async updateCounselorUserByIds(
+    counselorUserPayload: TUpdatableCounselorUser,
+    ids: { counselorId: string; userId: string },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { counselorId, userId } = ids;
+
+      const now = counselorUserPayload.counselorUserUpdatedTime
+        ? counselorUserPayload.counselorUserUpdatedTime
+        : new Date();
+
+      const counselorUser = await db
+        .updateTable('counselorUser')
+        .set({
+          ...counselorUserPayload,
+          counselorUserUpdatedTime: now,
+        })
+        .where('counselorUserCounselorId', '=', counselorId)
+        .where('counselorUserUserId', '=', userId)
+        .returningAll()
+        .executeTakeFirst();
+
+      return counselorUser!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CounselorUserRepository.repoName}] | Fail to update counselor-user by ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids }
       );
     }
   }
