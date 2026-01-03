@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   addPercherRoSchema,
   type TUpdatePercherNoteParams,
@@ -6,6 +16,9 @@ import {
   updatePercherNoteRoSchema,
   type TAddPercherRo,
   type TReleasePercherParams,
+  getMyPerchersQueryParamsSchema,
+  type TGetMyPerchersQueryParams,
+  type TGetMyPerchersVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -43,5 +56,15 @@ export class CounselorController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async releasePercher(@Param() releasePercherParams: TReleasePercherParams): Promise<void> {
     await this.counselorService.releasePercher(releasePercherParams);
+  }
+
+  @Roles(UserRole.Counselor)
+  @Get('me/perchers')
+  @HttpCode(HttpStatus.OK)
+  async getMyPerchers(
+    @Query(new ZodValidationPipe(getMyPerchersQueryParamsSchema))
+    getMyPerchersQueryParams: TGetMyPerchersQueryParams
+  ): Promise<TGetMyPerchersVo> {
+    return this.counselorService.getMyPerchers(getMyPerchersQueryParams);
   }
 }

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import {
   TAddPercherRo,
+  TCounselorUser,
+  TGetMyPerchersQueryParams,
+  TGetMyPerchersVo,
   TReleasePercherParams,
   TUpdatePercherNoteParams,
   TUpdatePercherNoteRo,
@@ -13,6 +16,8 @@ import { BanActionRepository } from '@/persistence/repos/ban';
 import { CounselorUserRepository } from '@/persistence/repos/counselor';
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
+
+import { getFullStorageUrl } from '../attachment/utils';
 
 @Injectable()
 export class CounselorService {
@@ -129,5 +134,44 @@ export class CounselorService {
       },
       { counselorId: userId, userId: percherId }
     );
+  }
+
+  async getMyPerchers(
+    getMyPerchersQueryParams: TGetMyPerchersQueryParams
+  ): Promise<TGetMyPerchersVo> {
+    const userId = this.clsService.get('user.id');
+
+    const counselorUserObjs = await this.counselorUserRepository.findPerchersByCounselorId(
+      userId,
+      getMyPerchersQueryParams
+    );
+
+    const formattedCounselorUserObjs = counselorUserObjs.map(
+      (counselorUserObjs): TCounselorUser => {
+        return {
+          counselorUserId: counselorUserObjs.counselorUserId,
+          counselorUserCounselorId: counselorUserObjs.counselorUserCounselorId,
+          counselorUserNote: counselorUserObjs.counselorUserNote,
+          counselorUserUpdatedTime: counselorUserObjs.counselorUserUpdatedTime,
+          user: {
+            userId: counselorUserObjs.userId,
+            userDisplayName: counselorUserObjs.userDisplayName,
+            userAvatarUrl: getFullStorageUrl(counselorUserObjs.userAvatarUrl),
+            roleName: counselorUserObjs.roleName,
+            pronoun: counselorUserObjs.userPronoun,
+            university: counselorUserObjs.userUniversity,
+            domain: counselorUserObjs.userDomain,
+            userInfoLookingFor: counselorUserObjs.userInfoLookingFor,
+            interests: counselorUserObjs.userInterest,
+            personalGoals: counselorUserObjs.userPersonalGoal,
+          },
+        };
+      }
+    );
+
+    return {
+      count: formattedCounselorUserObjs.length,
+      counselorUsers: formattedCounselorUserObjs,
+    };
   }
 }

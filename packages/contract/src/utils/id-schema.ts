@@ -128,3 +128,9 @@ export const roleApplicationIdSchema = (field = 'Role Application Id') => {
     .string(zString(field))
     .startsWith(IdPrefix.RoleApplication, zStartWith(field, IdPrefix.RoleApplication));
 };
+
+export const counselorUserIdSchema = (field = 'Counselor User Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.CounselorUser, zStartWith(field, IdPrefix.CounselorUser));
+};
