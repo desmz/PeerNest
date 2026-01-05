@@ -9,6 +9,7 @@ import { AuthModule } from '@/features/auth/auth.module';
 import { JwtAuthGuard } from '@/features/auth/guards/jwt.guard';
 import { RolesGuard } from '@/features/auth/guards/roles.guard';
 import { CommentModule } from '@/features/comment/comment.module';
+import { CounselorModule } from '@/features/counselor/counselor.module';
 import { DiscussionModule } from '@/features/discussion/discussion.module';
 import { FriendshipModule } from '@/features/friendship/friendship.module';
 import { MailSenderModule } from '@/features/mail-sender/mail-sender.module';
@@ -41,6 +42,7 @@ export const AppModules = {
     WellnessModule,
     ModerationModule,
     RoleManagementModule,
+    CounselorModule,
   ],
   providers: [
     {

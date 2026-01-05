@@ -43,6 +43,7 @@ import {
   RoleApplication,
   RoleAttachment,
   RoleChangeAction,
+  CounselorUser,
 } from './db';
 
 // role
@@ -254,3 +255,8 @@ export type TUpdatableRoleAttachment = Updateable<Omit<RoleAttachment, 'id'>>;
 export type TSelectableRoleChangeAction = Selectable<RoleChangeAction>;
 export type TInsertableRoleChangeAction = Insertable<RoleChangeAction>;
 export type TUpdatableRoleChangeAction = Updateable<Omit<RoleChangeAction, 'id'>>;
+
+// counselor_user
+export type TSelectableCounselorUser = Selectable<CounselorUser>;
+export type TInsertableCounselorUser = Insertable<CounselorUser>;
+export type TUpdatableCounselorUser = Updateable<Omit<CounselorUser, 'id'>>;

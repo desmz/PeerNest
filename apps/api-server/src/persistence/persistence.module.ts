@@ -8,6 +8,7 @@ import {
   UserCommentReportRepository,
 } from './repos/comment';
 import { ConversationParticipantRepository, ConversationRepository } from './repos/conversation';
+import { CounselorUserRepository } from './repos/counselor';
 import {
   DiscussionAttachmentRepository,
   DiscussionInterestRepository,
@@ -94,6 +95,7 @@ const repositories: Provider[] = [
   RoleApplicationRepository,
   RoleAttachmentRepository,
   RoleChangeActionRepository,
+  CounselorUserRepository,
 ];
 
 @Module({

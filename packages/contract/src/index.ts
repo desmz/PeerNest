@@ -1,6 +1,7 @@
 export * from './attachment';
 export * from './auth';
 export * from './comment';
+export * from './counselor';
 export * from './discussion';
 export * from './friendship';
 export * from './moderation';
