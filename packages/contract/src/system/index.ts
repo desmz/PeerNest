@@ -3,6 +3,7 @@ export * from './create-personal-goal';
 export * from './create-wellness-factor';
 export * from './create-wellness-mood';
 export * from './create-wellness-symptom';
+export * from './get-achievements';
 export * from './get-domains';
 export * from './get-interests';
 export * from './get-personal-goals';

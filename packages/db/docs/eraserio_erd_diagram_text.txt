@@ -604,6 +604,7 @@ role_application.id - role_change_action.role_application_id
 achievement_category [color: blue] {
   id varchar pk
   name varchar 
+  position numeric(20, 10)
   created_time timestamptz
   updated_time timestamptz?
   deleted_time timestamptz?
@@ -617,6 +618,7 @@ achievement [color: blue] {
   title varchar
   description text
   criteria jsonb
+  position numeric(20, 10)
   is_active boolean // default true
   type // periodic, immediate
   created_time timestamptz

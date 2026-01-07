@@ -24,6 +24,7 @@ import {
   RoleChangeActionRepository,
 } from './repos/role-management';
 import {
+  AchievementCategoryRepository,
   DomainRepository,
   InterestRepository,
   PersonalGoalRepository,
@@ -96,6 +97,7 @@ const repositories: Provider[] = [
   RoleAttachmentRepository,
   RoleChangeActionRepository,
   CounselorUserRepository,
+  AchievementCategoryRepository,
 ];
 
 @Module({

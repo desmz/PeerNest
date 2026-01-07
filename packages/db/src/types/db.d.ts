@@ -80,6 +80,7 @@ export interface Achievement {
   achievementDescription: string;
   achievementId: Generated<string>;
   achievementIsActive: Generated<boolean>;
+  achievementPosition: Numeric;
   achievementTitle: string;
   achievementType: string;
   achievementUpdatedTime: Timestamp | null;
@@ -90,6 +91,7 @@ export interface AchievementCategory {
   achievementCategoryDeletedTime: Timestamp | null;
   achievementCategoryId: Generated<string>;
   achievementCategoryName: string;
+  achievementCategoryPosition: Numeric;
   achievementCategoryUpdatedTime: Timestamp | null;
 }
 
