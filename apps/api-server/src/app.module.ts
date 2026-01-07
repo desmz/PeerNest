@@ -4,6 +4,7 @@ import { KyselyModule } from '@peernest/db';
 import { ClsModule } from 'nestjs-cls';
 
 import { ConfigModule } from '@/configs/config.module';
+import { AchievementModule } from '@/features/achievement/achievement.module';
 import { AttachmentModule } from '@/features/attachment/attachment.module';
 import { AuthModule } from '@/features/auth/auth.module';
 import { JwtAuthGuard } from '@/features/auth/guards/jwt.guard';
@@ -43,6 +44,7 @@ export const AppModules = {
     ModerationModule,
     RoleManagementModule,
     CounselorModule,
+    AchievementModule,
   ],
   providers: [
     {

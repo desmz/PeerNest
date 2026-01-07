@@ -29,6 +29,7 @@ import ms from 'ms';
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { MailConfig, type TMailConfig } from '@/configs/mail.config';
 import { CustomHttpException } from '@/custom.exception';
+import { AchievementService } from '@/features/achievement/achievement.service';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
@@ -61,6 +62,8 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly userInfoRepository: UserInfoRepository,
     private readonly userTokenRepository: UserTokenRepository,
+
+    private readonly achievementService: AchievementService,
     private readonly mailSenderService: MailSenderService,
     private readonly tokenService: TokenService
   ) {}
@@ -141,6 +144,8 @@ export class AuthService {
 
       return user;
     });
+
+    this.achievementService.evaluateImmediate(user.userId, 'createAccount');
 
     return { accessToken: await this.tokenService.generateAccessToken(user) };
   }
@@ -316,6 +321,8 @@ export class AuthService {
           },
           tx
         );
+
+        this.achievementService.evaluateImmediate(userId, 'createAccount');
 
         return { userId, userEmail: user.userEmail };
       });

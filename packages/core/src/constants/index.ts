@@ -1,3 +1,4 @@
+export * from './achievement.constant';
 export * from './attachment.constant';
 export * from './auth.constant';
 export * from './ban.contant';
