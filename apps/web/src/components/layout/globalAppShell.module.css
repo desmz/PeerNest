@@ -1,0 +1,8 @@
+.modalTitle {
+  font-size: var(--mantine-font-size-xl);
+}
+
+.modalFormLabel {
+  font-size: var(--mantine-font-size-md);
+  font-weight: 600;
+}

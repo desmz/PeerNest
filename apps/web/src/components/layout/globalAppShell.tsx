@@ -34,6 +34,8 @@ import { Link } from 'react-router';
 import logoImage from '@/assets/logo.svg';
 import api from '@/lib/api-client';
 
+import classes from './globalAppShell.module.css';
+
 type TGlobalAppShellProps = {
   children: React.ReactNode;
 };
@@ -81,6 +83,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
 
       notifications.show({
         message: `Your application for ${roleName ?? 'Unknown'} role is submitted!`,
+        color: 'green',
       });
 
       modalHandlers.close();
@@ -90,6 +93,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
       console.log('error');
       notifications.show({
         message: `Error: Your application is failed to submit. Please try again.`,
+        color: 'red',
       });
 
       modalHandlers.close();
@@ -153,7 +157,10 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
             title='Apply a Role'
             centered
             padding={'md'}
-            size={720}>
+            size={720}
+            classNames={{
+              title: classes.modalTitle,
+            }}>
             <form onSubmit={applyRoleForm.onSubmit(onSubmit)}>
               <Stack gap='xl'>
                 <Select
@@ -161,6 +168,9 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                   withAsterisk
                   placeholder='Choose the role you would like to apply'
                   data={roleNames}
+                  classNames={{
+                    label: classes.modalFormLabel,
+                  }}
                   {...applyRoleForm.getInputProps('roleId')}
                 />
                 <Textarea
@@ -169,8 +179,11 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                   description='Introduce yourself and explain why you are qualified for the chosen role.'
                   placeholder='What make you as a good candidate for the role...'
                   minRows={4}
-                  maxRows={4}
-                  autosize
+                  maxRows={12}
+                  autosize={true}
+                  classNames={{
+                    label: classes.modalFormLabel,
+                  }}
                   {...applyRoleForm.getInputProps('description')}
                 />
                 <FileInput
@@ -179,6 +192,9 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                   placeholder='Pick File'
                   accept='application/pdf,image/*'
                   w={'fit-content'}
+                  classNames={{
+                    label: classes.modalFormLabel,
+                  }}
                 />
                 <Flex direction={'row-reverse'}>
                   <Button w={'fit-content'} variant='filled' type='submit'>
