@@ -92,16 +92,23 @@ async function main() {
   const criteriaMap = new Map<string, unknown>(
     criteriaObj.map(({ title, ...otherCriteria }) => [title, otherCriteria])
   );
-  const appendedColumns = ['achievement_achievement_category_id', 'achievement_criteria'];
+  const appendedColumns = [
+    'achievement_achievement_category_id',
+    'achievement_criteria',
+    'achievement_position',
+  ];
 
   // formatting
   const formattedDataObj = achievementObj.map(
-    ({
-      achievement_category_name: mappingKey,
-      achievement_title: criteriaMappingKey,
-      achievement_is_active,
-      ...otherAchievement
-    }) => {
+    (
+      {
+        achievement_category_name: mappingKey,
+        achievement_title: criteriaMappingKey,
+        achievement_is_active,
+        ...otherAchievement
+      },
+      idx
+    ) => {
       console.log(criteriaMappingKey);
       return {
         ...otherAchievement,
@@ -110,6 +117,7 @@ async function main() {
         achievement_is_active: achievement_is_active === 'TRUE',
         achievement_achievement_category_id: map.get(mappingKey) ?? '',
         achievement_criteria: JSON.stringify(criteriaMap.get(criteriaMappingKey)) ?? null,
+        achievement_position: idx,
       };
     }
   );

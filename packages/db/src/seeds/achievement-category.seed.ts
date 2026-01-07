@@ -59,24 +59,19 @@ async function main() {
   //   )
   // );
 
-  // const appendedColumns = [
-  //   'wellness_factor_position',
-  //   'wellness_factor_wellness_factor_category_id',
-  // ];
+  const appendedColumns = ['achievement_category_position'];
 
-  const formattedDataObj = achievementCategoryObj.map((achievementCategory) => {
+  const formattedDataObj = achievementCategoryObj.map((achievementCategory, idx) => {
     return {
       ...achievementCategory,
       achievement_category_id: generateAchievementCategoryId(),
+      achievement_category_position: idx,
     };
   });
 
   const outputCsvPath = path.join(__dirname, 'formatted', `formatted_${filename}.csv`);
 
-  // const redefinedHeaders = [...headers, ...appendedColumns].filter(
-  //   (header) => header !== mappingKey
-  // );
-  const redefinedHeaders = headers;
+  const redefinedHeaders = [...headers, ...appendedColumns];
   const csvWriter = createObjectCsvWriter({
     path: outputCsvPath,
     header: redefinedHeaders.map((header) => ({
