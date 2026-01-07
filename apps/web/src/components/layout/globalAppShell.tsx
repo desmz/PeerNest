@@ -25,13 +25,14 @@ import {
   TApplyRoleRo,
   TGetRolesVo,
 } from '@peernest/contract';
-import { UserRole } from '@peernest/core';
+import { UploadType, UserRole } from '@peernest/core';
 import { IconArrowRight } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link } from 'react-router';
 
 import logoImage from '@/assets/logo.svg';
+import useUploadAttachment from '@/features/attachment/hooks/use-upload-attachment';
 import api from '@/lib/api-client';
 
 import classes from './globalAppShell.module.css';
@@ -53,6 +54,7 @@ async function applyRole(data: TApplyRoleRo) {
 export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
   const [opened, { toggle }] = useDisclosure();
   const [modalOpened, modalHandlers] = useDisclosure(false);
+  const { uploadFile, isUploading } = useUploadAttachment();
 
   // 2. data fetching library
   const { data: roleData } = useQuery({
@@ -62,6 +64,25 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
       return res.data;
     },
   });
+
+  async function onFileUploadChange(file: File | null) {
+    if (!file) return;
+
+    try {
+      const result = await uploadFile({
+        file,
+        type: UploadType.RoleApplication,
+      });
+
+      applyRoleForm.setFieldValue('attachmentId', result.attachmentId);
+    } catch (err) {
+      console.error(err);
+      notifications.show({
+        message: 'Failed to upload the file. Please try again later',
+        color: 'red',
+      });
+    }
+  }
 
   // 3. form handling
   // set values for all fields
@@ -78,7 +99,6 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
   const applyRoleMutation = useMutation<void, Error, TApplyRoleRo>({
     mutationFn: (data) => applyRole(data),
     onSuccess: (_, variables) => {
-      console.log(variables);
       const roleName = roleData?.find((role) => role.roleId === variables.roleId)?.roleName;
 
       notifications.show({
@@ -90,7 +110,6 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
       applyRoleForm.reset();
     },
     onError: () => {
-      console.log('error');
       notifications.show({
         message: `Error: Your application is failed to submit. Please try again.`,
         color: 'red',
@@ -188,10 +207,14 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                 />
                 <FileInput
                   label='File'
-                  description='Only 1 file (< 10MB) is allowed.'
+                  description='Only 1 pdf file (< 10MB) is allowed.'
                   placeholder='Pick File'
                   accept='application/pdf,image/*'
                   w={'fit-content'}
+                  onChange={onFileUploadChange}
+                  disabled={isUploading}
+                  clearable={!isUploading}
+                  // value={attachment}
                   classNames={{
                     label: classes.modalFormLabel,
                   }}
