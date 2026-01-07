@@ -617,9 +617,14 @@ achievement [color: blue] {
   title varchar
   description text
   criteria jsonb
+  is_active boolean // default true
+  type // periodic, immediate
   created_time timestamptz
   updated_time timestamptz?
   deleted_time timestamptz?
+
+  // unique(title)
+  // check(is_active = true, criteria is not null)
 } 
 
 achievement_category.id < achievement.achievement_category_id
@@ -628,7 +633,7 @@ user_achievement [color: green] {
   id varchar pk
   user_id varchar fk
   achievement_id varchar fk
-  is_visible boolean
+  is_visible boolean // default(false)
   awarded_time timestamptz
   updated_time timestamptz?
 

@@ -76,6 +76,8 @@ export class CounselorService {
       counselorUserNote: note,
       counselorUserCreatedTime: now,
     });
+
+    // todo: send notification to the percher
   }
 
   async updatePercherNote(
@@ -134,6 +136,8 @@ export class CounselorService {
       },
       { counselorId: userId, userId: percherId }
     );
+
+    // todo: send notification to the percher
   }
 
   async getMyPerchers(
