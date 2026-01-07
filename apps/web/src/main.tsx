@@ -1,5 +1,7 @@
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
@@ -33,6 +35,7 @@ root.render(
   <StrictMode>
     <BrowserRouter>
       <MantineProvider theme={theme}>
+        <Notifications position='bottom-right' limit={3} zIndex={10000} />
         <QueryClientProvider client={queryClient}>
           <HelmetProvider>
             <App />
