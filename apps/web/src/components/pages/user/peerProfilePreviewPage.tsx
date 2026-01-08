@@ -1,0 +1,119 @@
+import { Avatar, Badge, Box, Button, Flex, Group, Paper, Stack, Text, Title } from '@mantine/core';
+import { GET_USER_PROFILE_URL, type TGetUserProfileVo, urlBuilder } from '@peernest/contract';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router';
+
+import api from '@/lib/api-client';
+
+export async function getUserProfile(userId: string) {
+  const url = urlBuilder(GET_USER_PROFILE_URL, { userId });
+  return await api.get<TGetUserProfileVo>(url);
+}
+
+function capitalizeWords(str: string) {
+  if (!str) return '';
+  return str
+    .split(' ')
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(' ');
+}
+
+export default function PeerProfilePreviewPage() {
+  const { userId } = useParams<{ userId: string }>();
+
+  const query = useQuery({
+    queryKey: ['users', userId, 'profile'],
+    enabled: !!userId,
+    queryFn: async () => (await getUserProfile(userId!)).data,
+  });
+
+  if (!userId) return <Text c='red'>Missing userId.</Text>;
+  if (query.isPending) return <Text>Loading…</Text>;
+  if (query.isError) return <Text c='red'>Failed to load profile.</Text>;
+
+  const userData = query.data;
+
+  const subtitle = [
+    userData.pronoun?.pronounName,
+    userData.university?.universityName,
+    userData.domain?.domainName,
+  ]
+    .filter(Boolean)
+    .map((s) => capitalizeWords(String(s)))
+    .join(' · ');
+
+  return (
+    <Box>
+      {/* Main content */}
+      <Flex maw={'70%'} mx='auto' py={24} direction={'column'}>
+        {/* Header card */}
+        <Paper radius='md' p={16} mb={16}>
+          <Group align='center' gap={16} wrap='nowrap'>
+            <Avatar src={userData.userAvatarUrl} size={'xl'} radius={100} />
+
+            <Flex direction={'column'} gap={12}>
+              <div>
+                <Title order={4}>{userData.userDisplayName}</Title>
+
+                <Text size='xs' c='dimmed' mt={4}>
+                  {subtitle}
+                </Text>
+              </div>
+              <Button radius='md' size='sm' w={'fit-content'}>
+                Send Request
+              </Button>
+            </Flex>
+          </Group>
+        </Paper>
+
+        {/* Details */}
+        <Paper radius='md' p={16}>
+          <Stack gap={16}>
+            <Box>
+              <Title order={5}>About</Title>
+              <Text mt={4}>{userData.userInfoBio ?? '—'}</Text>
+            </Box>
+
+            <Box>
+              <Title order={5}>Looking For</Title>
+              <Text mt={4}>{userData.userInfoLookingFor ?? '—'}</Text>
+            </Box>
+
+            <Box>
+              <Title order={5}>Interests</Title>
+
+              <Group mt={6} gap={8} wrap='wrap'>
+                {(userData.interests ?? []).map((i) => (
+                  <Badge
+                    key={i.interestId}
+                    color='green'
+                    size='sm'
+                    fw={600}
+                    style={{ textTransform: 'capitalize' }}>
+                    {i.interestName}
+                  </Badge>
+                ))}
+              </Group>
+            </Box>
+
+            <Box>
+              <Title order={5}>Personal Goals</Title>
+              <Group mt={6} gap={8} wrap='wrap'>
+                {(userData.personalGoals ?? []).map((g) => (
+                  <Badge
+                    key={g.personalGoalId}
+                    color='blue'
+                    size='sm'
+                    fw={600}
+                    style={{ textTransform: 'capitalize' }}>
+                    {g.personalGoalName}
+                  </Badge>
+                ))}
+              </Group>
+            </Box>
+          </Stack>
+        </Paper>
+      </Flex>
+    </Box>
+  );
+}
