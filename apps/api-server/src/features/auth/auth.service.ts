@@ -145,7 +145,7 @@ export class AuthService {
       return user;
     });
 
-    this.achievementService.evaluateImmediate(user.userId, 'createAccount');
+    this.achievementService.evaluateImmediate(user.userId, ['createAccount']);
 
     return { accessToken: await this.tokenService.generateAccessToken(user) };
   }
@@ -322,7 +322,7 @@ export class AuthService {
           tx
         );
 
-        this.achievementService.evaluateImmediate(userId, 'createAccount');
+        this.achievementService.evaluateImmediate(userId, ['createAccount']);
 
         return { userId, userEmail: user.userEmail };
       });

@@ -176,7 +176,7 @@ export class DiscussionService {
       }
     });
 
-    this.achievementService.evaluateImmediate(userId, 'makeDiscussion');
+    this.achievementService.evaluateImmediate(userId, ['makeDiscussion']);
 
     return this.getDiscussionAgg(discussionId, userId, attachment);
   }

@@ -239,7 +239,7 @@ export class WellnessService {
       return checkIn;
     });
 
-    this.achievementService.evaluateImmediate(userId, 'coverAllWellnessFactors');
+    this.achievementService.evaluateImmediate(userId, ['coverAllWellnessFactors']);
 
     return {
       checkInId: checkIn.checkInId,

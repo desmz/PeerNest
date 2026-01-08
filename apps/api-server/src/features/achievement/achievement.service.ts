@@ -22,7 +22,7 @@ export class AchievementService {
 
   async evaluateImmediate(
     userId: string,
-    criteriaType?: TAchievementCriteriaType,
+    criteriaTypes?: TAchievementCriteriaType[],
     context?: Omit<TAchievementEvaluationContext, 'userId'>
   ) {
     const achievements = await this.achievementRepository.findAchievements({
@@ -42,7 +42,7 @@ export class AchievementService {
 
       if (criteria === null) continue;
 
-      if (criteriaType && criteriaType !== criteria.type) continue;
+      if (criteriaTypes && criteriaTypes.includes(criteria.type)) continue;
 
       const achievementHandler =
         this.achievementHandlersRegistry.getAchievementHandlerByCriteriaType(criteria.type);
@@ -50,9 +50,9 @@ export class AchievementService {
       if (!achievementHandler) continue;
 
       const refineContext = { ...context, userId };
-      const isPassed = await achievementHandler.evaluate(criteria, refineContext);
+      const isAchieved = await achievementHandler.evaluate(criteria, refineContext);
 
-      if (isPassed) {
+      if (isAchieved) {
         await this.userAchievementRepository.createUserAchievement(
           {
             userAchievementId: generateUserAchievementId(),

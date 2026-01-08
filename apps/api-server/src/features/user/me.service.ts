@@ -333,9 +333,13 @@ export class MeService {
       }
     });
 
-    this.achievementService.evaluateImmediate(userId, 'completeProfile', {
-      eventData: { userInfoId },
-    });
+    this.achievementService.evaluateImmediate(
+      userId,
+      ['completeProfile', 'maintainWellnessStreak'],
+      {
+        eventData: { userInfoId },
+      }
+    );
 
     return this.getMeProfileAgg(userId, userInfoId);
   }
