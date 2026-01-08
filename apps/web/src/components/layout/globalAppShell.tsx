@@ -51,7 +51,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
         </AppShell.Section>
         <AppShell.Section p='md'>Navbar footer - always at the bottom</AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main bg='gray.1'>{children}</AppShell.Main>
     </AppShell>
   );
 }
