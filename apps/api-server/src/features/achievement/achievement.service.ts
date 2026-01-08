@@ -22,7 +22,7 @@ export class AchievementService {
       types: [AchievementType.Immediate],
     });
 
-    const earned = await this.userAchievementRepository.findAchievementsByUserId(userId);
+    const earned = await this.userAchievementRepository.findUserAchievementsByUserId(userId);
 
     const earnedSet = new Set(earned.map((achievements) => achievements.achievementId));
 

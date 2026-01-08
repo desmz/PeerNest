@@ -66,6 +66,6 @@ export function pickUserMe(user: TSelectableUser & TSelectableRole): TMeVo {
     roleRank: parseInt(user.roleRank),
     email: user.userEmail,
     avatarUrl: getFullStorageUrl(user.userAvatarUrl),
-    lastSignedTime: user.userLastSignedTime,
+    lastSignedTime: user.userLastSignedTime.toISOString(),
   };
 }

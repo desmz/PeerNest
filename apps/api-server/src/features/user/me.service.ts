@@ -4,6 +4,8 @@ import { Injectable } from '@nestjs/common';
 import {
   TChangeEmailRo,
   TChangePasswordRo,
+  TGetMyAchievementsVo,
+  TMyAchievement,
   TUpdateMeProfileRo,
   TVerifyChangeEmailRo,
 } from '@peernest/contract';
@@ -38,6 +40,7 @@ import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
+import { UserAchievementRepository } from '@/persistence/repos/achievement';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
 import { InterestRepository, PersonalGoalRepository } from '@/persistence/repos/system';
 import {
@@ -68,6 +71,7 @@ export class MeService {
     private readonly userInfoInterestRepository: UserInfoInterestRepository,
     private readonly userInfoPersonalGoalRepository: UserInfoPersonalGoalRepository,
     private readonly userTokenRepository: UserTokenRepository,
+    private readonly userAchievementRepository: UserAchievementRepository,
     private readonly mailSenderService: MailSenderService
   ) {}
 
@@ -408,5 +412,34 @@ export class MeService {
       },
       userId
     );
+  }
+
+  async getMyAchievements(): Promise<TGetMyAchievementsVo> {
+    const userId = this.clsService.get('user.id');
+
+    const achievementObjs = await this.userAchievementRepository.getAchievementsByUserId(userId, {
+      orderBy: 'position',
+    });
+
+    const formattedAchievementObjs: TGetMyAchievementsVo = achievementObjs.map(
+      (achievementObj) => ({
+        achievementCategoryId: achievementObj.achievementCategoryId,
+        achievementCategoryName: achievementObj.achievementCategoryName,
+        achievementCategoryPosition: achievementObj.achievementCategoryPosition,
+        achievements: achievementObj.achievements.map(
+          (achievement): TMyAchievement => ({
+            achievementId: achievement.achievementId,
+            achievementTitle: achievement.achievementTitle,
+            achievementDescription: achievement.achievementDescription,
+            achievementPosition: achievement.achievementPosition,
+            isUnlocked: achievement.userAchievementId !== null,
+            isVisible: achievement.userAchievementIsVisible === true,
+            awardedTime: achievement.userAchievementAwardedTime,
+          })
+        ),
+      })
+    );
+
+    return formattedAchievementObjs;
   }
 }

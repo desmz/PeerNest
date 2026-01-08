@@ -41,6 +41,10 @@ export class AchievementCategoryRepository {
               eb.cast<string>('achievement.achievementPosition', 'text').as('achievementPosition')
             );
 
+          if (!includedDeleted) {
+            eb = eb.where('achievement.achievementDeletedTime', 'is', null);
+          }
+
           if (orderBy === 'position') {
             eb = eb.orderBy('achievement.achievementPosition', ordering);
           } else {
