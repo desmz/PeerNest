@@ -46,6 +46,7 @@ import {
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
+import { AchievementService } from '@/features/achievement/achievement.service';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
@@ -78,7 +79,9 @@ export class DiscussionService {
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly userDiscussionLikeRepository: UserDiscussionLikeRepository,
-    private readonly userDiscussionReportRepository: UserDiscussionReportRepository
+    private readonly userDiscussionReportRepository: UserDiscussionReportRepository,
+
+    private readonly achievementService: AchievementService
   ) {}
 
   async createDiscussion(createDiscussionRo: TCreateDiscussionRo): Promise<TCreateDiscussionVo> {
@@ -172,6 +175,8 @@ export class DiscussionService {
         );
       }
     });
+
+    this.achievementService.evaluateImmediate(userId, 'makeDiscussion');
 
     return this.getDiscussionAgg(discussionId, userId, attachment);
   }

@@ -1,0 +1,28 @@
+import { Injectable } from '@nestjs/common';
+import { DiscussionStatus } from '@peernest/core';
+
+import { DiscussionRepository } from '@/persistence/repos/discussion';
+
+import { TAchievementCriteria } from '../types';
+
+import AchievementHandler from './achievement-handler';
+
+@Injectable()
+export class MakeDiscussionHandler extends AchievementHandler<'makeDiscussion'> {
+  constructor(private readonly discussionRepository: DiscussionRepository) {
+    super();
+  }
+
+  readonly criteriaType = 'makeDiscussion';
+
+  async evaluate(
+    userId: string,
+    criteria: TAchievementCriteria<'makeDiscussion'>
+  ): Promise<boolean> {
+    const discussions = await this.discussionRepository.findDiscussionsByUserId(userId, {
+      statuses: [DiscussionStatus.Active],
+    });
+
+    return discussions.length > criteria.discussionCount;
+  }
+}
