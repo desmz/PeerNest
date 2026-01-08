@@ -8,10 +8,7 @@ import AchievementHandler from './achievement-handler';
 export class CreateAccountHandler extends AchievementHandler<'createAccount'> {
   readonly criteriaType = 'createAccount';
 
-  async evaluate(
-    _userId: string,
-    criteria: TAchievementCriteria<'createAccount'>
-  ): Promise<boolean> {
+  async evaluate(criteria: TAchievementCriteria<'createAccount'>): Promise<boolean> {
     return criteria.event === 'accountCreated';
   }
 }

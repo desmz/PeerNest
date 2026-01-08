@@ -3,7 +3,7 @@ import { DiscussionStatus } from '@peernest/core';
 
 import { DiscussionRepository } from '@/persistence/repos/discussion';
 
-import { TAchievementCriteria } from '../types';
+import { TAchievementCriteria, TAchievementEvaluationContext } from '../types';
 
 import AchievementHandler from './achievement-handler';
 
@@ -16,13 +16,15 @@ export class MakeDiscussionHandler extends AchievementHandler<'makeDiscussion'> 
   readonly criteriaType = 'makeDiscussion';
 
   async evaluate(
-    userId: string,
-    criteria: TAchievementCriteria<'makeDiscussion'>
+    criteria: TAchievementCriteria<'makeDiscussion'>,
+    context: TAchievementEvaluationContext
   ): Promise<boolean> {
+    const { userId } = context;
+
     const discussions = await this.discussionRepository.findDiscussionsByUserId(userId, {
       statuses: [DiscussionStatus.Active],
     });
 
-    return discussions.length > criteria.discussionCount;
+    return discussions.length >= criteria.discussionCount;
   }
 }

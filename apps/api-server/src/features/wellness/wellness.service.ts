@@ -69,6 +69,8 @@ import {
 } from '@/persistence/repos/wellness';
 import { IClsStore } from '@/types/cls';
 
+import { AchievementService } from '../achievement/achievement.service';
+
 import {
   TSelectableCheckInWithSleepTimeString,
   TSelectableWellnessOverview,
@@ -92,7 +94,10 @@ export class WellnessService {
     private readonly wellnessMoodRepository: WellnessMoodRepository,
     private readonly wellnessFactorRepository: WellnessFactorRepository,
     private readonly wellnessSymptomRepository: WellnessSymptomRepository,
-    private readonly wellnessCheckInFormatter: WellnessCheckInFormatter
+
+    private readonly wellnessCheckInFormatter: WellnessCheckInFormatter,
+
+    private readonly achievementService: AchievementService
   ) {}
 
   private wellnessTrendQueryMap: Record<WellnessTrendsMetric, TTrendQueryFn> = {
@@ -233,6 +238,8 @@ export class WellnessService {
 
       return checkIn;
     });
+
+    this.achievementService.evaluateImmediate(userId, 'coverAllWellnessFactors');
 
     return {
       checkInId: checkIn.checkInId,

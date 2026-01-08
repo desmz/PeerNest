@@ -6,6 +6,7 @@ import {
   TInsertableCheckInWellnessFactor,
   TKyselyTransaction,
 } from '@peernest/db';
+import { sql } from 'kysely';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -105,6 +106,47 @@ export class CheckInWellnessFactorRepository {
         `[${CheckInWellnessFactorRepository.repoName}] | Fail to find check in-wellness factors by check in ids`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, checkInIds }
+      );
+    }
+  }
+
+  async findWellnessFactorsByUserId(userId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const wellnessFactors = await db
+        .selectFrom('checkIn')
+        .innerJoin(
+          'checkInWellnessFactor',
+          'checkInWellnessFactor.checkInWellnessFactorCheckInId',
+          'checkIn.checkInId'
+        )
+        .innerJoin(
+          'wellnessFactor',
+          'wellnessFactor.wellnessFactorId',
+          'checkInWellnessFactor.checkInWellnessFactorWellnessFactorId'
+        )
+        .where('checkIn.checkInUserId', '=', userId)
+        .selectAll('checkInWellnessFactor')
+        .select([
+          'checkInId',
+          'checkInUserId',
+          'checkInMoodRating',
+          'checkInSleepQualityRating',
+          sql<string | null>`check_in_sleep_time::text`.as('checkInSleepTime'),
+          'checkInCheckInTime',
+          'checkInCreatedTime',
+          'checkInUpdatedTime',
+        ])
+        .distinctOn('checkInWellnessFactor.checkInWellnessFactorWellnessFactorId')
+        .execute();
+
+      return wellnessFactors;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessFactorRepository.repoName}] | Fail to find wellness factors by user id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
       );
     }
   }

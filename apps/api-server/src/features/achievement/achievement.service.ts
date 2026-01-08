@@ -5,7 +5,11 @@ import { UserAchievementRepository } from '@/persistence/repos/achievement';
 import { AchievementRepository } from '@/persistence/repos/system';
 
 import { AchievementHandlersRegistry } from './achievement-handlers-registry';
-import { TAchievementCriteriaType, TAchievementCriteriaUnion } from './types';
+import {
+  TAchievementCriteriaType,
+  TAchievementCriteriaUnion,
+  TAchievementEvaluationContext,
+} from './types';
 
 @Injectable()
 export class AchievementService {
@@ -16,7 +20,11 @@ export class AchievementService {
     private readonly userAchievementRepository: UserAchievementRepository
   ) {}
 
-  async evaluateImmediate(userId: string, criteriaType?: TAchievementCriteriaType) {
+  async evaluateImmediate(
+    userId: string,
+    criteriaType?: TAchievementCriteriaType,
+    context?: Omit<TAchievementEvaluationContext, 'userId'>
+  ) {
     const achievements = await this.achievementRepository.findAchievements({
       isActive: true,
       types: [AchievementType.Immediate],
@@ -41,7 +49,8 @@ export class AchievementService {
 
       if (!achievementHandler) continue;
 
-      const isPassed = await achievementHandler.evaluate(userId, criteria);
+      const refineContext = { ...context, userId };
+      const isPassed = await achievementHandler.evaluate(criteria, refineContext);
 
       if (isPassed) {
         await this.userAchievementRepository.createUserAchievement(

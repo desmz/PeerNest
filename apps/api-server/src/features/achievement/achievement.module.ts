@@ -5,10 +5,18 @@ import { PersistenceModule } from '@/persistence/persistence.module';
 import { AchievementHandlersRegistry } from './achievement-handlers-registry';
 import { AchievementService } from './achievement.service';
 import { AchievementHandlers } from './achievement.token';
-import { CreateAccountHandler, MakeDiscussionHandler } from './handlers';
+import {
+  CoverAllWellnessFactorsHandler,
+  CreateAccountHandler,
+  MakeDiscussionHandler,
+} from './handlers';
 import AchievementHandler from './handlers/achievement-handler';
 
-const achievementHandlers = [CreateAccountHandler, MakeDiscussionHandler];
+const achievementHandlers = [
+  CreateAccountHandler,
+  MakeDiscussionHandler,
+  CoverAllWellnessFactorsHandler,
+];
 
 @Module({
   imports: [PersistenceModule],

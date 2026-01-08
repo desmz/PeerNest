@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { TAchievementCriteria, TAchievementCriteriaType } from '../types';
+import {
+  TAchievementCriteria,
+  TAchievementCriteriaType,
+  TAchievementEvaluationContext,
+} from '../types';
 
 @Injectable()
 export default abstract class AchievementHandler<TCriteriaType extends TAchievementCriteriaType> {
@@ -18,7 +22,7 @@ export default abstract class AchievementHandler<TCriteriaType extends TAchievem
    * @param criteria the criteria object for the evaluation
    */
   abstract evaluate(
-    userId: string,
-    criteria: TAchievementCriteria<TCriteriaType>
+    criteria: TAchievementCriteria<TCriteriaType>,
+    context: TAchievementEvaluationContext
   ): Promise<boolean>;
 }
