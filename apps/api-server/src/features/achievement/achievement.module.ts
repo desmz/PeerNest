@@ -6,6 +6,7 @@ import { AchievementHandlersRegistry } from './achievement-handlers-registry';
 import { AchievementService } from './achievement.service';
 import { AchievementHandlers } from './achievement.token';
 import {
+  CompleteProfileHandler,
   CoverAllWellnessFactorsHandler,
   CreateAccountHandler,
   MakeDiscussionHandler,
@@ -14,6 +15,7 @@ import AchievementHandler from './handlers/achievement-handler';
 
 const achievementHandlers = [
   CreateAccountHandler,
+  CompleteProfileHandler,
   MakeDiscussionHandler,
   CoverAllWellnessFactorsHandler,
 ];

@@ -37,6 +37,7 @@ import { ClsService } from 'nestjs-cls';
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { MailConfig, type TMailConfig } from '@/configs/mail.config';
 import { CustomHttpException } from '@/custom.exception';
+import { AchievementService } from '@/features/achievement/achievement.service';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
@@ -72,6 +73,8 @@ export class MeService {
     private readonly userInfoPersonalGoalRepository: UserInfoPersonalGoalRepository,
     private readonly userTokenRepository: UserTokenRepository,
     private readonly userAchievementRepository: UserAchievementRepository,
+
+    private readonly achievementService: AchievementService,
     private readonly mailSenderService: MailSenderService
   ) {}
 
@@ -328,6 +331,10 @@ export class MeService {
           tx
         );
       }
+    });
+
+    this.achievementService.evaluateImmediate(userId, 'completeProfile', {
+      eventData: { userInfoId },
     });
 
     return this.getMeProfileAgg(userId, userInfoId);

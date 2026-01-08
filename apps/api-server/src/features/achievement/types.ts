@@ -15,7 +15,16 @@ type TAchievementCriteriaMap = {
   };
   completeProfile: {
     type: 'completeProfile';
-    fields: string[];
+    fields: [
+      'displayName',
+      'pronoun',
+      'university',
+      'domain',
+      'bio',
+      'lookingFor',
+      'interests',
+      'personalGoals',
+    ];
   };
   makeDiscussion: {
     type: 'makeDiscussion';
