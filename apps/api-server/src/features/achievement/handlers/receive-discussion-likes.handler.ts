@@ -28,8 +28,6 @@ export class ReceiveDiscussionLikesHandler extends AchievementHandler<'receiveDi
       throw Error('Failed to find total like count obj');
     }
 
-    console.log({ userId, totalLikeCountObj });
-
     return totalLikeCountObj.totalLikeCount >= likes;
   }
 }

@@ -9,6 +9,7 @@ import {
   CompleteProfileHandler,
   CoverAllWellnessFactorsHandler,
   CreateAccountHandler,
+  EarnDiscussionLike,
   MainWellnessWellnessStreakHandler,
   MakeDiscussionHandler,
   ReceiveDiscussionLikesHandler,
@@ -22,6 +23,7 @@ const achievementHandlers = [
   MakeDiscussionHandler,
   WriteHighQualityCommentHandler,
   ReceiveDiscussionLikesHandler,
+  EarnDiscussionLike,
   MainWellnessWellnessStreakHandler,
   CoverAllWellnessFactorsHandler,
 ];
