@@ -23,8 +23,6 @@ export class MainWellnessWellnessStreakHandler extends AchievementHandler<'maint
 
     const isAchieved = await this.checkInRepository.hasConsecutiveCheckInStreak(userId, streaks);
 
-    console.log({ isAchieved });
-
     return isAchieved;
   }
 }

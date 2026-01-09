@@ -1,5 +1,6 @@
 import { DynamicModule, Global, Module, ModuleMetadata } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { KyselyModule } from '@peernest/db';
 import { ClsModule } from 'nestjs-cls';
 
@@ -30,6 +31,7 @@ export const AppModules = {
         mount: true,
       },
     }),
+    ScheduleModule.forRoot(),
     KyselyModule.forRoot({ formatted: true }),
     PersistenceModule,
     MailSenderModule.register({ global: true }),

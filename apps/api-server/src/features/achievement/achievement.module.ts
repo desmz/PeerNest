@@ -11,6 +11,7 @@ import {
   CreateAccountHandler,
   MainWellnessWellnessStreakHandler,
   MakeDiscussionHandler,
+  WriteHighQualityCommentHandler,
 } from './handlers';
 import AchievementHandler from './handlers/achievement-handler';
 
@@ -18,6 +19,7 @@ const achievementHandlers = [
   CreateAccountHandler,
   CompleteProfileHandler,
   MakeDiscussionHandler,
+  WriteHighQualityCommentHandler,
   MainWellnessWellnessStreakHandler,
   CoverAllWellnessFactorsHandler,
 ];
