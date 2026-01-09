@@ -939,4 +939,33 @@ export class DiscussionRepository {
       );
     }
   }
+
+  async findTotalLikesAcrossUserDiscussions(userId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const totalLikeCountObj = await db
+        .selectFrom('discussion')
+        .innerJoin(
+          'userDiscussionLike',
+          'userDiscussionLike.userDiscussionLikeDiscussionId',
+          'discussion.discussionId'
+        )
+        .where('discussion.discussionAuthorId', '=', userId)
+        .where('discussion.discussionStatus', 'in', [DiscussionStatus.Active])
+        .where('discussion.discussionDeletedTime', 'is', null)
+        .select((eb) => [
+          eb.fn.count<number>('userDiscussionLike.userDiscussionLikeId').as('totalLikeCount'),
+        ])
+        .executeTakeFirst();
+
+      return totalLikeCountObj;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to find total likes across user discussions`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId }
+      );
+    }
+  }
 }

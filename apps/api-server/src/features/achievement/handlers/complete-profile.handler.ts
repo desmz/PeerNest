@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { HttpErrorCode, isEmptyObject } from '@peernest/core';
+import { isEmptyObject } from '@peernest/core';
 
-import { CustomHttpException } from '@/custom.exception';
 import { UserInfoRepository, UserRepository } from '@/persistence/repos/user';
 
 import { TAchievementCriteria, TAchievementEvaluationContext } from '../types';
@@ -29,13 +28,8 @@ export class CompleteProfileHandler extends AchievementHandler<'completeProfile'
 
     const userInfoId = eventData?.userInfoId as string | undefined;
 
-    console.log({ userInfoId });
-
     if (!userInfoId) {
-      throw new CustomHttpException(
-        `User info id is missing in ${CompleteProfileHandler.name}`,
-        HttpErrorCode.INTERNAL_SERVER_ERROR
-      );
+      throw new Error(`User info id is missing in ${CompleteProfileHandler.name}`);
     }
 
     const [user, userInfoAgg] = await Promise.all([
@@ -53,8 +47,6 @@ export class CompleteProfileHandler extends AchievementHandler<'completeProfile'
       interests: userInfoAgg?.interests && userInfoAgg.interests.length > 0,
       personalGoals: userInfoAgg?.personalGoals && userInfoAgg.personalGoals.length > 0,
     };
-
-    console.log(fieldsValidator);
 
     return fields.every((field) => Boolean(fieldsValidator[field]));
   }

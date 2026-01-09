@@ -297,6 +297,56 @@ export class CommentRepository {
       ]);
   }
 
+  async findUserCommentsByLikeCount(
+    userId: string,
+    likeCount: number,
+    options?: { minOrMax: 'min' | 'max' },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { minOrMax = 'min' } = options || {};
+
+      let query = db
+        .selectFrom('comment')
+        .innerJoin(
+          'userCommentLike',
+          'userCommentLike.userCommentLikeCommentId',
+          'comment.commentId'
+        )
+        .where('comment.commentAuthorId', '=', userId)
+        .where('comment.commentDeletedTime', 'is', null)
+        .select((eb) => [
+          'comment.commentId',
+          eb.fn.count<number>('userCommentLike.userCommentLikeId').as('commentLikeCount'),
+        ])
+        .groupBy('comment.commentId');
+
+      query = query.having((eb) => {
+        const commentLikeCount = eb.fn.count<number>('userCommentLike.userCommentLikeId');
+
+        if (minOrMax === 'max') {
+          return eb(commentLikeCount, '<=', likeCount);
+        } else {
+          return eb(commentLikeCount, '>=', likeCount);
+        }
+      });
+
+      query = query.orderBy('comment.commentCreatedTime', 'asc');
+
+      const comments = await query.execute();
+
+      return comments;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CommentRepository.repoName}] | Fail to find user comments by like counts`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, likeCount, options }
+      );
+    }
+  }
+
   // special case
   /**
    * Fetch comments for a discussion with hierarchical structure
@@ -1086,56 +1136,6 @@ export class CommentRepository {
         `[${CommentRepository.repoName}] | Fail to find user comments`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, authorId }
-      );
-    }
-  }
-
-  async findUserCommentsByLikeCount(
-    userId: string,
-    likeCount: number,
-    options?: { minOrMax: 'min' | 'max' },
-    tx?: TKyselyTransaction
-  ) {
-    try {
-      const db = dbOrTx(this.kyselyService.db, tx);
-
-      const { minOrMax = 'min' } = options || {};
-
-      let query = db
-        .selectFrom('comment')
-        .innerJoin(
-          'userCommentLike',
-          'userCommentLike.userCommentLikeCommentId',
-          'comment.commentId'
-        )
-        .where('comment.commentAuthorId', '=', userId)
-        .where('comment.commentDeletedTime', 'is', null)
-        .select((eb) => [
-          'comment.commentId',
-          eb.fn.count<number>('userCommentLike.userCommentLikeId').as('commentLikeCount'),
-        ])
-        .groupBy('comment.commentId');
-
-      query = query.having((eb) => {
-        const commentLikeCount = eb.fn.count<number>('userCommentLike.userCommentLikeId');
-
-        if (minOrMax === 'max') {
-          return eb(commentLikeCount, '<=', likeCount);
-        } else {
-          return eb(commentLikeCount, '>=', likeCount);
-        }
-      });
-
-      query = query.orderBy('comment.commentCreatedTime', 'asc');
-
-      const comments = await query.execute();
-
-      return comments;
-    } catch (error) {
-      throw new CustomHttpException(
-        `[${CommentRepository.repoName}] | Fail to find user comments by like counts`,
-        HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, userId, likeCount, options }
       );
     }
   }
