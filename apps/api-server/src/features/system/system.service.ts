@@ -10,6 +10,7 @@ import {
   TCreateWellnessMoodVo,
   TCreateWellnessSymptomRo,
   TCreateWellnessSymptomVo,
+  TGetAchievementsVo,
   TGetDomainsVo,
   TGetInterestsVo,
   TGetPersonalGoalsVo,
@@ -46,6 +47,7 @@ import {
 
 import { CustomHttpException } from '@/custom.exception';
 import {
+  AchievementCategoryRepository,
   DomainRepository,
   InterestRepository,
   PersonalGoalRepository,
@@ -62,6 +64,7 @@ import { RoleRepository } from '@/persistence/repos/user';
 @Injectable()
 export class SystemService {
   constructor(
+    private readonly achievementCategoryRepository: AchievementCategoryRepository,
     private readonly domainRepository: DomainRepository,
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
@@ -221,6 +224,29 @@ export class SystemService {
         wellnessFactorId: wellnessFactor.wellnessFactorId,
         wellnessFactorName: wellnessFactor.wellnessFactorName,
         wellnessFactorPosition: wellnessFactor.wellnessFactorPosition,
+      })),
+    }));
+  }
+
+  async getAchievements(): Promise<TGetAchievementsVo> {
+    const achievementAggs = await this.achievementCategoryRepository.findAchievementCategoryAggs({
+      orderBy: 'position',
+    });
+
+    return achievementAggs.map((achievementAgg) => ({
+      achievementCategoryId: achievementAgg.achievementCategoryId,
+      achievementCategoryName: achievementAgg.achievementCategoryName,
+      achievementCategoryPosition: achievementAgg.achievementCategoryPosition,
+      achievements: achievementAgg.achievements.map((achievement) => ({
+        achievementId: achievement.achievementId,
+        achievementTitle: achievement.achievementTitle,
+        achievementDescription: achievement.achievementDescription,
+        achievementCriteria: achievement.achievementCriteria
+          ? JSON.stringify(achievement.achievementCriteria)
+          : null,
+        achievementPosition: achievement.achievementPosition,
+        achievementIsActive: achievement.achievementIsActive,
+        achievementType: achievement.achievementType,
       })),
     }));
   }

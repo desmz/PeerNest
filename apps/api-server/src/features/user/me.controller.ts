@@ -24,7 +24,8 @@ import {
   updateMeProfileRoSchema,
   type TUpdateMeProfileRo,
   type TUpdateMeProfileVo,
-  TGetMeProfileVo,
+  type TGetMeProfileVo,
+  type TGetMyAchievementsVo,
 } from '@peernest/contract';
 import { type Request, type Response } from 'express';
 
@@ -101,5 +102,11 @@ export class MeController {
     file: Express.Multer.File
   ) {
     await this.meService.updateAvatar(file);
+  }
+
+  @Get('achievements')
+  @HttpCode(HttpStatus.OK)
+  async getMyAchievements(): Promise<TGetMyAchievementsVo> {
+    return this.meService.getMyAchievements();
   }
 }

@@ -604,6 +604,7 @@ role_application.id - role_change_action.role_application_id
 achievement_category [color: blue] {
   id varchar pk
   name varchar 
+  position numeric(20, 10)
   created_time timestamptz
   updated_time timestamptz?
   deleted_time timestamptz?
@@ -617,9 +618,15 @@ achievement [color: blue] {
   title varchar
   description text
   criteria jsonb
+  position numeric(20, 10)
+  is_active boolean // default true
+  type // periodic, immediate
   created_time timestamptz
   updated_time timestamptz?
   deleted_time timestamptz?
+
+  // unique(title)
+  // check(is_active = true, criteria is not null)
 } 
 
 achievement_category.id < achievement.achievement_category_id
@@ -628,7 +635,7 @@ user_achievement [color: green] {
   id varchar pk
   user_id varchar fk
   achievement_id varchar fk
-  is_visible boolean
+  is_visible boolean // default(false)
   awarded_time timestamptz
   updated_time timestamptz?
 

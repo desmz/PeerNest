@@ -13,7 +13,7 @@ export const meVoSchema = z.object({
   roleRank: z.int(),
   email: emailSchema,
   avatarUrl: z.string().nonempty(),
-  lastSignedTime: z.date(),
+  lastSignedTime: z.iso.datetime(),
 });
 
 export type TMeVo = z.infer<typeof meVoSchema>;

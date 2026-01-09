@@ -135,6 +135,33 @@ export class UserRepository {
     }
   }
 
+  async findUserBaseObjs(options?: { includedDeleted?: boolean }, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db
+        .selectFrom('user')
+        .innerJoin('role', 'role.roleId', 'user.userRoleId')
+        .selectAll(['user', 'role']);
+
+      if (!options?.includedDeleted) {
+        query = query.where('userDeletedTime', 'is', null);
+      }
+
+      query = query.orderBy('userLastSignedTime', 'desc');
+
+      const user = await query.execute();
+
+      return user;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserRepository.repoName}] | Fail to find users base objs`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, options }
+      );
+    }
+  }
+
   async findUsers(
     options?: TFindUsersQueryParams & { includedDeleted?: boolean; excludedUserIds?: string[] },
     tx?: TKyselyTransaction

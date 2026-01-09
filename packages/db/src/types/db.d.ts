@@ -72,6 +72,29 @@ export interface Account {
   accountUserId: string;
 }
 
+export interface Achievement {
+  achievementAchievementCategoryId: string;
+  achievementCreatedTime: Generated<Timestamp>;
+  achievementCriteria: Json | null;
+  achievementDeletedTime: Timestamp | null;
+  achievementDescription: string;
+  achievementId: Generated<string>;
+  achievementIsActive: Generated<boolean>;
+  achievementPosition: Numeric;
+  achievementTitle: string;
+  achievementType: string;
+  achievementUpdatedTime: Timestamp | null;
+}
+
+export interface AchievementCategory {
+  achievementCategoryCreatedTime: Generated<Timestamp>;
+  achievementCategoryDeletedTime: Timestamp | null;
+  achievementCategoryId: Generated<string>;
+  achievementCategoryName: string;
+  achievementCategoryPosition: Numeric;
+  achievementCategoryUpdatedTime: Timestamp | null;
+}
+
 export interface Attachment {
   attachmentCreatedTime: Generated<Timestamp>;
   attachmentDeletedTime: Timestamp | null;
@@ -805,6 +828,15 @@ export interface User {
   userUpdatedTime: Timestamp | null;
 }
 
+export interface UserAchievement {
+  userAchievementAchievementId: string;
+  userAchievementAwardedTime: Generated<Timestamp>;
+  userAchievementId: Generated<string>;
+  userAchievementIsVisible: Generated<boolean>;
+  userAchievementUpdatedTime: Timestamp | null;
+  userAchievementUserId: string;
+}
+
 export interface UserCommentLike {
   userCommentLikeCommentId: string;
   userCommentLikeCreatedTime: Generated<Timestamp>;
@@ -952,6 +984,8 @@ export interface WellnessSymptomCategory {
 
 export interface DB {
   account: Account;
+  achievement: Achievement;
+  achievementCategory: AchievementCategory;
   attachment: Attachment;
   'auth.auditLogEntries': AuthAuditLogEntries;
   'auth.flowState': AuthFlowState;
@@ -1015,6 +1049,7 @@ export interface DB {
   'storage.vectorIndexes': StorageVectorIndexes;
   university: University;
   user: User;
+  userAchievement: UserAchievement;
   userCommentLike: UserCommentLike;
   userCommentReport: UserCommentReport;
   userDiscussionLike: UserDiscussionLike;
