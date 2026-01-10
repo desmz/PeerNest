@@ -55,6 +55,9 @@ export enum IdPrefix {
   AchievementCategory = 'achmctgr',
   Achievement = 'achm',
   UserAchievement = 'usrachm',
+  NotificationCategory = 'ntfctctgr',
+  NotificationType = 'ntfctt',
+  Notification = 'ntfct',
 }
 
 export function generateUuid() {
@@ -242,5 +245,17 @@ export function generateAchievementId() {
 }
 
 export function generateUserAchievementId() {
+  return IdPrefix.UserAchievement + '-' + generateUuid();
+}
+
+export function generateNotificationCategoryId() {
+  return IdPrefix.NotificationCategory + '-' + generateUuid();
+}
+
+export function generateNotificationTypeId() {
+  return IdPrefix.NotificationType + '-' + generateUuid();
+}
+
+export function generateNotificationId() {
   return IdPrefix.UserAchievement + '-' + generateUuid();
 }

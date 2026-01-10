@@ -675,9 +675,9 @@ notification [color: blue] {
   title text
   body text
   payload jsonb
+  created_time timestamptz
   seen_time timestamptz?
   read_time timestamptz?
-  created_time timestamptz
 }
 
 notification_type.id < notification.notification_type_id
