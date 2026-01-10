@@ -17,6 +17,7 @@ export const envValidationSchema = z.object({
   HOST: z.string().nonempty(),
 
   // Applications and Packages
+  API_ORIGIN: z.url(),
   API_BASE_URL: z.url(),
 
   FRONTEND_PORT: zPort,

@@ -1,0 +1,16 @@
+export const NOTIFICATION_EVENT = {
+  COMMENT_REPLY: 'comment.reply',
+  FRIEND_REQUEST: 'friend.request',
+  FRIEND_ACCEPTED: 'friend.accepted',
+  FRIEND_REJECTED: 'friend.rejected',
+  PERCHER_ADDED: 'counselor.percher.added',
+  PERCHER_RELEASED: 'counselor.percher.released',
+  ACHIEVEMENT_UNLOCKED: 'achievement.unlocked',
+  BAN_REQUEST_CREATED: 'moderation.ban.requested',
+  BAN_APPROVED: 'moderation.ban.approved',
+  BAN_REJECTED: 'moderation.ban.rejected',
+  USER_BANNED: 'moderation.user.banned',
+  USER_UNBANNED: 'moderation.user.unbanned',
+  ROLE_CHANGED: 'role.changed',
+  ROLE_APPLICATION_REJECTED: 'role.application.rejected',
+} as const;

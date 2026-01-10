@@ -7,6 +7,7 @@ const rawEnvObj: Record<string, string | undefined> = {
   HOST: import.meta.env.VITE_HOST,
 
   // applications and packages
+  API_ORIGIN: import.meta.env.VITE_API_ORIGIN,
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
 
   FRONTEND_PORT: import.meta.env.VITE_FRONTEND_PORT,
