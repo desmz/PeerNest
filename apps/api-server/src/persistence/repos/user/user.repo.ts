@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TFindUsersQueryParams } from '@peernest/contract';
-import { generateUserId, HttpErrorCode } from '@peernest/core';
+import { generateUserId, HttpErrorCode, UserRole } from '@peernest/core';
 import {
   dbOrTx,
   KyselyService,
@@ -295,6 +295,42 @@ export class UserRepository {
         `[${UserRepository.repoName}] | Fail to find users `,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
+      );
+    }
+  }
+
+  async findUsersByRoleNames(
+    roleNames: UserRole[],
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      if (roleNames.length === 0) {
+        return [];
+      }
+
+      const { includedDeleted } = options || {};
+
+      let query = db
+        .selectFrom('user')
+        .innerJoin('role', 'role.roleId', 'userRoleId')
+        .where('role.roleName', 'in', roleNames)
+        .selectAll();
+
+      if (!includedDeleted) {
+        query = query.where('user.userDeletedTime', 'is', null);
+      }
+
+      const users = await query.execute();
+
+      return users;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserRepository.repoName}] | Fail to find users by role names`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, roleNames, options }
       );
     }
   }

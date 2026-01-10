@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { NOTIFICATION_EVENT, type TNotificationPayload } from '@peernest/core';
+import { NOTIFICATION_EVENT } from '@peernest/core';
+
+import { type TCommentReplyEvent } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
 
@@ -9,24 +11,18 @@ export class NotificationListener {
   constructor(private readonly dispatcher: NotificationDispatcher) {}
 
   @OnEvent(NOTIFICATION_EVENT.COMMENT_REPLY)
-  async onCommentReply(payload: TNotificationPayload<'commentReply'>) {
-    console.log('inside on comment reply', payload);
-    await this.dispatcher.dispatch(payload);
-    // await this.dispatcher.dispatch({
-    //   type: 'comment_reply',
-    //   recipientId: payload.commentAuthorId,
-    //   payload,
-    // });
+  async onCommentReply(event: TCommentReplyEvent) {
+    await this.dispatcher.dispatch({
+      type: 'commentReply',
+      recipients: {
+        userIds: [event.parentAuthorId],
+      },
+      payload: {
+        discussionId: event.discussionId,
+        commentId: event.replyCommentId,
+        parentCommentId: event.parentCommentId,
+        replierId: event.replierId,
+      },
+    });
   }
-
-  // @OnEvent(NOTIFICATION_EVENT.ACHIEVEMENT_UNLOCKED)
-  // async onAchievement(payload) {
-  //   await this.dispatcher.dispatch({
-  //     type: 'achievement_unlocked',
-  //     recipientId: payload.userId,
-  //     payload,
-  //   });
-  // }
-
-  // pattern continues for all events
 }

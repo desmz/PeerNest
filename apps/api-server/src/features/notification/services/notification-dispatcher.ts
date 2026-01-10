@@ -1,31 +1,84 @@
 import { Injectable } from '@nestjs/common';
-import { TNotificationPayload } from '@peernest/core';
+import {
+  generateNotificationId,
+  TNotificationDispatchObj,
+  TNotificationPayload,
+  TNotificationType,
+  TSocketRecipients,
+} from '@peernest/core';
+import { TInsertableNotification } from '@peernest/db';
 
-// import { NotificationTemplate } from './notification-template';
+import {
+  NotificationRepository,
+  NotificationTypeRepository,
+} from '@/persistence/repos/notification';
+import { UserRepository } from '@/persistence/repos/user';
+
+import { NotificationGateway } from '../notification.gateway';
+
+import { NotificationTemplate } from './notification-template';
 
 @Injectable()
 export class NotificationDispatcher {
-  constructor() {
-    // private readonly gateway: NotificationGateway,
-    // private readonly template: NotificationTemplate
+  constructor(
+    private readonly notificationGateway: NotificationGateway,
+    private readonly notificationTemplate: NotificationTemplate,
+
+    private readonly notificationRepository: NotificationRepository,
+    private readonly notificationTypeRepository: NotificationTypeRepository,
+    private readonly userRepository: UserRepository
+  ) {}
+
+  async dispatch<T extends TNotificationType>(dispatchObj: TNotificationDispatchObj<T>) {
+    const { payload, recipients, type } = dispatchObj;
+    const { body, title } = this.notificationTemplate.build(type, payload);
+
+    await this.processNotifications(recipients, type, {
+      body,
+      title,
+      notificationPayload: payload,
+    });
+
+    this.notificationGateway.pushToUser(recipients, payload);
   }
 
-  // async dispatch(input: { type: string; recipientId: string; payload: any }) {
-  //   const { title, body } = this.template.build(input.type, input.payload);
+  private async processNotifications<T extends TNotificationType>(
+    recipients: TSocketRecipients,
+    type: TNotificationType,
+    otherPayload: { body: string; title: string; notificationPayload: TNotificationPayload<T> }
+  ) {
+    const { roles = [], userIds = [] } = recipients;
 
-  //   const notification = await this.repo.create({
-  //     notificationTypeName: input.type,
-  //     recipientId: input.recipientId,
-  //     title,
-  //     body,
-  //     payload: input.payload,
-  //   });
+    const [notificationType, usersWithRole] = await Promise.all([
+      await this.notificationTypeRepository.findNotificationTypeByName(type),
+      await this.userRepository.findUsersByRoleNames(roles),
+    ]);
 
-  //   this.gateway.pushToUser(input.recipientId, notification);
-  // }
+    if (!notificationType) {
+      throw new Error(`Notification type ${type} is not found`);
+    }
 
-  async dispatch(payload: TNotificationPayload<'commentReply'>) {
-    console.log('dispatch a notification');
-    console.log(payload);
+    const recipientIdsSet = new Set([
+      ...userIds,
+      ...usersWithRole.map((userWithRole) => userWithRole.userId),
+    ]);
+
+    const now = new Date();
+
+    const notificationObjs: TInsertableNotification[] = Array.from(recipientIdsSet).map(
+      (recipientId) => ({
+        notificationId: generateNotificationId(),
+        notificationNotificationTypeId: notificationType.notificationTypeId,
+        notificationRecipientId: recipientId,
+        notificationTitle: otherPayload.title,
+        notificationBody: otherPayload.body,
+        notificationPayload: otherPayload.notificationPayload,
+        notificationCreatedTime: now,
+      })
+    );
+
+    console.log({ notificationObjs, notificationType, usersWithRole });
+
+    await this.notificationRepository.createNotifications(notificationObjs);
   }
 }

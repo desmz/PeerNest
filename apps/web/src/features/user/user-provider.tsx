@@ -1,5 +1,5 @@
 import { envObj } from '@peernest/config/static';
-import { NOTIFICATION_WEB_SOCKET_URL } from '@peernest/core';
+import { NOTIFICATION_WEB_SOCKET_NAMESPACE, WEB_SOCKET_EVENTS } from '@peernest/core';
 import { useAtom } from 'jotai';
 import React, { useEffect } from 'react';
 import { io } from 'socket.io-client';
@@ -13,21 +13,17 @@ import useCurrentUser from './hooks/use-current-user';
 export function UserProvider({ children }: React.PropsWithChildren) {
   const [, setCurrentUser] = useAtom(currentUserAtom);
   const { data: currentUser, isLoading, error, isError } = useCurrentUser();
-  const [, setSocket] = useAtom(socketAtom);
+  const [socket, setSocket] = useAtom(socketAtom);
 
   useEffect(() => {
     if (isLoading || isError) {
       return;
     }
 
-    const newSocket = io(`${envObj.API_ORIGIN}${NOTIFICATION_WEB_SOCKET_URL}`, {
+    const newSocket = io(`${envObj.API_ORIGIN}${NOTIFICATION_WEB_SOCKET_NAMESPACE}`, {
       transports: ['websocket'],
       withCredentials: true,
     });
-    // const newSocket = io(NOTIFICATION_WEB_SOCKET_URL, {
-    //   transports: ['websocket'],
-    //   withCredentials: true,
-    // });
 
     setSocket(newSocket);
 
@@ -40,6 +36,12 @@ export function UserProvider({ children }: React.PropsWithChildren) {
       newSocket.disconnect();
     };
   }, [isError, isLoading, setSocket]);
+
+  useEffect(() => {
+    socket?.on(WEB_SOCKET_EVENTS.NEW_NOTIFICATION, (event) => {
+      console.log(event);
+    });
+  }, [socket]);
 
   useEffect(() => {
     if (currentUser) {

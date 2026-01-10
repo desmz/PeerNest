@@ -1,3 +1,5 @@
+import { TSocketRecipients } from './web-socket.type';
+
 export type TNotificationType =
   | 'commentReply'
   | 'friendRequestReceived'
@@ -84,3 +86,9 @@ export type TNotificationPayloadMap = {
 export type TNotificationPayload<T extends TNotificationType> = TNotificationPayloadMap[T];
 
 export type TNotificationPayloadUnion = TNotificationPayloadMap[keyof TNotificationPayloadMap];
+
+export type TNotificationDispatchObj<T extends TNotificationType> = {
+  type: T;
+  recipients: TSocketRecipients;
+  payload: TNotificationPayload<T>;
+};

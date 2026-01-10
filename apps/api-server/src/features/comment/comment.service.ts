@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TCreateCommentRo,
   TCreateCommentVo,
@@ -21,6 +22,7 @@ import {
   generateUserCommentLikeId,
   generateUserCommentReportId,
   HttpErrorCode,
+  NOTIFICATION_EVENT,
   UploadType,
   UserCommentReportStatus,
   UserRole,
@@ -39,11 +41,14 @@ import {
 import { DiscussionRepository } from '@/persistence/repos/discussion';
 import { IClsStore } from '@/types/cls';
 
+import { TCommentReplyEvent } from '../domain/events';
+
 @Injectable()
 export class CommentService {
   constructor(
     @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     private readonly clsService: ClsService<IClsStore>,
+    private eventEmitter: EventEmitter2,
 
     private readonly commentRepository: CommentRepository,
     private readonly discussionRepository: DiscussionRepository,
@@ -106,6 +111,17 @@ export class CommentService {
       commentContent: commentContent,
       commentCreatedTime: now,
     });
+
+    // don't need to notify yourself
+    if (userId !== parentComment.commentAuthorId) {
+      this.eventEmitter.emit(NOTIFICATION_EVENT.COMMENT_REPLY, <TCommentReplyEvent>{
+        replyCommentId: reply.commentId,
+        parentCommentId: parentComment.commentId,
+        discussionId: reply.commentDiscussionId,
+        replierId: userId,
+        parentAuthorId: parentComment.commentAuthorId,
+      });
+    }
 
     return this.getCommentAgg(reply.commentId, userId);
   }

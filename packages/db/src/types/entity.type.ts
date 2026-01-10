@@ -1,5 +1,4 @@
 import { Insertable, Selectable, Updateable } from 'kysely';
-import { Notification } from 'pg';
 
 import {
   Account,
@@ -50,6 +49,7 @@ import {
   UserAchievement,
   NotificationCategory,
   NotificationType,
+  Notification,
 } from './db';
 
 // role
