@@ -293,8 +293,6 @@ export class FriendShipService {
       return conversationId;
     });
 
-    // todo: send notification to both users
-
     return conversationId;
   }
 

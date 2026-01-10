@@ -191,7 +191,6 @@ export class MeService {
     }
 
     await executeTx(this.kyselyService.db, async (tx) => {
-      const now = new Date();
       await this.accountRepository.softDeleteSocialAccountsByUserId(userId, now, tx);
 
       await this.userRepository.updateUserById(

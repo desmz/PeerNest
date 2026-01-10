@@ -47,8 +47,8 @@ export class AchievementService {
     await this.processAchievementEvaluation(userId, achievements, criteriaTypes, context);
   }
 
-  // @Cron(CronExpression.EVERY_DAY_AT_3AM) // 0 0 3 * * *
-  @Cron(CronExpression.EVERY_10_SECONDS) // */10 * * * * *
+  @Cron(CronExpression.EVERY_DAY_AT_3AM) // 0 0 3 * * *
+  // @Cron(CronExpression.EVERY_10_SECONDS) // */10 * * * * *
   async evaluatePeriodic(criteriaTypes?: TAchievementCriteriaType[]) {
     if (this.isRunning) return;
     this.isRunning = true;
