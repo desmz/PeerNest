@@ -1,0 +1,175 @@
+/* =========================
+   Page
+========================= */
+.page {
+  padding: 16px;
+}
+
+/* =========================
+   Top Filter Bar
+========================= */
+.filterBar {
+  background: white;
+}
+
+.filterRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Left: Interests / Goals */
+.filterLeft {
+  display: flex;
+  gap: 12px;
+}
+
+/* One chevron only */
+.selectOneChevron :global(.mantine-Select-input) {
+  padding-right: 36px;
+}
+
+/* Right: Search + icons */
+.filterRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Search input */
+.search {
+  width: 320px;
+}
+
+/* Ctrl + K capsule (small like Figma) */
+.kbdSingle {
+  background: #eef1f4;
+  border: 1px solid #d9dee3;
+  border-radius: 8px;
+
+  padding: 2px 10px;
+  height: 22px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Bell + profile */
+.topIcon {
+  width: 36px;
+  height: 36px;
+}
+
+.topAvatar {
+  width: 36px;
+  height: 36px;
+}
+
+/* =========================
+   Cards
+========================= */
+.card {
+  background: white;
+}
+
+/* Main row */
+.cardRow {
+  display: flex;
+  gap: 16px;
+  align-items: stretch; /* allows bottom-aligned buttons */
+}
+
+/* Avatar + text column */
+.left {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Main content */
+.content,
+.main {
+  flex: 1;
+  min-width: 0; /* IMPORTANT */
+}
+
+/* Name */
+.name {
+  font-size: 16px;
+}
+
+/* Subtitle */
+.subtitle {
+  margin-top: 2px;
+}
+
+/* =========================
+   Badges (ONE LINE)
+========================= */
+.badgesOneLine {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+/* Smaller badge like Figma */
+.badge,
+.badgeBlue,
+.badgeGreen {
+  height: 24px;
+  padding: 0 10px;
+}
+
+/* Truncate badge text */
+.badge :global(.mantine-Badge-label),
+.badgeBlue :global(.mantine-Badge-label),
+.badgeGreen :global(.mantine-Badge-label) {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================
+   Looking-for text
+========================= */
+.lookingFor {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================
+   Actions (buttons)
+========================= */
+.actionsCol {
+  display: flex;
+  align-items: flex-end;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  align-self: flex-end; /* LOWER than badges */
+}
+
+/* Button sizing */
+.btn,
+.actionBtn {
+  border: 1px solid transparent;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+}

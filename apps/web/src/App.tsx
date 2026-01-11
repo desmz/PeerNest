@@ -5,6 +5,7 @@ import LoginPage from '@/components/pages/auth/signInPage';
 import BanPage from '@/components/pages/ban/banPage';
 import Error404 from '@/components/pages/error/error404';
 import HomePage from '@/components/pages/homePage';
+import Manage from '@/components/pages/manage/managePage';
 import { APP_ROUTE } from '@/lib/app-route';
 
 export function App() {
@@ -25,6 +26,7 @@ export function App() {
 
       <Route element={<Layout />}>
         <Route path={APP_ROUTE.HOME} element={<HomePage />} />
+        <Route path={APP_ROUTE.MANAGE} element={<Manage />} />
       </Route>
 
       <Route path={APP_ROUTE.BAN} element={<BanPage />} />
