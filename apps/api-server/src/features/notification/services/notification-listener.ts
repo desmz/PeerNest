@@ -11,6 +11,7 @@ import {
   type TPercherReleasedEvent,
   type TAchievementUnlockedEvent,
   type TBanRequestCreatedEvent,
+  type TBanRequestRejectedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -116,6 +117,17 @@ export class NotificationListener {
         requesterId: event.requesterId,
         bannedUserId: event.bannedUserId,
       },
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.BAN_REJECTED)
+  async onBanRequestRejected(event: TBanRequestRejectedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'banRequestRejected',
+      recipients: {
+        userIds: [event.requesterId],
+      },
+      payload: event,
     });
   }
 }

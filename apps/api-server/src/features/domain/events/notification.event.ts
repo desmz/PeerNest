@@ -50,3 +50,10 @@ export type TBanRequestCreatedEvent = {
   requesterId: string;
   bannedUserId: string;
 };
+
+export type TBanRequestRejectedEvent = {
+  banRequestId: string;
+  requesterId: string;
+  bannedUserId: string;
+  resolverId: string;
+};

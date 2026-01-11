@@ -32,7 +32,7 @@ import { ClsService } from 'nestjs-cls';
 import { AppConfig, type TAppConfig } from '@/configs/app.config';
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
-import { TBanRequestCreatedEvent } from '@/features/domain/events';
+import { TBanRequestCreatedEvent, TBanRequestRejectedEvent } from '@/features/domain/events';
 import {
   BanActionRepository,
   BanRequestProofRepository,
@@ -293,7 +293,12 @@ export class BanService {
       banRequestId
     );
 
-    // todo: send notification
+    this.eventEmitter.emit(NOTIFICATION_EVENT.BAN_REJECTED, <TBanRequestRejectedEvent>{
+      banRequestId: banRequestId,
+      requesterId: requesterId,
+      bannedUserId: banRequest.banRequestBannedUserId,
+      resolverId: userId,
+    });
   }
 
   async banUser(banUserRo: TBanUserRo): Promise<void> {
