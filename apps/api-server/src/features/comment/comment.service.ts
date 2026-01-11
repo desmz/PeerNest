@@ -114,13 +114,14 @@ export class CommentService {
 
     // don't need to notify yourself
     if (userId !== parentComment.commentAuthorId) {
-      this.eventEmitter.emit(NOTIFICATION_EVENT.COMMENT_REPLY, <TCommentReplyEvent>{
+      const commentReplyEvent: TCommentReplyEvent = {
         replyCommentId: reply.commentId,
         parentCommentId: parentComment.commentId,
         discussionId: reply.commentDiscussionId,
         replierId: userId,
         parentAuthorId: parentComment.commentAuthorId,
-      });
+      };
+      this.eventEmitter.emit(NOTIFICATION_EVENT.COMMENT_REPLY, commentReplyEvent);
     }
 
     return this.getCommentAgg(reply.commentId, userId);

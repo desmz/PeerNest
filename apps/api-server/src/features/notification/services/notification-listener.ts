@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { NOTIFICATION_EVENT } from '@peernest/core';
+import { NOTIFICATION_EVENT, UserRole } from '@peernest/core';
 
 import {
   type TFriendRequestReceivedEvent,
@@ -12,6 +12,8 @@ import {
   type TAchievementUnlockedEvent,
   type TBanRequestCreatedEvent,
   type TBanRequestRejectedEvent,
+  type TBanRequestApprovedEvent,
+  type TUserBannedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -110,13 +112,24 @@ export class NotificationListener {
     await this.dispatcher.dispatch({
       type: 'banRequestCreated',
       recipients: {
-        roles: event.roles,
+        roles: [UserRole.Admin],
       },
       payload: {
         banRequestId: event.banRequestId,
         requesterId: event.requesterId,
         bannedUserId: event.bannedUserId,
       },
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.BAN_APPROVED)
+  async onBanRequestApproved(event: TBanRequestApprovedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'banRequestApproved',
+      recipients: {
+        userIds: [event.requesterId],
+      },
+      payload: event,
     });
   }
 
@@ -128,6 +141,21 @@ export class NotificationListener {
         userIds: [event.requesterId],
       },
       payload: event,
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.USER_BANNED)
+  async onUserBanned(event: TUserBannedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'userBanned',
+      recipients: {
+        roles: [UserRole.Moderator, UserRole.Admin],
+      },
+      payload: {
+        banActionId: event.banActionId,
+        bannedUserId: event.bannedUserId,
+        bannedBy: event.bannedBy,
+      },
     });
   }
 }

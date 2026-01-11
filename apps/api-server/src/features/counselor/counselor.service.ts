@@ -79,11 +79,12 @@ export class CounselorService {
       counselorUserCreatedTime: now,
     });
 
-    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_ADDED, <TPercherAddedEvent>{
+    const percherAddedEvent: TPercherAddedEvent = {
       counselorId: counselorUser.counselorUserId,
       percherUserId: counselorUser.counselorUserUserId,
       counselorUserId: counselorUser.counselorUserCounselorId,
-    });
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_ADDED, percherAddedEvent);
   }
 
   async updatePercherNote(
@@ -143,11 +144,12 @@ export class CounselorService {
       { counselorId: userId, userId: percherId }
     );
 
-    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_RELEASED, <TPercherReleasedEvent>{
+    const percherReleasedEvent: TPercherReleasedEvent = {
       counselorId: counselorUser.counselorUserId,
       percherUserId: counselorUser.counselorUserUserId,
       counselorUserId: counselorUser.counselorUserCounselorId,
-    });
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_RELEASED, percherReleasedEvent);
   }
 
   async getMyPerchers(

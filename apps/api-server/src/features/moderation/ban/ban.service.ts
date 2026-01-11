@@ -24,7 +24,6 @@ import {
   generateBanRequestProofId,
   HttpErrorCode,
   NOTIFICATION_EVENT,
-  UserRole,
 } from '@peernest/core';
 import { executeTx, KyselyService, TInsertableBanRequestProof } from '@peernest/db';
 import { ClsService } from 'nestjs-cls';
@@ -32,7 +31,12 @@ import { ClsService } from 'nestjs-cls';
 import { AppConfig, type TAppConfig } from '@/configs/app.config';
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
-import { TBanRequestCreatedEvent, TBanRequestRejectedEvent } from '@/features/domain/events';
+import {
+  TBanRequestApprovedEvent,
+  TBanRequestCreatedEvent,
+  TBanRequestRejectedEvent,
+  TUserBannedEvent,
+} from '@/features/domain/events';
 import {
   BanActionRepository,
   BanRequestProofRepository,
@@ -172,12 +176,12 @@ export class BanService {
       );
     });
 
-    this.eventEmitter.emit(NOTIFICATION_EVENT.BAN_REQUEST_CREATED, <TBanRequestCreatedEvent>{
-      roles: [UserRole.Admin],
+    const banRequestCreatedEvent: TBanRequestCreatedEvent = {
       banRequestId: banRequestId,
       requesterId: userId,
       bannedUserId: bannedUserId,
-    });
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.BAN_REQUEST_CREATED, banRequestCreatedEvent);
   }
 
   async approveBanRequest(
@@ -251,7 +255,22 @@ export class BanService {
       );
     });
 
-    // todo: send notification
+    const bantRequestApprovedEvent: TBanRequestApprovedEvent = {
+      banRequestId: banRequestId,
+      requesterId: requesterId,
+      bannedUserId: banRequest.banRequestBannedUserId,
+      resolverId: userId,
+    };
+
+    this.eventEmitter.emit(NOTIFICATION_EVENT.BAN_APPROVED, bantRequestApprovedEvent);
+
+    const userBannedEvent: TUserBannedEvent = {
+      banActionId: banActionId,
+      bannedUserId: banRequest.banRequestBannedUserId,
+      bannedBy: userId,
+    };
+
+    this.eventEmitter.emit(NOTIFICATION_EVENT.USER_BANNED, userBannedEvent);
   }
 
   async rejectBanRequest(rejectBanRequestParams: TRejectBanRequestParams): Promise<void> {
@@ -293,12 +312,16 @@ export class BanService {
       banRequestId
     );
 
-    this.eventEmitter.emit(NOTIFICATION_EVENT.BAN_REJECTED, <TBanRequestRejectedEvent>{
+    const banRequestRejectedEvent: TBanRequestRejectedEvent = {
       banRequestId: banRequestId,
       requesterId: requesterId,
       bannedUserId: banRequest.banRequestBannedUserId,
       resolverId: userId,
-    });
+    };
+    this.eventEmitter.emit(
+      NOTIFICATION_EVENT.BAN_REJECTED,
+      <TBanRequestRejectedEvent>banRequestRejectedEvent
+    );
   }
 
   async banUser(banUserRo: TBanUserRo): Promise<void> {
@@ -355,7 +378,13 @@ export class BanService {
       );
     });
 
-    // todo: send notification
+    const userBannedEvent: TUserBannedEvent = {
+      banActionId: banActionId,
+      bannedUserId: bannedUserId,
+      bannedBy: userId,
+    };
+
+    this.eventEmitter.emit(NOTIFICATION_EVENT.USER_BANNED, userBannedEvent);
   }
 
   async unbanUser(unbanUserParams: TUnBanUserParams): Promise<void> {

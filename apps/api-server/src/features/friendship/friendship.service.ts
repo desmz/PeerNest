@@ -154,11 +154,12 @@ export class FriendShipService {
       friendRequestCreatedTime: now,
     });
 
-    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REQUEST, <TFriendRequestReceivedEvent>{
+    const friendRequestReceivedEvent: TFriendRequestReceivedEvent = {
       friendRequestId: friendRequest.friendRequestId,
       fromUserId: friendRequest.friendRequestFromId,
       toUserId: friendRequest.friendRequestToId,
-    });
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REQUEST, friendRequestReceivedEvent);
 
     return {
       isAutoMatch: false,
@@ -193,11 +194,12 @@ export class FriendShipService {
 
     const conversationId = await this.processCreateFriendShip({ fromId, toId });
 
-    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_ACCEPTED, <TFriendRequestAcceptedEvent>{
+    const friendRequestAcceptedEvent: TFriendRequestAcceptedEvent = {
       friendRequestId: friendRequest.friendRequestId,
       fromUserId: friendRequest.friendRequestFromId,
       toUserId: friendRequest.friendRequestToId,
-    });
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_ACCEPTED, friendRequestAcceptedEvent);
 
     return { conversationId };
   }
@@ -347,11 +349,12 @@ export class FriendShipService {
       { friendRequestStatus: FriendRequestStatus.Pending }
     );
 
-    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REJECTED, <TFriendRequestRejectedEvent>{
+    const friendRequestRejectedEvent: TFriendRequestRejectedEvent = {
       friendRequestId: friendRequest.friendRequestId,
       fromUserId: friendRequest.friendRequestFromId,
       toUserId: friendRequest.friendRequestToId,
-    });
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REJECTED, friendRequestRejectedEvent);
   }
 
   async getFriendRequests(

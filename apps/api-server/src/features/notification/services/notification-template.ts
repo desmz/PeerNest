@@ -68,14 +68,14 @@ export class NotificationTemplate {
       body: `The ban request for user ${payload.bannedUserId} was rejected.`,
     }),
 
-    userBanned: () => ({
-      title: 'Account status updated',
-      body: 'Your account has been restricted due to a policy violation.',
+    userBanned: (payload) => ({
+      title: 'User Banned',
+      body: `Admin ${payload.bannedBy} has banned user ${payload.bannedUserId}.`,
     }),
 
-    userUnbanned: () => ({
-      title: 'Account reinstated',
-      body: 'Your account restrictions have been lifted. Welcome back!',
+    userUnbanned: (payload) => ({
+      title: 'User Unbanned',
+      body: `Admin ${payload.unbannedBy} has reinstated user ${payload.unbannedUserId}.`,
     }),
 
     // --- ROLE ---

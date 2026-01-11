@@ -133,11 +133,13 @@ export class AchievementService {
           { onConflictNothing: true }
         );
 
-        this.eventEmitter.emit(NOTIFICATION_EVENT.ACHIEVEMENT_UNLOCKED, <TAchievementUnlockedEvent>{
+        const achievementUnlockedEvent: TAchievementUnlockedEvent = {
           userId: userAchievement.userAchievementUserId,
           achievementId: userAchievement.userAchievementAchievementId,
           achievementTitle: achievement.achievementTitle,
-        });
+        };
+
+        this.eventEmitter.emit(NOTIFICATION_EVENT.ACHIEVEMENT_UNLOCKED, achievementUnlockedEvent);
       }
     }
   }
