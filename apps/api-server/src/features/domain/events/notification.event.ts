@@ -5,3 +5,9 @@ export type TCommentReplyEvent = {
   replierId: string;
   parentAuthorId: string;
 };
+
+export type TFriendRequestReceivedEvent = {
+  fromUserId: string;
+  toUserId: string;
+  friendRequestId: string;
+};

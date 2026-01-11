@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TAcceptFriendRequestParams,
   TAcceptFriendRequestVo,
@@ -22,6 +23,7 @@ import {
   FriendRequestType,
   HttpErrorCode,
   RelationshipType,
+  NOTIFICATION_EVENT,
 } from '@peernest/core';
 import {
   executeTx,
@@ -43,12 +45,15 @@ import { FriendRequestRepository, RelationshipRepository } from '@/persistence/r
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
+import { TFriendRequestReceivedEvent } from '../domain/events';
+
 import { TGetFriendRequestsByUserIdOptions } from './types';
 
 @Injectable()
 export class FriendShipService {
   constructor(
     private readonly clsService: ClsService<IClsStore>,
+    private readonly eventEmitter: EventEmitter2,
     private readonly kyselyService: KyselyService,
 
     private readonly banActionRepository: BanActionRepository,
@@ -137,7 +142,7 @@ export class FriendShipService {
       };
     }
 
-    await this.friendRequestRepository.createFriendRequest({
+    const friendRequest = await this.friendRequestRepository.createFriendRequest({
       friendRequestId: generateFriendRequestId(),
       friendRequestFromId: userId,
       friendRequestToId: toId,
@@ -145,7 +150,11 @@ export class FriendShipService {
       friendRequestCreatedTime: now,
     });
 
-    // todo: send notification to toUser
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REQUEST, <TFriendRequestReceivedEvent>{
+      friendRequestId: friendRequest.friendRequestId,
+      fromUserId: friendRequest.friendRequestFromId,
+      toUserId: friendRequest.friendRequestToId,
+    });
 
     return {
       isAutoMatch: false,

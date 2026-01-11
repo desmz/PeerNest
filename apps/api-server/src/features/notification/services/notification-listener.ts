@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { NOTIFICATION_EVENT } from '@peernest/core';
 
-import { type TCommentReplyEvent } from '@/features/domain/events';
+import {
+  type TFriendRequestReceivedEvent,
+  type TCommentReplyEvent,
+} from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
 
@@ -23,6 +26,17 @@ export class NotificationListener {
         parentCommentId: event.parentCommentId,
         replierId: event.replierId,
       },
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.FRIEND_REQUEST)
+  async onFriendRequestReceived(event: TFriendRequestReceivedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'friendRequestReceived',
+      recipients: {
+        userIds: [event.toUserId],
+      },
+      payload: event,
     });
   }
 }
