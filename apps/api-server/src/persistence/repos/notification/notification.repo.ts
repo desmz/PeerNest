@@ -208,7 +208,8 @@ export class NotificationRepository {
           'notificationCategory.notificationCategoryId',
           'notificationTypeNotificationCategoryId'
         )
-        .selectAll();
+        .selectAll()
+        .where('notification.notificationRecipientId', '=', userId);
 
       if (notSeen) {
         query = query.where('notificationSeenTime', 'is', null);
@@ -258,7 +259,8 @@ export class NotificationRepository {
 
       let query = db
         .selectFrom('notification')
-        .select((eb) => [eb.fn.count<number>('notificationId').distinct().as('notificationCount')]);
+        .select((eb) => [eb.fn.count<number>('notificationId').distinct().as('notificationCount')])
+        .where('notificationRecipientId', '=', userId);
 
       if (notSeen) {
         query = query.where('notificationSeenTime', 'is', null);
