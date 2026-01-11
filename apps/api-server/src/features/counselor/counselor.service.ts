@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TAddPercherRo,
   TCounselorUser,
@@ -8,7 +9,7 @@ import {
   TUpdatePercherNoteParams,
   TUpdatePercherNoteRo,
 } from '@peernest/contract';
-import { generateCounselorUserId, HttpErrorCode } from '@peernest/core';
+import { generateCounselorUserId, HttpErrorCode, NOTIFICATION_EVENT } from '@peernest/core';
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
@@ -18,11 +19,13 @@ import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
 import { getFullStorageUrl } from '../attachment/utils';
+import { TPercherAddedEvent } from '../domain/events';
 
 @Injectable()
 export class CounselorService {
   constructor(
     private readonly clsService: ClsService<IClsStore>,
+    private readonly eventEmitter: EventEmitter2,
 
     private readonly banActionRepository: BanActionRepository,
     private readonly counselorUserRepository: CounselorUserRepository,
@@ -69,7 +72,7 @@ export class CounselorService {
       );
     }
 
-    await this.counselorUserRepository.createCounselorUser({
+    const counselorUser = await this.counselorUserRepository.createCounselorUser({
       counselorUserId: generateCounselorUserId(),
       counselorUserCounselorId: userId,
       counselorUserUserId: percherId,
@@ -77,7 +80,11 @@ export class CounselorService {
       counselorUserCreatedTime: now,
     });
 
-    // todo: send notification to the percher
+    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_ADDED, <TPercherAddedEvent>{
+      counselorId: counselorUser.counselorUserId,
+      percherUserId: counselorUser.counselorUserUserId,
+      counselorUserId: counselorUser.counselorUserCounselorId,
+    });
   }
 
   async updatePercherNote(

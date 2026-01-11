@@ -23,3 +23,9 @@ export type TFriendRequestRejectedEvent = {
   toUserId: string;
   friendRequestId: string;
 };
+
+export type TPercherAddedEvent = {
+  counselorId: string;
+  percherUserId: string;
+  counselorUserId: string;
+};
