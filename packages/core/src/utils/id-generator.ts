@@ -257,5 +257,5 @@ export function generateNotificationTypeId() {
 }
 
 export function generateNotificationId() {
-  return IdPrefix.UserAchievement + '-' + generateUuid();
+  return IdPrefix.Notification + '-' + generateUuid();
 }

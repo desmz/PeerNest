@@ -14,3 +14,8 @@ export const NOTIFICATION_EVENT = {
   ROLE_CHANGED: 'role.changed',
   ROLE_APPLICATION_REJECTED: 'role.application.rejected',
 } as const;
+
+export enum FindNotificationsSortOption {
+  Oldest = 'oldest',
+  Newest = 'newest',
+}
