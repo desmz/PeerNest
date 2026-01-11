@@ -2,7 +2,7 @@ import { Logger, OnModuleDestroy } from '@nestjs/common';
 import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import {
   NOTIFICATION_WEB_SOCKET_NAMESPACE,
-  TNotificationPayload,
+  TNotificationObj,
   TNotificationType,
   TSocketRecipients,
   TSocketRoleRoom,
@@ -83,7 +83,7 @@ export class NotificationGateway implements OnGatewayConnection, OnModuleDestroy
 
   pushToUser<T extends TNotificationType>(
     recipients: TSocketRecipients,
-    notificationPayload: TNotificationPayload<T>
+    notificationPayload: TNotificationObj<T>
   ) {
     const { roles, userIds } = recipients;
 
@@ -96,11 +96,11 @@ export class NotificationGateway implements OnGatewayConnection, OnModuleDestroy
     const rooms: string[] = [];
 
     if (userIds) {
-      rooms.concat(userIds);
+      rooms.push(...userIds);
     }
 
     if (roleRooms) {
-      rooms.concat(roleRooms);
+      rooms.push(...roleRooms);
     }
 
     this.server.to(rooms).emit(WEB_SOCKET_EVENTS.NEW_NOTIFICATION, notificationPayload);

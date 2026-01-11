@@ -92,3 +92,11 @@ export type TNotificationDispatchObj<T extends TNotificationType> = {
   recipients: TSocketRecipients;
   payload: TNotificationPayload<T>;
 };
+
+export type TNotificationObj<T extends TNotificationType> = {
+  notificationType: T;
+  notificationTitle: string;
+  notificationBody: string;
+  notificationPayload: TNotificationPayload<T>;
+  notificationCreatedTime: Date;
+};

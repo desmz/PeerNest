@@ -6,6 +6,7 @@ import {
   type TFriendRequestReceivedEvent,
   type TCommentReplyEvent,
   type TFriendRequestAcceptedEvent,
+  type TFriendRequestRejectedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -45,6 +46,17 @@ export class NotificationListener {
   async onFriendRequestAccepted(event: TFriendRequestAcceptedEvent) {
     await this.dispatcher.dispatch({
       type: 'friendRequestAccepted',
+      recipients: {
+        userIds: [event.fromUserId],
+      },
+      payload: event,
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.FRIEND_REJECTED)
+  async onFriendRequestRejected(event: TFriendRequestRejectedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'friendRequestRejected',
       recipients: {
         userIds: [event.fromUserId],
       },

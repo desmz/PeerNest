@@ -45,7 +45,11 @@ import { FriendRequestRepository, RelationshipRepository } from '@/persistence/r
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
-import { TFriendRequestAcceptedEvent, TFriendRequestReceivedEvent } from '../domain/events';
+import {
+  TFriendRequestAcceptedEvent,
+  TFriendRequestReceivedEvent,
+  TFriendRequestRejectedEvent,
+} from '../domain/events';
 
 import { TGetFriendRequestsByUserIdOptions } from './types';
 
@@ -343,7 +347,11 @@ export class FriendShipService {
       { friendRequestStatus: FriendRequestStatus.Pending }
     );
 
-    // todo: send notification to toUser
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REJECTED, <TFriendRequestRejectedEvent>{
+      friendRequestId: friendRequest.friendRequestId,
+      fromUserId: friendRequest.friendRequestFromId,
+      toUserId: friendRequest.friendRequestToId,
+    });
   }
 
   async getFriendRequests(

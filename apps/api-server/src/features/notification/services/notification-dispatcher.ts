@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   generateNotificationId,
   TNotificationDispatchObj,
+  TNotificationObj,
   TNotificationPayload,
   TNotificationType,
   TSocketRecipients,
@@ -33,13 +34,13 @@ export class NotificationDispatcher {
     const { payload, recipients, type } = dispatchObj;
     const { body, title } = this.notificationTemplate.build(type, payload);
 
-    await this.processNotifications(recipients, type, {
+    const notificationObj = await this.processNotifications(recipients, type, {
       body,
       title,
       notificationPayload: payload,
     });
 
-    this.notificationGateway.pushToUser(recipients, payload);
+    this.notificationGateway.pushToUser(recipients, notificationObj);
   }
 
   private async processNotifications<T extends TNotificationType>(
@@ -65,7 +66,7 @@ export class NotificationDispatcher {
 
     const now = new Date();
 
-    const notificationObjs: TInsertableNotification[] = Array.from(recipientIdsSet).map(
+    const insertableNotificationObjs: TInsertableNotification[] = Array.from(recipientIdsSet).map(
       (recipientId) => ({
         notificationId: generateNotificationId(),
         notificationNotificationTypeId: notificationType.notificationTypeId,
@@ -77,8 +78,18 @@ export class NotificationDispatcher {
       })
     );
 
-    console.log({ notificationObjs, notificationType, usersWithRole });
+    console.log({ insertableNotificationObjs, notificationType, usersWithRole });
 
-    await this.notificationRepository.createNotifications(notificationObjs);
+    await this.notificationRepository.createNotifications(insertableNotificationObjs);
+
+    const notificationObj: TNotificationObj<TNotificationType> = {
+      notificationType: type,
+      notificationTitle: otherPayload.title,
+      notificationBody: otherPayload.body,
+      notificationPayload: otherPayload.notificationPayload,
+      notificationCreatedTime: now,
+    };
+
+    return notificationObj;
   }
 }
