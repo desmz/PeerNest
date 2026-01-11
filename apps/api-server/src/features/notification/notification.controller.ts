@@ -1,10 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Query } from '@nestjs/common';
 import {
   getMyNotificationsQueryParamsSchema,
   markNotificationsAsSeenRoSchema,
   type TMarkNotificationsAsSeenRo,
   type TGetMyNotificationsQueryParams,
   type TGetMyNotificationsVo,
+  type TMarkNotificationAsReadParams,
 } from '@peernest/contract';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
@@ -31,5 +32,13 @@ export class NotificationController {
     markNotificationsAsSeenRo: TMarkNotificationsAsSeenRo
   ): Promise<void> {
     await this.notificationService.markNotificationsAsSeen(markNotificationsAsSeenRo);
+  }
+
+  @Patch(':notificationId/read')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async markNotificationAsSRead(
+    @Param() markNotificationAsReadParams: TMarkNotificationAsReadParams
+  ): Promise<void> {
+    await this.notificationService.markNotificationAsSRead(markNotificationAsReadParams);
   }
 }

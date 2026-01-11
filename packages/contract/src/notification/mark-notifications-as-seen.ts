@@ -8,7 +8,7 @@ export const MARK_NOTIFICATIONS_AS_SEEN_METHOD: TApiMethod = 'patch';
 export const MARK_NOTIFICATIONS_AS_SEEN_URL = '/notifications/seen';
 
 export const markNotificationsAsSeenRoSchema = z.object({
-  notificationIds: z.array(notificationIdSchema()),
+  notificationIds: z.array(notificationIdSchema()).nullable(),
 });
 
 export type TMarkNotificationsAsSeenRo = z.infer<typeof markNotificationsAsSeenRoSchema>;

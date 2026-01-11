@@ -37,31 +37,139 @@ export class NotificationRepository {
     }
   }
 
-  async updateNotificationsByIds(
+  async updateNotificationById(
     notificationPayload: TUpdatableNotification,
-    ids: string[],
+    id: string,
+    options?: {
+      unReadonly?: boolean;
+      notSeen?: boolean;
+    },
     tx?: TKyselyTransaction
   ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      if (ids.length === 0) {
-        return [];
-      }
+      const { notSeen, unReadonly } = options || {};
 
-      const notifications = await db
+      let query = db
         .updateTable('notification')
         .set(notificationPayload)
-        .where('notificationId', 'in', ids)
-        .returningAll()
-        .execute();
+        .where('notificationId', '=', id);
+
+      if (unReadonly) {
+        query = query.where('notificationReadTime', 'is', null);
+      }
+
+      if (notSeen) {
+        query = query.where('notificationSeenTime', 'is', null);
+      }
+
+      const notification = await query.returningAll().executeTakeFirst();
+
+      return notification!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${NotificationRepository.repoName}] | Fail to update notification by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, notificationPayload, id }
+      );
+    }
+  }
+
+  async updateNotificationsByUserId(
+    notificationPayload: TUpdatableNotification,
+    userId: string,
+    options?: {
+      unReadonly?: boolean;
+      notSeen?: boolean;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { notSeen, unReadonly } = options || {};
+
+      let query = db
+        .updateTable('notification')
+        .set(notificationPayload)
+        .where('notificationRecipientId', '=', userId);
+
+      if (unReadonly) {
+        query = query.where('notificationReadTime', 'is', null);
+      }
+
+      if (notSeen) {
+        query = query.where('notificationSeenTime', 'is', null);
+      }
+
+      const notifications = await query.returningAll().execute();
 
       return notifications!;
     } catch (error) {
       throw new CustomHttpException(
         `[${NotificationRepository.repoName}] | Fail to update notifications by user id`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
-        { error, notificationPayload, ids }
+        { error, notificationPayload, userId, options }
+      );
+    }
+  }
+
+  async updateNotificationsByIds(
+    notificationPayload: TUpdatableNotification,
+    ids: string[],
+    options?: {
+      unReadonly?: boolean;
+      notSeen?: boolean;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { notSeen, unReadonly } = options || {};
+
+      let query = db
+        .updateTable('notification')
+        .set(notificationPayload)
+        .where('notificationId', 'in', ids);
+
+      if (unReadonly) {
+        query = query.where('notificationReadTime', 'is', null);
+      }
+
+      if (notSeen) {
+        query = query.where('notificationSeenTime', 'is', null);
+      }
+
+      const notifications = await query.returningAll().execute();
+
+      return notifications!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${NotificationRepository.repoName}] | Fail to update notifications by ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, notificationPayload, ids, options }
+      );
+    }
+  }
+
+  async findNotificationById(id: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const notification = await db
+        .selectFrom('notification')
+        .where('notificationId', '=', id)
+        .selectAll()
+        .executeTakeFirst();
+
+      return notification!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${NotificationRepository.repoName}] | Fail to find notification by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id }
       );
     }
   }
@@ -72,7 +180,7 @@ export class NotificationRepository {
       limit?: number;
       offset?: number;
       unReadonly?: boolean;
-      isSeen?: boolean;
+      notSeen?: boolean;
       orderBy?: FindNotificationsSortOption;
     },
     tx?: TKyselyTransaction
@@ -84,7 +192,7 @@ export class NotificationRepository {
         limit = 20,
         offset = 0,
         unReadonly = false,
-        isSeen = false,
+        notSeen = false,
         orderBy = FindNotificationsSortOption.Newest,
       } = options || {};
 
@@ -102,7 +210,7 @@ export class NotificationRepository {
         )
         .selectAll();
 
-      if (isSeen) {
+      if (notSeen) {
         query = query.where('notificationSeenTime', 'is', null);
       }
 
@@ -140,19 +248,19 @@ export class NotificationRepository {
 
   async getNotificationCountByUserId(
     userId: string,
-    options?: { unReadonly?: true; isSeen?: true },
+    options?: { unReadonly?: true; notSeen?: true },
     tx?: TKyselyTransaction
   ) {
     try {
       const db = dbOrTx(this.kyselyService.db, tx);
 
-      const { unReadonly = false, isSeen = false } = options || {};
+      const { unReadonly = false, notSeen = false } = options || {};
 
       let query = db
         .selectFrom('notification')
         .select((eb) => [eb.fn.count<number>('notificationId').distinct().as('notificationCount')]);
 
-      if (isSeen) {
+      if (notSeen) {
         query = query.where('notificationSeenTime', 'is', null);
       }
 

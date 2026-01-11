@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import {
   TGetMyNotificationsQueryParams,
   TGetMyNotificationsVo,
+  TMarkNotificationAsReadParams,
   TMarkNotificationsAsSeenRo,
   TNotification,
 } from '@peernest/contract';
-import { FindNotificationsSortOption } from '@peernest/core';
+import { FindNotificationsSortOption, HttpErrorCode } from '@peernest/core';
+import { TUpdatableNotification } from '@peernest/db';
 import { ClsService } from 'nestjs-cls';
 
+import { CustomHttpException } from '@/custom.exception';
 import { NotificationRepository } from '@/persistence/repos/notification';
 import { IClsStore } from '@/types/cls';
 
@@ -63,14 +66,50 @@ export class NotificationService {
   async markNotificationsAsSeen(
     markNotificationsAsSeenRo: TMarkNotificationsAsSeenRo
   ): Promise<void> {
+    const userId = this.clsService.get('user.id');
     const { notificationIds } = markNotificationsAsSeenRo;
 
     const now = new Date();
-    await this.notificationRepository.updateNotificationsByIds(
-      {
-        notificationSeenTime: now,
-      },
-      notificationIds
-    );
+    if (notificationIds && notificationIds.length > 0) {
+      await this.notificationRepository.updateNotificationsByIds(
+        { notificationSeenTime: now },
+        notificationIds,
+        { notSeen: true }
+      );
+    } else {
+      await this.notificationRepository.updateNotificationsByUserId(
+        { notificationSeenTime: now },
+        userId,
+        { notSeen: true }
+      );
+    }
+  }
+
+  async markNotificationAsSRead(
+    markNotificationAsReadParams: TMarkNotificationAsReadParams
+  ): Promise<void> {
+    const { notificationId } = markNotificationAsReadParams;
+
+    const notification = await this.notificationRepository.findNotificationById(notificationId);
+
+    if (!notification) {
+      throw new CustomHttpException(
+        `Notification ${notificationId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    const now = new Date();
+    const notificationPayload: TUpdatableNotification = {
+      notificationReadTime: now,
+    };
+
+    if (notification.notificationSeenTime === null) {
+      notificationPayload.notificationSeenTime = now;
+    }
+
+    await this.notificationRepository.updateNotificationById(notificationPayload, notificationId, {
+      unReadonly: true,
+    });
   }
 }
