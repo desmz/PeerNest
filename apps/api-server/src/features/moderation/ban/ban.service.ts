@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TApproveBanRequestParams,
   TApproveBanRequestRo,
@@ -22,6 +23,8 @@ import {
   generateBanRequestId,
   generateBanRequestProofId,
   HttpErrorCode,
+  NOTIFICATION_EVENT,
+  UserRole,
 } from '@peernest/core';
 import { executeTx, KyselyService, TInsertableBanRequestProof } from '@peernest/db';
 import { ClsService } from 'nestjs-cls';
@@ -29,6 +32,7 @@ import { ClsService } from 'nestjs-cls';
 import { AppConfig, type TAppConfig } from '@/configs/app.config';
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
+import { TBanRequestCreatedEvent } from '@/features/domain/events';
 import {
   BanActionRepository,
   BanRequestProofRepository,
@@ -44,6 +48,7 @@ export class BanService {
   constructor(
     @AppConfig() private readonly appConfig: TAppConfig,
     private readonly clsService: ClsService<IClsStore>,
+    private readonly eventEmitter: EventEmitter2,
     private readonly kyselyService: KyselyService,
 
     private readonly banActionRepository: BanActionRepository,
@@ -167,7 +172,12 @@ export class BanService {
       );
     });
 
-    // todo: send notification
+    this.eventEmitter.emit(NOTIFICATION_EVENT.BAN_REQUEST_CREATED, <TBanRequestCreatedEvent>{
+      roles: [UserRole.Admin],
+      banRequestId: banRequestId,
+      requesterId: userId,
+      bannedUserId: bannedUserId,
+    });
   }
 
   async approveBanRequest(

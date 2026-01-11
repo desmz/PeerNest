@@ -1,3 +1,5 @@
+import { UserRole } from '@peernest/core';
+
 export type TCommentReplyEvent = {
   replyCommentId: string;
   parentCommentId: string;
@@ -40,4 +42,11 @@ export type TAchievementUnlockedEvent = {
   userId: string;
   achievementId: string;
   achievementTitle: string;
+};
+
+export type TBanRequestCreatedEvent = {
+  roles: UserRole[];
+  banRequestId: string;
+  requesterId: string;
+  bannedUserId: string;
 };

@@ -78,8 +78,6 @@ export class NotificationDispatcher {
       })
     );
 
-    console.log({ insertableNotificationObjs, notificationType, usersWithRole });
-
     await this.notificationRepository.createNotifications(insertableNotificationObjs);
 
     const notificationObj: TNotificationObj<TNotificationType> = {

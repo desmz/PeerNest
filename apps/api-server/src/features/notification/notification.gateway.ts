@@ -58,13 +58,13 @@ export class NotificationGateway implements OnGatewayConnection, OnModuleDestroy
       }
 
       client.join(userId);
+      this.logger.debug(`User ${userId} connected via websocket`);
 
       if (user.roleName === UserRole.Admin || user.roleName === UserRole.Moderator) {
         const room: TSocketRoleRoom = `role:${user.roleName}`;
         client.join(room);
+        this.logger.debug(`User with role ${user.roleName} connected via websocket`);
       }
-
-      this.logger.debug(`User ${userId} connected via websocket`);
     } catch (err) {
       this.logger.error('Websocket failed to connect');
       console.error(err);
@@ -90,7 +90,7 @@ export class NotificationGateway implements OnGatewayConnection, OnModuleDestroy
     let roleRooms: TSocketRoleRoom[] = [];
 
     if (roles && roles.length > 0) {
-      roleRooms = roles.map((roleName) => `role${roleName}` as TSocketRoleRoom) || [];
+      roleRooms = roles.map((roleName) => `role:${roleName}` as TSocketRoleRoom) || [];
     }
 
     const rooms: string[] = [];

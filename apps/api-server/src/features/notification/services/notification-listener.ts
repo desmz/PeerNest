@@ -10,6 +10,7 @@ import {
   type TPercherAddedEvent,
   type TPercherReleasedEvent,
   type TAchievementUnlockedEvent,
+  type TBanRequestCreatedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -99,6 +100,21 @@ export class NotificationListener {
       payload: {
         achievementId: event.achievementId,
         achievementTitle: event.achievementTitle,
+      },
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.BAN_REQUEST_CREATED)
+  async onBanRequestCreated(event: TBanRequestCreatedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'banRequestCreated',
+      recipients: {
+        roles: event.roles,
+      },
+      payload: {
+        banRequestId: event.banRequestId,
+        requesterId: event.requesterId,
+        bannedUserId: event.bannedUserId,
       },
     });
   }
