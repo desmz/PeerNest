@@ -13,13 +13,12 @@ import { generateCounselorUserId, HttpErrorCode, NOTIFICATION_EVENT } from '@pee
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
+import { getFullStorageUrl } from '@/features/attachment/utils';
+import { TPercherAddedEvent, TPercherReleasedEvent } from '@/features/domain/events';
 import { BanActionRepository } from '@/persistence/repos/ban';
 import { CounselorUserRepository } from '@/persistence/repos/counselor';
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
-
-import { getFullStorageUrl } from '../attachment/utils';
-import { TPercherAddedEvent } from '../domain/events';
 
 @Injectable()
 export class CounselorService {
@@ -144,7 +143,11 @@ export class CounselorService {
       { counselorId: userId, userId: percherId }
     );
 
-    // todo: send notification to the percher
+    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_RELEASED, <TPercherReleasedEvent>{
+      counselorId: counselorUser.counselorUserId,
+      percherUserId: counselorUser.counselorUserUserId,
+      counselorUserId: counselorUser.counselorUserCounselorId,
+    });
   }
 
   async getMyPerchers(

@@ -8,6 +8,7 @@ import {
   type TFriendRequestAcceptedEvent,
   type TFriendRequestRejectedEvent,
   type TPercherAddedEvent,
+  type TPercherReleasedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -69,6 +70,17 @@ export class NotificationListener {
   async onPercherAdded(event: TPercherAddedEvent) {
     await this.dispatcher.dispatch({
       type: 'percherAdded',
+      recipients: {
+        userIds: [event.percherUserId],
+      },
+      payload: event,
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.PERCHER_RELEASED)
+  async onPercherReleased(event: TPercherReleasedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'percherReleased',
       recipients: {
         userIds: [event.percherUserId],
       },

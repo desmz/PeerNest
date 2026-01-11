@@ -29,3 +29,9 @@ export type TPercherAddedEvent = {
   percherUserId: string;
   counselorUserId: string;
 };
+
+export type TPercherReleasedEvent = {
+  counselorId: string;
+  percherUserId: string;
+  counselorUserId: string;
+};
