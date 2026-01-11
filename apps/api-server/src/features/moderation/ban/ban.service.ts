@@ -36,6 +36,7 @@ import {
   TBanRequestCreatedEvent,
   TBanRequestRejectedEvent,
   TUserBannedEvent,
+  TUserUnbannedEvent,
 } from '@/features/domain/events';
 import {
   BanActionRepository,
@@ -416,7 +417,13 @@ export class BanService {
       banActionId
     );
 
-    // todo: send notification (all mods and admins)
+    const userUnbannedEvent: TUserUnbannedEvent = {
+      banActionId: banAction.banActionId,
+      unbannedUserId: banAction.banActionBannedUserId,
+      unbannedBy: banAction.banActionBannedBy,
+    };
+
+    this.eventEmitter.emit(NOTIFICATION_EVENT.USER_UNBANNED, userUnbannedEvent);
   }
 
   async findBanUsers(findBanUsersQueryParams: TFindBanUsersQueryParams): Promise<TFindBanUsersVo> {

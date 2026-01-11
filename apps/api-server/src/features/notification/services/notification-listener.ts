@@ -14,6 +14,7 @@ import {
   type TBanRequestRejectedEvent,
   type TBanRequestApprovedEvent,
   type TUserBannedEvent,
+  type TUserUnbannedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -155,6 +156,21 @@ export class NotificationListener {
         banActionId: event.banActionId,
         bannedUserId: event.bannedUserId,
         bannedBy: event.bannedBy,
+      },
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.USER_UNBANNED)
+  async onUserUnbanned(event: TUserUnbannedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'userUnbanned',
+      recipients: {
+        roles: [UserRole.Moderator, UserRole.Admin],
+      },
+      payload: {
+        banActionId: event.banActionId,
+        unbannedUserId: event.unbannedUserId,
+        unbannedBy: event.unbannedBy,
       },
     });
   }

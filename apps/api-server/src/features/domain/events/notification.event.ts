@@ -67,3 +67,9 @@ export type TUserBannedEvent = {
   bannedUserId: string;
   bannedBy: string;
 };
+
+export type TUserUnbannedEvent = {
+  banActionId: string;
+  unbannedUserId: string;
+  unbannedBy: string;
+};
