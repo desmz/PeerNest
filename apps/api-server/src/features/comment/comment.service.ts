@@ -33,6 +33,7 @@ import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
+import { TCommentReplyEvent } from '@/features/domain/events';
 import {
   CommentRepository,
   UserCommentLikeRepository,
@@ -40,8 +41,6 @@ import {
 } from '@/persistence/repos/comment';
 import { DiscussionRepository } from '@/persistence/repos/discussion';
 import { IClsStore } from '@/types/cls';
-
-import { TCommentReplyEvent } from '../domain/events';
 
 @Injectable()
 export class CommentService {

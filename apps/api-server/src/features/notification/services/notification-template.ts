@@ -81,7 +81,7 @@ export class NotificationTemplate {
     // --- ROLE ---
     roleChanged: () => ({
       title: 'Role updated',
-      body: 'Your role status has changed.',
+      body: 'Your role has been changed.',
     }),
 
     roleApplicationRejected: () => ({

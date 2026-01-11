@@ -15,6 +15,8 @@ import {
   type TBanRequestApprovedEvent,
   type TUserBannedEvent,
   type TUserUnbannedEvent,
+  type TRoleChangedEvent,
+  type TRoleApplicationRejectedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -171,6 +173,35 @@ export class NotificationListener {
         banActionId: event.banActionId,
         unbannedUserId: event.unbannedUserId,
         unbannedBy: event.unbannedBy,
+      },
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.ROLE_CHANGED)
+  async onRoleChanged(event: TRoleChangedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'roleChanged',
+      recipients: {
+        userIds: [event.userId],
+      },
+      payload: {
+        roleChangeActionId: event.roleChangeActionId,
+        oldRoleId: event.oldRoleId,
+        newRoleId: event.newRoleId,
+      },
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.ROLE_APPLICATION_REJECTED)
+  async onRoleApplicationRejected(event: TRoleApplicationRejectedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'roleApplicationRejected',
+      recipients: {
+        userIds: [event.userId],
+      },
+      payload: {
+        roleApplicationId: event.roleApplicationId,
+        appliedRoleId: event.appliedRoleId,
       },
     });
   }

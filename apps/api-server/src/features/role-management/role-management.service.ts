@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TApplyRoleRo,
   TApproveRoleApplicationParams,
@@ -15,6 +16,7 @@ import {
   generateRoleAttachmentId,
   generateRoleChangeActionId,
   HttpErrorCode,
+  NOTIFICATION_EVENT,
   RoleApplicationStatus,
   RoleChangeActionType,
   UploadType,
@@ -27,6 +29,7 @@ import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
+import { TRoleApplicationRejectedEvent, TRoleChangedEvent } from '@/features/domain/events';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
 import {
   RoleApplicationRepository,
@@ -39,6 +42,7 @@ import { IClsStore } from '@/types/cls';
 @Injectable()
 export class RoleManagementService {
   constructor(
+    private readonly eventEmitter: EventEmitter2,
     @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     private readonly kyselyService: KyselyService,
     private readonly clsService: ClsService<IClsStore>,
@@ -200,7 +204,7 @@ export class RoleManagementService {
     }
 
     const now = new Date();
-    await executeTx(this.kyselyService.db, async (tx) => {
+    const roleChangeAction = await executeTx(this.kyselyService.db, async (tx) => {
       await this.roleApplicationRepository.updateRoleApplicationById(
         {
           roleApplicationStatus: RoleApplicationStatus.Approved,
@@ -217,7 +221,7 @@ export class RoleManagementService {
           ? RoleChangeActionType.Promotion
           : RoleChangeActionType.Demotion;
 
-      await this.roleChangeActionRepository.createRoleChangeAction(
+      const roleChangeAction = await this.roleChangeActionRepository.createRoleChangeAction(
         {
           roleChangeActionId: generateRoleChangeActionId(),
           roleChangeActionTargetUserId: applicant.userId,
@@ -236,7 +240,18 @@ export class RoleManagementService {
         applicant.userId,
         tx
       );
+
+      return roleChangeAction;
     });
+
+    const roleChangedEvent: TRoleChangedEvent = {
+      userId: applicant.userId,
+      roleChangeActionId: roleChangeAction.roleChangeActionId,
+      oldRoleId: roleChangeAction.roleChangeActionOldRoleId,
+      newRoleId: roleChangeAction.roleChangeActionNewRoleId,
+    };
+
+    this.eventEmitter.emit(NOTIFICATION_EVENT.ROLE_CHANGED, roleChangedEvent);
   }
 
   async rejectRoleApplication(
@@ -300,9 +315,20 @@ export class RoleManagementService {
       },
       roleApplicationId
     );
+
+    const roleApplicationRejectedEvent: TRoleApplicationRejectedEvent = {
+      userId: roleApplication.roleApplicationApplicantId,
+      roleApplicationId: roleApplication.roleApplicationId,
+      appliedRoleId: roleApplication.roleApplicationAppliedRoleId,
+    };
+
+    this.eventEmitter.emit(
+      NOTIFICATION_EVENT.ROLE_APPLICATION_REJECTED,
+      roleApplicationRejectedEvent
+    );
   }
 
-  async changeUserRo(changeUserRo: TChangeUserRoleRo): Promise<void> {
+  async changeUserRole(changeUserRo: TChangeUserRoleRo): Promise<void> {
     const { newRoleId, roleApplicationId, targetUserId } = changeUserRo;
 
     const userId = this.clsService.get('user.id');
@@ -351,7 +377,7 @@ export class RoleManagementService {
     }
 
     const now = new Date();
-    await executeTx(this.kyselyService.db, async (tx) => {
+    const roleChangeAction = await executeTx(this.kyselyService.db, async (tx) => {
       if (roleApplicationId) {
         await this.roleApplicationRepository.updateRoleApplicationById(
           {
@@ -385,7 +411,7 @@ export class RoleManagementService {
           ? RoleChangeActionType.Promotion
           : RoleChangeActionType.Demotion;
 
-      await this.roleChangeActionRepository.createRoleChangeAction(
+      const roleChangeAction = await this.roleChangeActionRepository.createRoleChangeAction(
         {
           roleChangeActionId: generateRoleChangeActionId(),
           roleChangeActionTargetUserId: targetUserId,
@@ -404,7 +430,18 @@ export class RoleManagementService {
         applicant.userId,
         tx
       );
+
+      return roleChangeAction;
     });
+
+    const roleChangedEvent: TRoleChangedEvent = {
+      userId: applicant.userId,
+      roleChangeActionId: roleChangeAction.roleChangeActionId,
+      oldRoleId: roleChangeAction.roleChangeActionOldRoleId,
+      newRoleId: roleChangeAction.roleChangeActionNewRoleId,
+    };
+
+    this.eventEmitter.emit(NOTIFICATION_EVENT.ROLE_CHANGED, roleChangedEvent);
   }
 
   async findRoleApplications(

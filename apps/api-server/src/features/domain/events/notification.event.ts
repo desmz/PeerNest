@@ -73,3 +73,16 @@ export type TUserUnbannedEvent = {
   unbannedUserId: string;
   unbannedBy: string;
 };
+
+export type TRoleChangedEvent = {
+  userId: string;
+  roleChangeActionId: string;
+  oldRoleId: string;
+  newRoleId: string;
+};
+
+export type TRoleApplicationRejectedEvent = {
+  userId: string;
+  roleApplicationId: string;
+  appliedRoleId: string;
+};

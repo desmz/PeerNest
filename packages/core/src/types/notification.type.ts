@@ -78,8 +78,7 @@ export type TNotificationPayloadMap = {
   };
   roleApplicationRejected: {
     roleApplicationId: string;
-    oldRoleId: string;
-    newRoleId: string;
+    appliedRoleId: string;
   };
 };
 

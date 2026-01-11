@@ -69,6 +69,7 @@ export class BanActionRepository {
           ...banActionPayload,
           banActionUpdatedTime: now,
         })
+        .where('banActionId', '=', id)
         .returningAll()
         .executeTakeFirst();
 

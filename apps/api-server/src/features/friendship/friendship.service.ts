@@ -36,6 +36,11 @@ import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
+import {
+  TFriendRequestAcceptedEvent,
+  TFriendRequestReceivedEvent,
+  TFriendRequestRejectedEvent,
+} from '@/features/domain/events';
 import { BanActionRepository } from '@/persistence/repos/ban';
 import {
   ConversationParticipantRepository,
@@ -44,12 +49,6 @@ import {
 import { FriendRequestRepository, RelationshipRepository } from '@/persistence/repos/friendship';
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
-
-import {
-  TFriendRequestAcceptedEvent,
-  TFriendRequestReceivedEvent,
-  TFriendRequestRejectedEvent,
-} from '../domain/events';
 
 import { TGetFriendRequestsByUserIdOptions } from './types';
 

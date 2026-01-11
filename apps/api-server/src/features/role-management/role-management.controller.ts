@@ -47,10 +47,10 @@ export class RoleManagementController {
 
   @Post('change')
   @HttpCode(HttpStatus.CREATED)
-  async changeUserRo(
+  async changeUserRole(
     @Body(new ZodValidationPipe(changeUserRoleRoSchema)) changeUserRo: TChangeUserRoleRo
   ): Promise<void> {
-    await this.roleManagementService.changeUserRo(changeUserRo);
+    await this.roleManagementService.changeUserRole(changeUserRo);
   }
 
   @Roles(UserRole.Admin, UserRole.Moderator)
