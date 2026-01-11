@@ -45,7 +45,7 @@ import { FriendRequestRepository, RelationshipRepository } from '@/persistence/r
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
-import { TFriendRequestReceivedEvent } from '../domain/events';
+import { TFriendRequestAcceptedEvent, TFriendRequestReceivedEvent } from '../domain/events';
 
 import { TGetFriendRequestsByUserIdOptions } from './types';
 
@@ -189,7 +189,11 @@ export class FriendShipService {
 
     const conversationId = await this.processCreateFriendShip({ fromId, toId });
 
-    // todo: send notification to fromUser (requester)
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_ACCEPTED, <TFriendRequestAcceptedEvent>{
+      friendRequestId: friendRequest.friendRequestId,
+      fromUserId: friendRequest.friendRequestFromId,
+      toUserId: friendRequest.friendRequestToId,
+    });
 
     return { conversationId };
   }
@@ -301,8 +305,6 @@ export class FriendShipService {
 
       return conversationId;
     });
-
-    // todo: send notification to both users
 
     return conversationId;
   }

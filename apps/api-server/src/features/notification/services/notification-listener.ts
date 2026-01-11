@@ -5,6 +5,7 @@ import { NOTIFICATION_EVENT } from '@peernest/core';
 import {
   type TFriendRequestReceivedEvent,
   type TCommentReplyEvent,
+  type TFriendRequestAcceptedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -35,6 +36,17 @@ export class NotificationListener {
       type: 'friendRequestReceived',
       recipients: {
         userIds: [event.toUserId],
+      },
+      payload: event,
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.FRIEND_ACCEPTED)
+  async onFriendRequestAccepted(event: TFriendRequestAcceptedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'friendRequestAccepted',
+      recipients: {
+        userIds: [event.fromUserId],
       },
       payload: event,
     });

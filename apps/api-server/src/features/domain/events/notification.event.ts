@@ -11,3 +11,9 @@ export type TFriendRequestReceivedEvent = {
   toUserId: string;
   friendRequestId: string;
 };
+
+export type TFriendRequestAcceptedEvent = {
+  fromUserId: string;
+  toUserId: string;
+  friendRequestId: string;
+};
