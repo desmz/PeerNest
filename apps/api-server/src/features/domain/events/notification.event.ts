@@ -35,3 +35,9 @@ export type TPercherReleasedEvent = {
   percherUserId: string;
   counselorUserId: string;
 };
+
+export type TAchievementUnlockedEvent = {
+  userId: string;
+  achievementId: string;
+  achievementTitle: string;
+};

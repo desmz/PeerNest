@@ -9,6 +9,7 @@ import {
   type TFriendRequestRejectedEvent,
   type TPercherAddedEvent,
   type TPercherReleasedEvent,
+  type TAchievementUnlockedEvent,
 } from '@/features/domain/events';
 
 import { NotificationDispatcher } from './notification-dispatcher';
@@ -85,6 +86,20 @@ export class NotificationListener {
         userIds: [event.percherUserId],
       },
       payload: event,
+    });
+  }
+
+  @OnEvent(NOTIFICATION_EVENT.ACHIEVEMENT_UNLOCKED)
+  async onAchievementUnlocked(event: TAchievementUnlockedEvent) {
+    await this.dispatcher.dispatch({
+      type: 'achievementUnlocked',
+      recipients: {
+        userIds: [event.userId],
+      },
+      payload: {
+        achievementId: event.achievementId,
+        achievementTitle: event.achievementTitle,
+      },
     });
   }
 }
