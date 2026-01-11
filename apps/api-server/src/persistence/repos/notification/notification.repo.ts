@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { FindNotificationsSortOption, HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TInsertableNotification, TKyselyTransaction } from '@peernest/db';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableNotification,
+  TKyselyTransaction,
+  TUpdatableNotification,
+} from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -27,6 +33,35 @@ export class NotificationRepository {
         `[${NotificationRepository.repoName}] | Fail to create notifications`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, notificationObjs }
+      );
+    }
+  }
+
+  async updateNotificationsByIds(
+    notificationPayload: TUpdatableNotification,
+    ids: string[],
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      if (ids.length === 0) {
+        return [];
+      }
+
+      const notifications = await db
+        .updateTable('notification')
+        .set(notificationPayload)
+        .where('notificationId', 'in', ids)
+        .returningAll()
+        .execute();
+
+      return notifications!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${NotificationRepository.repoName}] | Fail to update notifications by user id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, notificationPayload, ids }
       );
     }
   }

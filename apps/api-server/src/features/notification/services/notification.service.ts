@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   TGetMyNotificationsQueryParams,
   TGetMyNotificationsVo,
+  TMarkNotificationsAsSeenRo,
   TNotification,
 } from '@peernest/contract';
 import { FindNotificationsSortOption } from '@peernest/core';
@@ -57,5 +58,19 @@ export class NotificationService {
       },
       notifications: formattedNotificationAggs,
     };
+  }
+
+  async markNotificationsAsSeen(
+    markNotificationsAsSeenRo: TMarkNotificationsAsSeenRo
+  ): Promise<void> {
+    const { notificationIds } = markNotificationsAsSeenRo;
+
+    const now = new Date();
+    await this.notificationRepository.updateNotificationsByIds(
+      {
+        notificationSeenTime: now,
+      },
+      notificationIds
+    );
   }
 }
