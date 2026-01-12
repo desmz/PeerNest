@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { AchievementType, generateUserAchievementId } from '@peernest/core';
+import { AchievementType, generateUserAchievementId, NOTIFICATION_EVENT } from '@peernest/core';
 import { TSelectableAchievement } from '@peernest/db';
 import pLimit, { LimitFunction } from 'p-limit';
 
+import { TAchievementUnlockedEvent } from '@/features/domain/events';
 import { UserAchievementRepository } from '@/persistence/repos/achievement';
 import { AchievementRepository } from '@/persistence/repos/system';
 import { UserRepository } from '@/persistence/repos/user';
@@ -25,6 +27,7 @@ export class AchievementService {
   private limit: LimitFunction;
 
   constructor(
+    private readonly eventEmitter: EventEmitter2,
     private readonly achievementHandlersRegistry: AchievementHandlersRegistry,
 
     private readonly achievementRepository: AchievementRepository,
@@ -120,7 +123,7 @@ export class AchievementService {
       const isAchieved = await achievementHandler.evaluate(criteria, refineContext);
 
       if (isAchieved) {
-        await this.userAchievementRepository.createUserAchievement(
+        const userAchievement = await this.userAchievementRepository.createUserAchievement(
           {
             userAchievementId: generateUserAchievementId(),
             userAchievementUserId: userId,
@@ -130,7 +133,13 @@ export class AchievementService {
           { onConflictNothing: true }
         );
 
-        // todo: send notification to the user
+        const achievementUnlockedEvent: TAchievementUnlockedEvent = {
+          userId: userAchievement.userAchievementUserId,
+          achievementId: userAchievement.userAchievementAchievementId,
+          achievementTitle: achievement.achievementTitle,
+        };
+
+        this.eventEmitter.emit(NOTIFICATION_EVENT.ACHIEVEMENT_UNLOCKED, achievementUnlockedEvent);
       }
     }
   }

@@ -606,6 +606,35 @@ export interface Interest {
   interestUpdatedTime: Timestamp | null;
 }
 
+export interface Notification {
+  notificationBody: string;
+  notificationCreatedTime: Generated<Timestamp>;
+  notificationId: Generated<string>;
+  notificationNotificationTypeId: string;
+  notificationPayload: Json;
+  notificationReadTime: Timestamp | null;
+  notificationRecipientId: string;
+  notificationSeenTime: Timestamp | null;
+  notificationTitle: string;
+}
+
+export interface NotificationCategory {
+  notificationCategoryCreatedTime: Generated<Timestamp>;
+  notificationCategoryDeletedTime: Timestamp | null;
+  notificationCategoryId: Generated<string>;
+  notificationCategoryName: string;
+  notificationCategoryUpdatedTime: Timestamp | null;
+}
+
+export interface NotificationType {
+  notificationTypeCreatedTime: Generated<Timestamp>;
+  notificationTypeDeletedTime: Timestamp | null;
+  notificationTypeId: Generated<string>;
+  notificationTypeName: string;
+  notificationTypeNotificationCategoryId: string;
+  notificationTypeUpdatedTime: Timestamp | null;
+}
+
 export interface PersonalGoal {
   personalGoalCreatedTime: Generated<Timestamp>;
   personalGoalDeletedTime: Timestamp | null;
@@ -1028,6 +1057,9 @@ export interface DB {
   'extensions.pgStatStatementsInfo': ExtensionsPgStatStatementsInfo;
   friendRequest: FriendRequest;
   interest: Interest;
+  notification: Notification;
+  notificationCategory: NotificationCategory;
+  notificationType: NotificationType;
   personalGoal: PersonalGoal;
   pronoun: Pronoun;
   'realtime.messages': RealtimeMessages;

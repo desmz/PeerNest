@@ -1,0 +1,15 @@
+notification_type_id,notification_type_name,notification_category_name
+1,commentReply,discussion
+2,friendRequestReceived,friendship
+3,friendRequestAccepted,friendship
+4,friendRequestRejected,friendship
+5,percherAdded,counselor
+6,percherReleased,counselor
+7,achievementUnlocked,achievement
+8,banRequestCreated,moderation
+9,banRequestApproved,moderation
+10,banRequestRejected,moderation
+11,userBanned,moderation
+12,userUnbanned,moderation
+13,roleChanged,role
+14,roleApplicationRejected,role

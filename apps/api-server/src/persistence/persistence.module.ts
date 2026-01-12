@@ -19,6 +19,7 @@ import {
   UserDiscussionReportRepository,
 } from './repos/discussion';
 import { FriendRequestRepository, RelationshipRepository } from './repos/friendship';
+import { NotificationRepository, NotificationTypeRepository } from './repos/notification';
 import {
   RoleApplicationRepository,
   RoleAttachmentRepository,
@@ -102,6 +103,8 @@ const repositories: Provider[] = [
   AchievementCategoryRepository,
   AchievementRepository,
   UserAchievementRepository,
+  NotificationTypeRepository,
+  NotificationRepository,
 ];
 
 @Module({

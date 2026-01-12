@@ -47,6 +47,9 @@ import {
   AchievementCategory,
   Achievement,
   UserAchievement,
+  NotificationCategory,
+  NotificationType,
+  Notification,
 } from './db';
 
 // role
@@ -278,3 +281,18 @@ export type TUpdatableAchievement = Updateable<Omit<Achievement, 'id'>>;
 export type TSelectableUserAchievement = Selectable<UserAchievement>;
 export type TInsertableUserAchievement = Insertable<UserAchievement>;
 export type TUpdatableUserAchievement = Updateable<Omit<UserAchievement, 'id'>>;
+
+// notification_category
+export type TSelectableNotificationCategory = Selectable<NotificationCategory>;
+export type TInsertableNotificationCategory = Insertable<NotificationCategory>;
+export type TUpdatableNotificationCategory = Updateable<Omit<NotificationCategory, 'id'>>;
+
+// notification_type
+export type TSelectableNotificationType = Selectable<NotificationType>;
+export type TInsertableNotificationType = Insertable<NotificationType>;
+export type TUpdatableNotificationType = Updateable<Omit<NotificationType, 'id'>>;
+
+// notification
+export type TSelectableNotification = Selectable<Notification>;
+export type TInsertableNotification = Insertable<Notification>;
+export type TUpdatableNotification = Updateable<Omit<Notification, 'id'>>;

@@ -134,3 +134,15 @@ export const counselorUserIdSchema = (field = 'Counselor User Id') => {
     .string(zString(field))
     .startsWith(IdPrefix.CounselorUser, zStartWith(field, IdPrefix.CounselorUser));
 };
+
+export const notificationTypeIdSchema = (field = 'Notification Type Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.NotificationType, zStartWith(field, IdPrefix.NotificationType));
+};
+
+export const notificationIdSchema = (field = 'Notification Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.Notification, zStartWith(field, IdPrefix.Notification));
+};

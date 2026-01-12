@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TAddPercherRo,
   TCounselorUser,
@@ -8,21 +9,22 @@ import {
   TUpdatePercherNoteParams,
   TUpdatePercherNoteRo,
 } from '@peernest/contract';
-import { generateCounselorUserId, HttpErrorCode } from '@peernest/core';
+import { generateCounselorUserId, HttpErrorCode, NOTIFICATION_EVENT } from '@peernest/core';
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
+import { getFullStorageUrl } from '@/features/attachment/utils';
+import { TPercherAddedEvent, TPercherReleasedEvent } from '@/features/domain/events';
 import { BanActionRepository } from '@/persistence/repos/ban';
 import { CounselorUserRepository } from '@/persistence/repos/counselor';
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
-import { getFullStorageUrl } from '../attachment/utils';
-
 @Injectable()
 export class CounselorService {
   constructor(
     private readonly clsService: ClsService<IClsStore>,
+    private readonly eventEmitter: EventEmitter2,
 
     private readonly banActionRepository: BanActionRepository,
     private readonly counselorUserRepository: CounselorUserRepository,
@@ -69,7 +71,7 @@ export class CounselorService {
       );
     }
 
-    await this.counselorUserRepository.createCounselorUser({
+    const counselorUser = await this.counselorUserRepository.createCounselorUser({
       counselorUserId: generateCounselorUserId(),
       counselorUserCounselorId: userId,
       counselorUserUserId: percherId,
@@ -77,7 +79,12 @@ export class CounselorService {
       counselorUserCreatedTime: now,
     });
 
-    // todo: send notification to the percher
+    const percherAddedEvent: TPercherAddedEvent = {
+      counselorId: counselorUser.counselorUserId,
+      percherUserId: counselorUser.counselorUserUserId,
+      counselorUserId: counselorUser.counselorUserCounselorId,
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_ADDED, percherAddedEvent);
   }
 
   async updatePercherNote(
@@ -137,7 +144,12 @@ export class CounselorService {
       { counselorId: userId, userId: percherId }
     );
 
-    // todo: send notification to the percher
+    const percherReleasedEvent: TPercherReleasedEvent = {
+      counselorId: counselorUser.counselorUserId,
+      percherUserId: counselorUser.counselorUserUserId,
+      counselorUserId: counselorUser.counselorUserCounselorId,
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.PERCHER_RELEASED, percherReleasedEvent);
   }
 
   async getMyPerchers(

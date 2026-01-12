@@ -1,5 +1,6 @@
 import { DynamicModule, Global, Module, ModuleMetadata } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { KyselyModule } from '@peernest/db';
 import { ClsModule } from 'nestjs-cls';
@@ -16,6 +17,7 @@ import { DiscussionModule } from '@/features/discussion/discussion.module';
 import { FriendshipModule } from '@/features/friendship/friendship.module';
 import { MailSenderModule } from '@/features/mail-sender/mail-sender.module';
 import { ModerationModule } from '@/features/moderation/moderation.module';
+import { NotificationModule } from '@/features/notification/notification.module';
 import { RoleManagementModule } from '@/features/role-management/role-management.module';
 import { SystemModule } from '@/features/system/system.module';
 import { UserModule } from '@/features/user/user.module';
@@ -32,6 +34,7 @@ export const AppModules = {
       },
     }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     KyselyModule.forRoot({ formatted: true }),
     PersistenceModule,
     MailSenderModule.register({ global: true }),
@@ -47,6 +50,7 @@ export const AppModules = {
     RoleManagementModule,
     CounselorModule,
     AchievementModule,
+    NotificationModule,
   ],
   providers: [
     {
