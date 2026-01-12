@@ -42,7 +42,7 @@ export class DiscussionPersonalGoalRepository {
       return discussionPersonalGoal!;
     } catch (error) {
       throw new CustomHttpException(
-        `[${DiscussionPersonalGoalRepository.repoName}] | Fail to create discussion- personal-goal`,
+        `[${DiscussionPersonalGoalRepository.repoName}] | Fail to create discussion-personal-goals`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, discussionPersonalGoalObjs }
       );

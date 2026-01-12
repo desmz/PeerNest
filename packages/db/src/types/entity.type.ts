@@ -27,6 +27,22 @@ import {
   UserCommentReport,
   UserDiscussionLike,
   UserCommentLike,
+  WellnessMood,
+  WellnessSymptomCategory,
+  WellnessSymptom,
+  WellnessFactorCategory,
+  WellnessFactor,
+  CheckIn,
+  CheckInWellnessMood,
+  CheckInWellnessFactor,
+  CheckInHealthMeasurement,
+  CheckInWellnessSymptom,
+  BanRequest,
+  BanRequestProof,
+  BanAction,
+  RoleApplication,
+  RoleAttachment,
+  RoleChangeAction,
 } from './db';
 
 // role
@@ -158,3 +174,83 @@ export type TUpdatableUserDiscussionLike = Updateable<Omit<UserDiscussionLike, '
 export type TSelectableUserCommentLike = Selectable<UserCommentLike>;
 export type TInsertableUserCommentLike = Insertable<UserCommentLike>;
 export type TUpdatableUserCommentLike = Updateable<Omit<UserCommentLike, 'id'>>;
+
+// wellness_mood
+export type TSelectableWellnessMood = Selectable<WellnessMood>;
+export type TInsertableWellnessMood = Insertable<WellnessMood>;
+export type TUpdatableWellnessMood = Updateable<Omit<WellnessMood, 'id'>>;
+
+// wellness_symptom_category
+export type TSelectableWellnessSymptomCategory = Selectable<WellnessSymptomCategory>;
+export type TInsertableWellnessSymptomCategory = Insertable<WellnessSymptomCategory>;
+export type TUpdatableWellnessSymptomCategory = Updateable<Omit<WellnessSymptomCategory, 'id'>>;
+
+// wellness_symptom
+export type TSelectableWellnessSymptom = Selectable<WellnessSymptom>;
+export type TInsertableWellnessSymptom = Insertable<WellnessSymptom>;
+export type TUpdatableWellnessSymptom = Updateable<Omit<WellnessSymptom, 'id'>>;
+
+// wellness_factor_category
+export type TSelectableWellnessFactorCategory = Selectable<WellnessFactorCategory>;
+export type TInsertableWellnessFactorCategory = Insertable<WellnessFactorCategory>;
+export type TUpdatableWellnessFactorCategory = Updateable<Omit<WellnessFactorCategory, 'id'>>;
+
+// wellness_factor
+export type TSelectableWellnessFactor = Selectable<WellnessFactor>;
+export type TInsertableWellnessFactor = Insertable<WellnessFactor>;
+export type TUpdatableWellnessFactor = Updateable<Omit<WellnessFactor, 'id'>>;
+
+// check_in
+export type TSelectableCheckIn = Selectable<CheckIn>;
+export type TInsertableCheckIn = Insertable<CheckIn>;
+export type TUpdatableCheckIn = Updateable<Omit<CheckIn, 'id'>>;
+
+// check_in_wellness_mood
+export type TSelectableCheckInWellnessMood = Selectable<CheckInWellnessMood>;
+export type TInsertableCheckInWellnessMood = Insertable<CheckInWellnessMood>;
+export type TUpdatableCheckInWellnessMood = Updateable<Omit<CheckInWellnessMood, 'id'>>;
+
+// check_in_wellness_symptom
+export type TSelectableCheckInWellnessSymptom = Selectable<CheckInWellnessSymptom>;
+export type TInsertableCheckInWellnessSymptom = Insertable<CheckInWellnessSymptom>;
+export type TUpdatableCheckInWellnessSymptom = Updateable<Omit<CheckInWellnessSymptom, 'id'>>;
+
+// check_in_wellness_factor
+export type TSelectableCheckInWellnessFactor = Selectable<CheckInWellnessFactor>;
+export type TInsertableCheckInWellnessFactor = Insertable<CheckInWellnessFactor>;
+export type TUpdatableCheckInWellnessFactor = Updateable<Omit<CheckInWellnessFactor, 'id'>>;
+
+// check_in_health_measurement
+export type TSelectableCheckInHealthMeasurement = Selectable<CheckInHealthMeasurement>;
+export type TInsertableCheckInHealthMeasurement = Insertable<CheckInHealthMeasurement>;
+export type TUpdatableCheckInHealthMeasurement = Updateable<Omit<CheckInHealthMeasurement, 'id'>>;
+
+// ban_request
+export type TSelectableBanRequest = Selectable<BanRequest>;
+export type TInsertableBanRequest = Insertable<BanRequest>;
+export type TUpdatableBanRequest = Updateable<Omit<BanRequest, 'id'>>;
+
+// ban_request_proof
+export type TSelectableBanRequestProof = Selectable<BanRequestProof>;
+export type TInsertableBanRequestProof = Insertable<BanRequestProof>;
+export type TUpdatableBanRequestProof = Updateable<Omit<BanRequestProof, 'id'>>;
+
+// ban_action
+export type TSelectableBanAction = Selectable<BanAction>;
+export type TInsertableBanAction = Insertable<BanAction>;
+export type TUpdatableBanAction = Updateable<Omit<BanAction, 'id'>>;
+
+// role_application
+export type TSelectableRoleApplication = Selectable<RoleApplication>;
+export type TInsertableRoleApplication = Insertable<RoleApplication>;
+export type TUpdatableRoleApplication = Updateable<Omit<RoleApplication, 'id'>>;
+
+// role_attachment
+export type TSelectableRoleAttachment = Selectable<RoleAttachment>;
+export type TInsertableRoleAttachment = Insertable<RoleAttachment>;
+export type TUpdatableRoleAttachment = Updateable<Omit<RoleAttachment, 'id'>>;
+
+// role_change_action
+export type TSelectableRoleChangeAction = Selectable<RoleChangeAction>;
+export type TInsertableRoleChangeAction = Insertable<RoleChangeAction>;
+export type TUpdatableRoleChangeAction = Updateable<Omit<RoleChangeAction, 'id'>>;

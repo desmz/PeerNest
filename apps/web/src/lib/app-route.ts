@@ -5,4 +5,5 @@ export const APP_ROUTE = {
   AUTH: '/auth',
   USER: `${USER_BASE}`,
   USER_ME: `${USER_BASE}/me`,
+  BAN: '/ban',
 };

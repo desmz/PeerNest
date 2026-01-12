@@ -35,6 +35,22 @@ export enum IdPrefix {
   UserCommentReport = 'usrcmrp',
   UserDiscussionLike = 'usrdcsl',
   UserCommentLike = 'usrcml',
+  WellnessMood = 'wnm',
+  WellnessSymptomCategory = 'wnstctgr',
+  WellnessSymptom = 'wnst',
+  WellnessFactorCategory = 'wnftctgr',
+  WellnessFactor = 'wnft',
+  CheckIn = 'cki',
+  CheckInWellnessMood = 'ckiwnm',
+  CheckInWellnessSymptom = 'ckiwnst',
+  CheckInWellnessFactor = 'ckiwnft',
+  CheckInHealthMeasurement = 'ckihmsm',
+  BanRequest = 'brq',
+  BanRequestProof = 'brqp',
+  BanAction = 'bat',
+  RoleApplication = 'rapct',
+  RoleAttachment = 'ratm',
+  RoleChangeAction = 'rcat',
 }
 
 export function generateUuid() {
@@ -143,4 +159,68 @@ export function generateUserDiscussionLikeId() {
 
 export function generateUserCommentLikeId() {
   return IdPrefix.UserCommentLike + '-' + generateUuid();
+}
+
+export function generateWellnessMoodId() {
+  return IdPrefix.WellnessMood + '-' + generateUuid();
+}
+
+export function generateWellnessSymptomCategoryId() {
+  return IdPrefix.WellnessSymptomCategory + '-' + generateUuid();
+}
+
+export function generateWellnessSymptomId() {
+  return IdPrefix.WellnessSymptom + '-' + generateUuid();
+}
+
+export function generateWellnessFactorCategoryId() {
+  return IdPrefix.WellnessFactorCategory + '-' + generateUuid();
+}
+
+export function generateWellnessFactorId() {
+  return IdPrefix.WellnessFactor + '-' + generateUuid();
+}
+
+export function generateCheckInId() {
+  return IdPrefix.CheckIn + '-' + generateUuid();
+}
+
+export function generateCheckInWellnessMoodId() {
+  return IdPrefix.CheckInWellnessMood + '-' + generateUuid();
+}
+
+export function generateCheckInWellnessSymptomId() {
+  return IdPrefix.CheckInWellnessSymptom + '-' + generateUuid();
+}
+
+export function generateCheckInWellnessFactorId() {
+  return IdPrefix.CheckInWellnessFactor + '-' + generateUuid();
+}
+
+export function generateCheckInHealthMeasurementId() {
+  return IdPrefix.CheckInHealthMeasurement + '-' + generateUuid();
+}
+
+export function generateBanRequestId() {
+  return IdPrefix.BanRequest + '-' + generateUuid();
+}
+
+export function generateBanRequestProofId() {
+  return IdPrefix.BanRequestProof + '-' + generateUuid();
+}
+
+export function generateBanActionId() {
+  return IdPrefix.BanAction + '-' + generateUuid();
+}
+
+export function generateRoleApplicationId() {
+  return IdPrefix.RoleApplication + '-' + generateUuid();
+}
+
+export function generateRoleAttachmentId() {
+  return IdPrefix.RoleAttachment + '-' + generateUuid();
+}
+
+export function generateRoleChangeActionId() {
+  return IdPrefix.RoleChangeAction + '-' + generateUuid();
 }

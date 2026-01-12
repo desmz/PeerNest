@@ -1,0 +1,86 @@
+wellness_factor_id,wellness_factor,category
+1,alcohol,lifestyle
+2,caffeine,lifestyle
+3,stress,lifestyle
+4,air travel,lifestyle
+5,jet lag,lifestyle
+6,social media,lifestyle
+7,tobacco,lifestyle
+8,smoking,lifestyle
+9,time outside,lifestyle
+10,screen time,lifestyle
+11,video games,lifestyle
+12,breathwork,lifestyle
+13,cold shower,lifestyle
+14,meditation,lifestyle
+15,sex,lifestyle
+16,therapy,lifestyle
+17,watch the sunset,lifestyle
+18,avoid caffeine after 12pm,lifestyle
+19,video calls,work
+20,commute to work,work
+21,night shift,work
+22,on-call shift,work
+23,work late,work
+24,ruminating past events,behavioural pattern
+25,overthinking future events,behavioural pattern
+26,overly self-critical,behavioural pattern
+27,needing constant distractions,behavioural pattern
+28,avoiding situations,behavioural pattern
+29,masking,behavioural pattern
+30,procrastination,behavioural pattern
+31,compulsions,behavioural pattern
+32,doom scrolling,behavioural pattern
+33,comparing to others,behavioural pattern
+34,impulsiveness,behavioural pattern
+35,oversensitivity,behavioural pattern
+36,social withdrawal,behavioural pattern
+37,hypervigilance,behavioural pattern
+38,passive aggressive,behavioural pattern
+39,perfectionism,behavioural pattern
+40,over-planning,behavioural pattern
+41,self sabotage,behavioural pattern
+42,people pleasing,behavioural pattern
+43,validation seeking,behavioural pattern
+44,acupuncture,recovery
+45,physical therapy,recovery
+46,sauna,recovery
+47,chiropractor,recovery
+48,cryotherapy,recovery
+49,cupping,recovery
+50,hyperbaric chamber,recovery
+51,ice bath,recovery
+52,massage therapy,recovery
+53,red light therapy,recovery
+54,sensory deprivation tank,recovery
+55,steam room,recovery
+56,family,social
+57,friends,social
+58,partner,social
+59,co-workers,social
+60,make my bed,personal care
+61,brush teeth,personal care
+62,take a shower,personal care
+63,floss teeth,personal care
+64,have a bath,personal care
+65,moisturise,personal care
+66,preapre a meal,personal care
+67,tidy bedroom,personal care
+68,wash my face,personal care
+69,blue light blocking glasses,sleep
+70,device in bed,sleep
+71,early bedtime,sleep
+72,late bedtime,sleep
+73,cat in bedroom,sleep
+74,CPAP machine,sleep
+75,dog in bedroom,sleep
+76,ear plugs,sleep
+77,electric blanket,sleep
+78,humidifier,sleep
+79,nasal strip,sleep
+80,pain affected sleep,sleep
+81,sleep mask,sleep
+82,sound machine,sleep
+83,weighted blanket,sleep
+84,get sunlight in the morning,sleep
+85,no screens within 1hr of sleep,sleep

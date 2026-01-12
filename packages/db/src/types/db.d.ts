@@ -4,6 +4,7 @@
  */
 
 import type { ColumnType } from 'kysely';
+import type { IPostgresInterval } from 'postgres-interval';
 
 export type AuthAalLevel = 'aal1' | 'aal2' | 'aal3';
 
@@ -35,6 +36,12 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
+
+export type Interval = ColumnType<
+  IPostgresInterval,
+  IPostgresInterval | number | string,
+  IPostgresInterval | number | string
+>;
 
 export type Json = JsonValue;
 
@@ -350,10 +357,80 @@ export interface AuthUsers {
   updatedAt: Timestamp | null;
 }
 
+export interface BanAction {
+  banActionBanEndTime: Timestamp | null;
+  banActionBannedBy: string;
+  banActionBannedUserId: string;
+  banActionBanRequestId: string | null;
+  banActionBanStartTime: Generated<Timestamp>;
+  banActionCreatedTime: Generated<Timestamp>;
+  banActionId: Generated<string>;
+  banActionReason: string;
+  banActionUpdatedTime: Timestamp | null;
+}
+
+export interface BanRequest {
+  banRequestBannedUserId: string;
+  banRequestCreatedTime: Generated<Timestamp>;
+  banRequestId: Generated<string>;
+  banRequestProofReferenceRaw: string;
+  banRequestReason: string;
+  banRequestRequesterId: string;
+  banRequestResolvedTime: Timestamp | null;
+  banRequestResolverId: string | null;
+  banRequestStatus: string;
+}
+
+export interface BanRequestProof {
+  banRequestProofBanRequestId: string;
+  banRequestProofId: Generated<string>;
+  banRequestProofReferenceRaw: string;
+  banRequestProofResourceId: string;
+  banRequestProofResourceType: string;
+}
+
+export interface CheckIn {
+  checkInCheckInTime: Generated<Timestamp>;
+  checkInCreatedTime: Generated<Timestamp>;
+  checkInId: Generated<string>;
+  checkInMoodRating: Int8;
+  checkInSleepQualityRating: Int8 | null;
+  checkInSleepTime: Interval | null;
+  checkInUpdatedTime: Timestamp | null;
+  checkInUserId: string;
+}
+
+export interface CheckInHealthMeasurement {
+  checkInHealthMeasurementCheckInId: string;
+  checkInHealthMeasurementHeartRate: Int8 | null;
+  checkInHealthMeasurementId: Generated<string>;
+  checkInHealthMeasurementStepCount: Int8 | null;
+  checkInHealthMeasurementWeight: Numeric | null;
+}
+
+export interface CheckInWellnessFactor {
+  checkInWellnessFactorCheckInId: string;
+  checkInWellnessFactorId: Generated<string>;
+  checkInWellnessFactorWellnessFactorId: string;
+}
+
+export interface CheckInWellnessMood {
+  checkInWellnessMoodCheckInId: string;
+  checkInWellnessMoodId: Generated<string>;
+  checkInWellnessMoodWellnessMoodId: string;
+}
+
+export interface CheckInWellnessSymptom {
+  checkInWellnessSymptomCheckInId: string;
+  checkInWellnessSymptomId: Generated<string>;
+  checkInWellnessSymptomWellnessSymptomId: string;
+}
+
 export interface Comment {
   commentAuthorId: string;
   commentContent: string;
   commentCreatedTime: Generated<Timestamp>;
+  commentDeletedBy: string | null;
   commentDeletedTime: Timestamp | null;
   commentDiscussionId: string;
   commentId: Generated<string>;
@@ -383,6 +460,7 @@ export interface Discussion {
   discussionAuthorId: string;
   discussionContent: string;
   discussionCreatedTime: Generated<Timestamp>;
+  discussionDeletedBy: string | null;
   discussionDeletedTime: Timestamp | null;
   discussionId: Generated<string>;
   discussionSearchTsv: string | null;
@@ -500,7 +578,7 @@ export interface PersonalGoal {
   personalGoalDeletedTime: Timestamp | null;
   personalGoalDescription: string | null;
   personalGoalId: Generated<string>;
-  personalGoalName: string;
+  personalGoalName: string | null;
   personalGoalPosition: Numeric;
   personalGoalTitle: string;
   personalGoalUpdatedTime: Timestamp | null;
@@ -555,6 +633,38 @@ export interface Role {
   roleName: string;
   roleRank: Int8;
   roleUpdatedTime: Timestamp | null;
+}
+
+export interface RoleApplication {
+  roleApplicationApplicantId: string;
+  roleApplicationAppliedRoleId: string;
+  roleApplicationCreatedTime: Generated<Timestamp>;
+  roleApplicationDeletedTime: Timestamp | null;
+  roleApplicationDescription: string | null;
+  roleApplicationId: Generated<string>;
+  roleApplicationProcessedBy: string | null;
+  roleApplicationProcessedTime: Timestamp | null;
+  roleApplicationStatus: string;
+  roleApplicationUpdatedTime: Timestamp | null;
+}
+
+export interface RoleAttachment {
+  roleAttachmentAttachmentId: string;
+  roleAttachmentId: Generated<string>;
+  roleAttachmentRoleApplicationId: string;
+}
+
+export interface RoleChangeAction {
+  roleChangeActionCreatedTime: Generated<Timestamp>;
+  roleChangeActionDeletedTime: Timestamp | null;
+  roleChangeActionId: Generated<string>;
+  roleChangeActionNewRoleId: string;
+  roleChangeActionOldRoleId: string;
+  roleChangeActionProcessedBy: string;
+  roleChangeActionRoleApplicationId: string | null;
+  roleChangeActionTargetUserId: string;
+  roleChangeActionType: string;
+  roleChangeActionUpdatedTime: Timestamp | null;
 }
 
 export interface StorageBuckets {
@@ -783,6 +893,53 @@ export interface VaultSecrets {
   updatedAt: Generated<Timestamp>;
 }
 
+export interface WellnessFactor {
+  wellnessFactorCreatedTime: Generated<Timestamp>;
+  wellnessFactorDeletedTime: Timestamp | null;
+  wellnessFactorId: Generated<string>;
+  wellnessFactorName: string;
+  wellnessFactorPosition: Numeric;
+  wellnessFactorUpdatedTime: Timestamp | null;
+  wellnessFactorWellnessFactorCategoryId: string;
+}
+
+export interface WellnessFactorCategory {
+  wellnessFactorCategoryCreatedTime: Generated<Timestamp>;
+  wellnessFactorCategoryDeletedTime: Timestamp | null;
+  wellnessFactorCategoryId: Generated<string>;
+  wellnessFactorCategoryName: string;
+  wellnessFactorCategoryPosition: Numeric;
+  wellnessFactorCategoryUpdatedTime: Timestamp | null;
+}
+
+export interface WellnessMood {
+  wellnessMoodCreatedTime: Generated<Timestamp>;
+  wellnessMoodDeletedTime: Timestamp | null;
+  wellnessMoodId: Generated<string>;
+  wellnessMoodName: string;
+  wellnessMoodPosition: Numeric;
+  wellnessMoodUpdatedTime: Timestamp | null;
+}
+
+export interface WellnessSymptom {
+  wellnessSymptomCreatedTime: Generated<Timestamp>;
+  wellnessSymptomDeletedTime: Timestamp | null;
+  wellnessSymptomId: Generated<string>;
+  wellnessSymptomName: string;
+  wellnessSymptomPosition: Numeric;
+  wellnessSymptomUpdatedTime: Timestamp | null;
+  wellnessSymptomWellnessSymptomCategoryId: string;
+}
+
+export interface WellnessSymptomCategory {
+  wellnessSymptomCategoryCreatedTime: Generated<Timestamp>;
+  wellnessSymptomCategoryDeletedTime: Timestamp | null;
+  wellnessSymptomCategoryId: Generated<string>;
+  wellnessSymptomCategoryName: string;
+  wellnessSymptomCategoryPosition: Numeric;
+  wellnessSymptomCategoryUpdatedTime: Timestamp | null;
+}
+
 export interface DB {
   account: Account;
   attachment: Attachment;
@@ -806,6 +963,14 @@ export interface DB {
   'auth.ssoDomains': AuthSsoDomains;
   'auth.ssoProviders': AuthSsoProviders;
   'auth.users': AuthUsers;
+  banAction: BanAction;
+  banRequest: BanRequest;
+  banRequestProof: BanRequestProof;
+  checkIn: CheckIn;
+  checkInHealthMeasurement: CheckInHealthMeasurement;
+  checkInWellnessFactor: CheckInWellnessFactor;
+  checkInWellnessMood: CheckInWellnessMood;
+  checkInWellnessSymptom: CheckInWellnessSymptom;
   comment: Comment;
   conversation: Conversation;
   conversationParticipant: ConversationParticipant;
@@ -825,6 +990,9 @@ export interface DB {
   'realtime.subscription': RealtimeSubscription;
   relationship: Relationship;
   role: Role;
+  roleApplication: RoleApplication;
+  roleAttachment: RoleAttachment;
+  roleChangeAction: RoleChangeAction;
   'storage.buckets': StorageBuckets;
   'storage.bucketsAnalytics': StorageBucketsAnalytics;
   'storage.bucketsVectors': StorageBucketsVectors;
@@ -846,4 +1014,9 @@ export interface DB {
   userToken: UserToken;
   'vault.decryptedSecrets': VaultDecryptedSecrets;
   'vault.secrets': VaultSecrets;
+  wellnessFactor: WellnessFactor;
+  wellnessFactorCategory: WellnessFactorCategory;
+  wellnessMood: WellnessMood;
+  wellnessSymptom: WellnessSymptom;
+  wellnessSymptomCategory: WellnessSymptomCategory;
 }

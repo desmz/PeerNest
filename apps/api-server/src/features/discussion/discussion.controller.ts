@@ -33,9 +33,17 @@ import {
   findDiscussionsQueryParamsSchema,
   type TFindDiscussionsQueryParams,
   type TFindDiscussionsVo,
+  type TArchiveDiscussionParams,
+  type TUnarchiveDiscussionParams,
+  findArchivedDiscussionsQueryParamsSchema,
+  type TFindArchivedDiscussionsQueryParams,
+  type TFindArchivedDiscussionVo,
 } from '@peernest/contract';
+import { UserRole } from '@peernest/core';
 
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
+
+import { Roles } from '../auth/decorators/roles.decorator';
 
 import { DiscussionService } from './discussion.service';
 
@@ -49,6 +57,16 @@ export class DiscussionController {
     @Body(new ZodValidationPipe(createDiscussionRoSchema)) createDiscussionRo: TCreateDiscussionRo
   ): Promise<TCreateDiscussionVo> {
     return this.discussionService.createDiscussion(createDiscussionRo);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Get('archived')
+  @HttpCode(HttpStatus.OK)
+  async findArchivedDiscussions(
+    @Query(new ZodValidationPipe(findArchivedDiscussionsQueryParamsSchema))
+    findArchivedDiscussionsQueryParams: TFindArchivedDiscussionsQueryParams
+  ): Promise<TFindArchivedDiscussionVo> {
+    return this.discussionService.findArchivedDiscussions(findArchivedDiscussionsQueryParams);
   }
 
   @Get(':discussionId')
@@ -113,5 +131,23 @@ export class DiscussionController {
     findDiscussionsQueryParams: TFindDiscussionsQueryParams
   ): Promise<TFindDiscussionsVo> {
     return this.discussionService.findDiscussions(findDiscussionsQueryParams);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Post(':discussionId/archive')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async archiveDiscussion(
+    @Param() archiveDiscussionParams: TArchiveDiscussionParams
+  ): Promise<void> {
+    await this.discussionService.archiveDiscussion(archiveDiscussionParams);
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Post(':discussionId/unarchive')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unarchiveDiscussion(
+    @Param() unarchiveDiscussionParams: TUnarchiveDiscussionParams
+  ): Promise<void> {
+    await this.discussionService.unarchiveDiscussion(unarchiveDiscussionParams);
   }
 }

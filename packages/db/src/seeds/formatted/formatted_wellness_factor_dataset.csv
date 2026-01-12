@@ -1,0 +1,86 @@
+wellness_factor_id,wellness_factor_name,wellness_factor_position,wellness_factor_wellness_factor_category_id
+wnft-019b5599-990a-778f-a000-2e1d324d0aa3,alcohol,0,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-8562bc7f398d,caffeine,1,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-8563eb68c599,stress,2,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856450bab5f1,air travel,3,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-8565bc88600a,jet lag,4,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-8566b41e993d,social media,5,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-8567fd6bd192,tobacco,6,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856833a71999,smoking,7,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-85696524c458,time outside,8,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856ade242f30,screen time,9,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856b1a03a541,video games,10,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856cffad70c2,breathwork,11,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856d76af0128,cold shower,12,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856ec030e75a,meditation,13,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-856f1e2e91b8,sex,14,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-857072361e34,therapy,15,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-85712ad31773,watch the sunset,16,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-8572008b1a5c,avoid caffeine after 12pm,17,wnftctgr-019b5574-96f1-76ca-a524-abb634d997f7
+wnft-019b5599-990b-7084-a541-85736d7642fd,video calls,18,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ac6ec639d
+wnft-019b5599-990b-7084-a541-85744826aa1a,commute to work,19,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ac6ec639d
+wnft-019b5599-990b-7084-a541-8575fe443e99,night shift,20,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ac6ec639d
+wnft-019b5599-990b-7084-a541-8576d029e96c,on-call shift,21,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ac6ec639d
+wnft-019b5599-990b-7084-a541-8577713bdaeb,work late,22,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ac6ec639d
+wnft-019b5599-990b-7084-a541-8578e18cc4e6,ruminating past events,23,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-8579256c26a9,overthinking future events,24,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-857a26712db2,overly self-critical,25,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-857be1e72f91,needing constant distractions,26,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-857cfd425db9,avoiding situations,27,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-857dbb153906,masking,28,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-857e1e768920,procrastination,29,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-857f24dc562b,compulsions,30,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-8580e458e885,doom scrolling,31,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-8581084ac4dc,comparing to others,32,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-85825cecbaad,impulsiveness,33,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-858376187258,oversensitivity,34,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-8584197284fd,social withdrawal,35,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-85859ddd5cf9,hypervigilance,36,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-8586b2984d5c,passive aggressive,37,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-858778df50f5,perfectionism,38,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-85887b04b6c3,over-planning,39,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-858986e8f59e,self sabotage,40,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-858a210f0c88,people pleasing,41,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-858bfb473512,validation seeking,42,wnftctgr-019b5574-96f3-7d32-bc5d-cf8bb115d0d7
+wnft-019b5599-990b-7084-a541-858c3ba30ceb,acupuncture,43,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-858dec5c301f,physical therapy,44,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-858ec2d3c1b6,sauna,45,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-858f0719c4d8,chiropractor,46,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-8590106c7434,cryotherapy,47,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-859117740333,cupping,48,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-85920ee97486,hyperbaric chamber,49,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-85933ed37d2d,ice bath,50,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-85942cf9fed7,massage therapy,51,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-8595f385c6c5,red light therapy,52,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-85962160d1eb,sensory deprivation tank,53,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-8597be8c110a,steam room,54,wnftctgr-019b5574-96f3-7d32-bc5d-cf8ca67c5841
+wnft-019b5599-990b-7084-a541-8598954b59d5,family,55,wnftctgr-019b5574-96f3-7d32-bc5d-cf8d2a17a49a
+wnft-019b5599-990b-7084-a541-85990003d150,friends,56,wnftctgr-019b5574-96f3-7d32-bc5d-cf8d2a17a49a
+wnft-019b5599-990b-7084-a541-859a68b50b62,partner,57,wnftctgr-019b5574-96f3-7d32-bc5d-cf8d2a17a49a
+wnft-019b5599-990b-7084-a541-859b232fc7fb,co-workers,58,wnftctgr-019b5574-96f3-7d32-bc5d-cf8d2a17a49a
+wnft-019b5599-990b-7084-a541-859c7e46b2d2,make my bed,59,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-859dc21fe89c,brush teeth,60,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-859e210bd3dd,take a shower,61,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-859f252411ad,floss teeth,62,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-85a025504d53,have a bath,63,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-85a107f7e613,moisturise,64,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-85a2ff34002a,preapre a meal,65,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-85a37b879159,tidy bedroom,66,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-85a461e261b2,wash my face,67,wnftctgr-019b5574-96f3-7d32-bc5d-cf8e6d33c7b8
+wnft-019b5599-990b-7084-a541-85a56bcdc8db,blue light blocking glasses,68,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85a65292c3c3,device in bed,69,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85a78a4ea50a,early bedtime,70,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85a83674dcf3,late bedtime,71,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85a9c4fafe76,cat in bedroom,72,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85aab3486ce1,CPAP machine,73,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85ab589f376c,dog in bedroom,74,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85acd2824195,ear plugs,75,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85ad8be7be0d,electric blanket,76,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85ae5017de8d,humidifier,77,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85af17192a4e,nasal strip,78,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85b03e30fd1f,pain affected sleep,79,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85b1f329d9d4,sleep mask,80,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85b26eae6514,sound machine,81,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85b3ce3a0625,weighted blanket,82,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85b4b275a715,get sunlight in the morning,83,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f
+wnft-019b5599-990b-7084-a541-85b50d59622d,no screens within 1hr of sleep,84,wnftctgr-019b5574-96f3-7d32-bc5d-cf8f0097881f

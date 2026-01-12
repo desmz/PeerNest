@@ -23,4 +23,8 @@ export const AttachmentPolicies: Record<UploadType, TAttachmentPolicy> = {
     maxSize: 10 * 1024 * 1024, // 10MB
     allowedMimeTypes: ['image/jpeg', 'image/png'],
   },
+  [UploadType.RoleApplication]: {
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedMimeTypes: ['application/pdf'],
+  },
 };

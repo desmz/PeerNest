@@ -10,6 +10,7 @@ export const ME_URL = '/me';
 export const meVoSchema = z.object({
   displayName: displayNameSchema,
   role: z.string().nonempty(),
+  roleRank: z.int(),
   email: emailSchema,
   avatarUrl: z.string().nonempty(),
   lastSignedTime: z.date(),

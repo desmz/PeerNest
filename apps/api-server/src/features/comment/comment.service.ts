@@ -30,7 +30,7 @@ import { ClsService } from 'nestjs-cls';
 import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
-import { getFullStorageUrl } from '@/features/attachment/utils';
+import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
 import {
   CommentRepository,
   UserCommentLikeRepository,
@@ -314,15 +314,12 @@ export class CommentService {
                 //   ? getFullStorageUrl(discussion.author?.userAvatarUrl)
                 //   : '',
               },
-              attachmentUrl: discussion.attachmentPath
-                ? await this.storageAdapter.getPreviewUrl(
-                    StorageAdapter.getBucket(UploadType.Discussion),
-                    discussion.attachmentPath,
-                    undefined,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    { 'Content-Type': discussion.attachmentMimetype }
-                  )
-                : null,
+              attachmentUrl: await getAttachmentPreviewUrl(
+                this.storageAdapter,
+                UploadType.Discussion,
+                discussion.attachmentPath,
+                discussion.attachmentMimetype
+              ),
             }
           : null,
         parentComment: parentComment
@@ -331,9 +328,6 @@ export class CommentService {
               author: {
                 ...parentComment.author,
                 userAvatarUrl: getFullStorageUrl(parentComment.author!.userAvatarUrl),
-                // userAvatarUrl: parentComment.author?.userAvatarUrl
-                //   ? getFullStorageUrl(parentComment.author?.userAvatarUrl)
-                //   : '',
               },
             }
           : null,
