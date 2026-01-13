@@ -146,3 +146,9 @@ export const notificationIdSchema = (field = 'Notification Id') => {
     .string(zString(field))
     .startsWith(IdPrefix.Notification, zStartWith(field, IdPrefix.Notification));
 };
+
+export const achievementIdSchema = (field = 'Achievement Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.Achievement, zStartWith(field, IdPrefix.Achievement));
+};

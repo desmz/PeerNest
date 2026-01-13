@@ -5,6 +5,7 @@ import {
   KyselyService,
   TInsertableUserAchievement,
   TKyselyTransaction,
+  TUpdatableUserAchievement,
 } from '@peernest/db';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
@@ -52,6 +53,73 @@ export class UserAchievementRepository {
         `[${UserAchievementRepository.repoName}] | Fail to create user-achievement`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, userAchievementObj, options }
+      );
+    }
+  }
+
+  async updateUserAchievementByIds(
+    userAchievementPayload: TUpdatableUserAchievement,
+    ids: { userId: string; achievementId: string },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { achievementId, userId } = ids;
+
+      const now = userAchievementPayload.userAchievementUpdatedTime
+        ? userAchievementPayload.userAchievementUpdatedTime
+        : new Date();
+
+      const userAchievement = await db
+        .updateTable('userAchievement')
+        .set({
+          ...userAchievementPayload,
+          userAchievementUpdatedTime: now,
+        })
+        .where('userAchievementAchievementId', '=', achievementId)
+        .where('userAchievementUserId', '=', userId)
+        .returningAll()
+        .executeTakeFirst();
+
+      return userAchievement;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserAchievementRepository.repoName}] | Fail to update user-achievement by achievement ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userAchievementPayload, ids }
+      );
+    }
+  }
+
+  async updateUserAchievementsByUserId(
+    userAchievementPayload: TUpdatableUserAchievement,
+    userId: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = userAchievementPayload.userAchievementUpdatedTime
+        ? userAchievementPayload.userAchievementUpdatedTime
+        : new Date();
+
+      const userAchievements = await db
+        .updateTable('userAchievement')
+        .set({
+          ...userAchievementPayload,
+          userAchievementUpdatedTime: now,
+        })
+        .where('userAchievementUserId', '=', userId)
+        .returningAll()
+        .execute();
+
+      return userAchievements;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${UserAchievementRepository.repoName}] | Fail to update user-achievements by user id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userAchievementPayload, userId }
       );
     }
   }

@@ -5,6 +5,7 @@ import {
   TChangeEmailRo,
   TChangePasswordRo,
   TGetMyAchievementsVo,
+  TMarkMyAchievementAsVisibleParams,
   TMyAchievement,
   TUpdateMeProfileRo,
   TVerifyChangeEmailRo,
@@ -43,7 +44,11 @@ import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-prov
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
 import { UserAchievementRepository } from '@/persistence/repos/achievement';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
-import { InterestRepository, PersonalGoalRepository } from '@/persistence/repos/system';
+import {
+  AchievementRepository,
+  InterestRepository,
+  PersonalGoalRepository,
+} from '@/persistence/repos/system';
 import {
   AccountRepository,
   UserInfoInterestRepository,
@@ -65,6 +70,7 @@ export class MeService {
 
     private readonly attachmentRepository: AttachmentRepository,
     private readonly accountRepository: AccountRepository,
+    private readonly achievementRepository: AchievementRepository,
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly userRepository: UserRepository,
@@ -451,5 +457,56 @@ export class MeService {
     );
 
     return formattedAchievementObjs;
+  }
+  async markMyAchievementAsVisible(
+    markMyAchievementAsVisibleParams: TMarkMyAchievementAsVisibleParams
+  ): Promise<void> {
+    const { achievementId } = markMyAchievementAsVisibleParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const [userAchievements, achievement] = await Promise.all([
+      await this.userAchievementRepository.findUserAchievementsByUserId(userId),
+      await this.achievementRepository.findAchievementById(achievementId),
+    ]);
+
+    if (!achievement) {
+      throw new CustomHttpException(
+        `Achievement ${achievementId} does not exist`,
+        HttpErrorCode.VALIDATION_ERROR
+      );
+    }
+
+    const targetedAchievement = userAchievements.find(
+      (userAchievement) => userAchievement.achievementId === achievementId
+    );
+
+    if (!targetedAchievement) {
+      throw new CustomHttpException(
+        "You haven't unlock this achievement",
+        HttpErrorCode.UNPROCESSABLE_ENTITY
+      );
+    }
+
+    const now = new Date();
+    executeTx(this.kyselyService.db, async (tx) => {
+      await this.userAchievementRepository.updateUserAchievementsByUserId(
+        {
+          userAchievementIsVisible: false,
+          userAchievementUpdatedTime: now,
+        },
+        userId,
+        tx
+      );
+
+      await this.userAchievementRepository.updateUserAchievementByIds(
+        {
+          userAchievementIsVisible: true,
+          userAchievementUpdatedTime: now,
+        },
+        { userId: userId, achievementId: achievementId },
+        tx
+      );
+    });
   }
 }

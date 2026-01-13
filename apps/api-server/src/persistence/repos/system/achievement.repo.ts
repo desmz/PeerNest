@@ -10,6 +10,34 @@ export class AchievementRepository {
 
   constructor(private readonly kyselyService: KyselyService) {}
 
+  async findAchievementById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { includedDeleted } = options || {};
+
+      let query = db.selectFrom('achievement').where('achievementId', '=', id).selectAll();
+
+      if (!includedDeleted) {
+        query = query.where('achievementDeletedTime', 'is', null);
+      }
+
+      const achievement = await query.executeTakeFirst();
+
+      return achievement;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${AchievementRepository.repoName}] | Fail to find achievement by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, id, options }
+      );
+    }
+  }
+
   async findAchievements(
     options?: {
       isActive?: boolean;

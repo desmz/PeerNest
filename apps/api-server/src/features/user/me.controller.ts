@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
   Post,
   Put,
@@ -26,6 +27,7 @@ import {
   type TUpdateMeProfileVo,
   type TGetMeProfileVo,
   type TGetMyAchievementsVo,
+  type TMarkMyAchievementAsVisibleParams,
 } from '@peernest/contract';
 import { type Request, type Response } from 'express';
 
@@ -108,5 +110,13 @@ export class MeController {
   @HttpCode(HttpStatus.OK)
   async getMyAchievements(): Promise<TGetMyAchievementsVo> {
     return this.meService.getMyAchievements();
+  }
+
+  @Patch('achievements/:achievementId/visible')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async markMyAchievementAsVisible(
+    @Param() markMyAchievementAsVisibleParams: TMarkMyAchievementAsVisibleParams
+  ): Promise<void> {
+    await this.meService.markMyAchievementAsVisible(markMyAchievementAsVisibleParams);
   }
 }
