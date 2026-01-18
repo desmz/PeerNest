@@ -1,41 +1,21 @@
-import { Box, Flex, Text } from '@mantine/core';
-import { GET_MY_PERCHER_URL, type TGetMyPerchersVo } from '@peernest/contract';
-import { useQuery } from '@tanstack/react-query';
+import { UserRole } from '@peernest/core';
+import { useAtom } from 'jotai';
+import { useNavigate } from 'react-router';
 
-import api from '@/lib/api-client';
+import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
+import { APP_ROUTE } from '@/lib/app-route';
 
-import classes from './managePage.module.css';
-import PercherCard from './percherCard';
-
-async function getPerchers() {
-  return api.get<TGetMyPerchersVo>(GET_MY_PERCHER_URL);
-}
+import CounselorMangePage from './counselorManagePage';
 
 export default function ManagePage() {
-  const query = useQuery({
-    queryKey: ['perchers'],
-    queryFn: async () => {
-      const res = await getPerchers();
-      return res.data;
-    },
-  });
+  const navigate = useNavigate();
+  const [currentUser] = useAtom(currentUserAtom);
 
-  if (query.isPending) return <Text>Loading…</Text>;
-
-  if (query.isError) {
-    const msg = query.error instanceof Error ? query.error.message : String(query.error);
-    return <Text c='red'>An error has occurred: {msg}</Text>;
+  const role = currentUser?.role;
+  if (role === UserRole.Counselor) {
+    return <CounselorMangePage />;
+  } else {
+    navigate(APP_ROUTE.HOME, { replace: true });
+    return null;
   }
-
-  const perchers = query.data.counselorUsers;
-
-  return (
-    <Box className={classes.page}>
-      <Flex gap='sm' direction={'column'}>
-        {perchers.map((percher) => (
-          <PercherCard percher={percher} />
-        ))}
-      </Flex>
-    </Box>
-  );
 }

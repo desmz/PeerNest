@@ -31,6 +31,7 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useState } from 'react';
 import { Link } from 'react-router';
@@ -39,7 +40,7 @@ import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
 import { capitalizeFirstLetter } from '@/lib/util';
 
-import classes from './managePage.module.css';
+import classes from './counselorManagePage.module.css';
 
 type TPercherCharProps = {
   percher: TCounselorUser;
@@ -67,6 +68,10 @@ export default function PercherCard({ percher }: TPercherCharProps) {
     modalHandlers.open();
   };
 
+  const formattedCounselorUserUpdatedTime =
+    percher.counselorUserUpdatedTime &&
+    dayjs(percher.counselorUserUpdatedTime).format('HH:mm, DD/MM/YY');
+
   // Form handling
   const updatePercherNote = useForm<TUpdatePercherNoteForm>({
     initialValues: {
@@ -76,6 +81,8 @@ export default function PercherCard({ percher }: TPercherCharProps) {
     validate: zod4Resolver(updatePercherNoteRoSchema),
   });
 
+  console.log(percher.counselorUserNote);
+
   const updatePercherNoteMutation = useMutation<void, Error, TUpdatePercherNoteForm>({
     mutationFn: async (data) => {
       const { percherId, ...formdata } = data;
@@ -83,7 +90,7 @@ export default function PercherCard({ percher }: TPercherCharProps) {
     },
     onSuccess: (_, variables) => {
       notifications.show({
-        message: `Note for percher has been updated succesfully!`,
+        message: `Note for percher has been updated successfully!`,
         color: 'green',
       });
 
@@ -154,14 +161,14 @@ export default function PercherCard({ percher }: TPercherCharProps) {
                 {subtitle}
               </Text>
               <Group gap={8} mt={8} wrap='nowrap' className={classes.badgesOneLine}>
-                {(percher.user.personalGoals ?? []).map((g) => (
+                {(percher.user.personalGoals ?? []).map((goal) => (
                   <Badge
-                    key={g.personalGoalId}
+                    key={goal.personalGoalId}
                     color='blue'
                     size='sm'
                     fw={600}
                     style={{ textTransform: 'capitalize' }}>
-                    {g.personalGoalName}
+                    {goal.personalGoalName}
                   </Badge>
                 ))}
                 {(percher.user.interests ?? []).map((i) => (
@@ -247,7 +254,7 @@ export default function PercherCard({ percher }: TPercherCharProps) {
                   <Modal
                     opened={opened}
                     onClose={handlers.close}
-                    title='ARE YOU SURE YOU WANT TO DROP THIS PERCHER?'
+                    title='Are you sure you want to drop this percher?'
                     centered
                     padding={'md'}
                     size={520}>
@@ -287,13 +294,15 @@ export default function PercherCard({ percher }: TPercherCharProps) {
           <Flex>
             <Text fw={'600'}>Note</Text>
             <Flex align={'center'}>
-              <Text c={'dimmed'} pl={'8'} size='xs'>
-                (Last edited at 14:31, 12/03/25)
-              </Text>
+              {formattedCounselorUserUpdatedTime && (
+                <Text c={'dimmed'} pl={'8'} size='xs'>
+                  {`(Last edited at ${formattedCounselorUserUpdatedTime})`}
+                </Text>
+              )}
             </Flex>
           </Flex>
 
-          <Flex>{percherState.counselorUserNote} </Flex>
+          <Text className={classes.note}>{percherState.counselorUserNote} </Text>
         </Flex>
       </Paper>
     </Flex>
