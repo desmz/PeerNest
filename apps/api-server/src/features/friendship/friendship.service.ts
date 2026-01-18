@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TAcceptFriendRequestParams,
   TAcceptFriendRequestVo,
@@ -22,6 +23,7 @@ import {
   FriendRequestType,
   HttpErrorCode,
   RelationshipType,
+  NOTIFICATION_EVENT,
 } from '@peernest/core';
 import {
   executeTx,
@@ -34,6 +36,11 @@ import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
 import { getFullStorageUrl } from '@/features/attachment/utils';
+import {
+  TFriendRequestAcceptedEvent,
+  TFriendRequestReceivedEvent,
+  TFriendRequestRejectedEvent,
+} from '@/features/domain/events';
 import { BanActionRepository } from '@/persistence/repos/ban';
 import {
   ConversationParticipantRepository,
@@ -49,6 +56,7 @@ import { TGetFriendRequestsByUserIdOptions } from './types';
 export class FriendShipService {
   constructor(
     private readonly clsService: ClsService<IClsStore>,
+    private readonly eventEmitter: EventEmitter2,
     private readonly kyselyService: KyselyService,
 
     private readonly banActionRepository: BanActionRepository,
@@ -137,7 +145,7 @@ export class FriendShipService {
       };
     }
 
-    await this.friendRequestRepository.createFriendRequest({
+    const friendRequest = await this.friendRequestRepository.createFriendRequest({
       friendRequestId: generateFriendRequestId(),
       friendRequestFromId: userId,
       friendRequestToId: toId,
@@ -145,7 +153,12 @@ export class FriendShipService {
       friendRequestCreatedTime: now,
     });
 
-    // todo: send notification to toUser
+    const friendRequestReceivedEvent: TFriendRequestReceivedEvent = {
+      friendRequestId: friendRequest.friendRequestId,
+      fromUserId: friendRequest.friendRequestFromId,
+      toUserId: friendRequest.friendRequestToId,
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REQUEST, friendRequestReceivedEvent);
 
     return {
       isAutoMatch: false,
@@ -180,7 +193,12 @@ export class FriendShipService {
 
     const conversationId = await this.processCreateFriendShip({ fromId, toId });
 
-    // todo: send notification to fromUser (requester)
+    const friendRequestAcceptedEvent: TFriendRequestAcceptedEvent = {
+      friendRequestId: friendRequest.friendRequestId,
+      fromUserId: friendRequest.friendRequestFromId,
+      toUserId: friendRequest.friendRequestToId,
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_ACCEPTED, friendRequestAcceptedEvent);
 
     return { conversationId };
   }
@@ -293,8 +311,6 @@ export class FriendShipService {
       return conversationId;
     });
 
-    // todo: send notification to both users
-
     return conversationId;
   }
 
@@ -332,7 +348,12 @@ export class FriendShipService {
       { friendRequestStatus: FriendRequestStatus.Pending }
     );
 
-    // todo: send notification to toUser
+    const friendRequestRejectedEvent: TFriendRequestRejectedEvent = {
+      friendRequestId: friendRequest.friendRequestId,
+      fromUserId: friendRequest.friendRequestFromId,
+      toUserId: friendRequest.friendRequestToId,
+    };
+    this.eventEmitter.emit(NOTIFICATION_EVENT.FRIEND_REJECTED, friendRequestRejectedEvent);
   }
 
   async getFriendRequests(

@@ -135,6 +135,47 @@ export class DiscussionRepository {
     }
   }
 
+  async findDiscussionsByUserId(
+    userId: string,
+    options?: { includedDeleted?: boolean; statuses?: DiscussionStatus[] },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { includedDeleted, statuses } = options || {};
+
+      let query = db
+        .selectFrom('discussion')
+        .leftJoin(
+          'discussionAttachment',
+          'discussionAttachment.discussionAttachmentDiscussionId',
+          'discussion.discussionId'
+        )
+        .selectAll('discussion')
+        .select('discussionAttachment.discussionAttachmentAttachmentId as attachmentId')
+        .where('discussion.discussionAuthorId', '=', userId);
+
+      if (!includedDeleted) {
+        query = query.where('discussion.discussionDeletedTime', 'is', null);
+      }
+
+      if (statuses && statuses.length > 0) {
+        query = query.where('discussion.discussionStatus', 'in', statuses);
+      }
+
+      const discussions = await query.execute();
+
+      return discussions;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to find discussions by user id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, options }
+      );
+    }
+  }
+
   async findDiscussionsByIds(
     ids: string[],
     options?: { includedDeleted?: boolean; statuses?: DiscussionStatus[] },
@@ -390,6 +431,56 @@ export class DiscussionRepository {
           )
           .as('is_reported'),
       ]);
+  }
+
+  async findUserDiscussionsByLikeCount(
+    userId: string,
+    likeCount: number,
+    options?: { minOrMax?: 'min' | 'max' },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { minOrMax = 'min' } = options || {};
+
+      let query = db
+        .selectFrom('discussion')
+        .innerJoin(
+          'userDiscussionLike',
+          'userDiscussionLike.userDiscussionLikeDiscussionId',
+          'discussion.discussionId'
+        )
+        .where('discussion.discussionAuthorId', '=', userId)
+        .where('discussion.discussionStatus', 'in', [DiscussionStatus.Active])
+        .select((eb) => [
+          'discussion.discussionId',
+          eb.fn.count<number>('userDiscussionLike.userDiscussionLikeId').as('discussionLikeCount'),
+        ])
+        .groupBy('discussion.discussionId');
+
+      query = query.having((eb) => {
+        const commentLikeCount = eb.fn.count<number>('userDiscussionLike.userDiscussionLikeId');
+
+        if (minOrMax === 'max') {
+          return eb(commentLikeCount, '<=', likeCount);
+        } else {
+          return eb(commentLikeCount, '>=', likeCount);
+        }
+      });
+
+      query = query.orderBy('discussion.discussionCreatedTime', 'asc');
+
+      const discussions = await query.execute();
+
+      return discussions;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to find user discussions by like count`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, likeCount, options }
+      );
+    }
   }
 
   // special case
@@ -895,6 +986,34 @@ export class DiscussionRepository {
         `[${DiscussionRepository.repoName}] | Fail to find archived discussions`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
+      );
+    }
+  }
+
+  async findTotalLikesAcrossUserDiscussions(userId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const totalLikeCountObj = await db
+        .selectFrom('discussion')
+        .innerJoin(
+          'userDiscussionLike',
+          'userDiscussionLike.userDiscussionLikeDiscussionId',
+          'discussion.discussionId'
+        )
+        .where('discussion.discussionAuthorId', '=', userId)
+        .where('discussion.discussionStatus', 'in', [DiscussionStatus.Active])
+        .select((eb) => [
+          eb.fn.count<number>('userDiscussionLike.userDiscussionLikeId').as('totalLikeCount'),
+        ])
+        .executeTakeFirst();
+
+      return totalLikeCountObj;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${DiscussionRepository.repoName}] | Fail to find total likes across user discussions`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId }
       );
     }
   }

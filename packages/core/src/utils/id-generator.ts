@@ -52,6 +52,12 @@ export enum IdPrefix {
   RoleAttachment = 'ratm',
   RoleChangeAction = 'rcat',
   CounselorUser = 'cslusr',
+  AchievementCategory = 'achmctgr',
+  Achievement = 'achm',
+  UserAchievement = 'usrachm',
+  NotificationCategory = 'ntfctctgr',
+  NotificationType = 'ntfctt',
+  Notification = 'ntfct',
 }
 
 export function generateUuid() {
@@ -228,4 +234,28 @@ export function generateRoleChangeActionId() {
 
 export function generateCounselorUserId() {
   return IdPrefix.CounselorUser + '-' + generateUuid();
+}
+
+export function generateAchievementCategoryId() {
+  return IdPrefix.AchievementCategory + '-' + generateUuid();
+}
+
+export function generateAchievementId() {
+  return IdPrefix.Achievement + '-' + generateUuid();
+}
+
+export function generateUserAchievementId() {
+  return IdPrefix.UserAchievement + '-' + generateUuid();
+}
+
+export function generateNotificationCategoryId() {
+  return IdPrefix.NotificationCategory + '-' + generateUuid();
+}
+
+export function generateNotificationTypeId() {
+  return IdPrefix.NotificationType + '-' + generateUuid();
+}
+
+export function generateNotificationId() {
+  return IdPrefix.Notification + '-' + generateUuid();
 }

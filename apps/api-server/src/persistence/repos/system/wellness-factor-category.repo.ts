@@ -72,6 +72,10 @@ export class WellnessFactorCategoryRepository {
                 .as('wellnessFactorPosition')
             );
 
+          if (!includedDeleted) {
+            eb = eb.where('wellnessFactor.wellnessFactorDeletedTime', 'is', null);
+          }
+
           if (orderBy === 'position') {
             eb = eb.orderBy('wellnessFactor.wellnessFactorPosition', ordering);
           } else {

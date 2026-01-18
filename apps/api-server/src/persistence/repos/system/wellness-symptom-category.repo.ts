@@ -72,6 +72,10 @@ export class WellnessSymptomCategoryRepository {
                 .as('wellnessSymptomPosition')
             );
 
+          if (!includedDeleted) {
+            eb = eb.where('wellnessSymptom.wellnessSymptomDeletedTime', 'is', null);
+          }
+
           if (orderBy === 'position') {
             eb = eb.orderBy('wellnessSymptom.wellnessSymptomPosition', ordering);
           } else {

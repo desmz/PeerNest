@@ -44,6 +44,12 @@ import {
   RoleAttachment,
   RoleChangeAction,
   CounselorUser,
+  AchievementCategory,
+  Achievement,
+  UserAchievement,
+  NotificationCategory,
+  NotificationType,
+  Notification,
 } from './db';
 
 // role
@@ -260,3 +266,33 @@ export type TUpdatableRoleChangeAction = Updateable<Omit<RoleChangeAction, 'id'>
 export type TSelectableCounselorUser = Selectable<CounselorUser>;
 export type TInsertableCounselorUser = Insertable<CounselorUser>;
 export type TUpdatableCounselorUser = Updateable<Omit<CounselorUser, 'id'>>;
+
+// achievement_category
+export type TSelectableAchievementCategory = Selectable<AchievementCategory>;
+export type TInsertableAchievementCategory = Insertable<AchievementCategory>;
+export type TUpdatableAchievementCategory = Updateable<Omit<AchievementCategory, 'id'>>;
+
+// achievement
+export type TSelectableAchievement = Selectable<Achievement>;
+export type TInsertableAchievement = Insertable<Achievement>;
+export type TUpdatableAchievement = Updateable<Omit<Achievement, 'id'>>;
+
+// user_achievement
+export type TSelectableUserAchievement = Selectable<UserAchievement>;
+export type TInsertableUserAchievement = Insertable<UserAchievement>;
+export type TUpdatableUserAchievement = Updateable<Omit<UserAchievement, 'id'>>;
+
+// notification_category
+export type TSelectableNotificationCategory = Selectable<NotificationCategory>;
+export type TInsertableNotificationCategory = Insertable<NotificationCategory>;
+export type TUpdatableNotificationCategory = Updateable<Omit<NotificationCategory, 'id'>>;
+
+// notification_type
+export type TSelectableNotificationType = Selectable<NotificationType>;
+export type TInsertableNotificationType = Insertable<NotificationType>;
+export type TUpdatableNotificationType = Updateable<Omit<NotificationType, 'id'>>;
+
+// notification
+export type TSelectableNotification = Selectable<Notification>;
+export type TInsertableNotification = Insertable<Notification>;
+export type TUpdatableNotification = Updateable<Omit<Notification, 'id'>>;

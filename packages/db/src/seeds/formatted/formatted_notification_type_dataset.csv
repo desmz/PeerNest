@@ -1,0 +1,15 @@
+notification_type_id,notification_type_name,notification_type_notification_category_id
+ntfctt-019ba7dd-6a3f-73cc-aa68-ebc2fd23dd32,commentReply,ntfctctgr-019ba7d2-94b6-7362-9dd2-388bf9326e90
+ntfctt-019ba7dd-6a3f-73cc-aa68-ebc3a2ea159a,friendRequestReceived,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b252787bbe5a
+ntfctt-019ba7dd-6a40-7b7b-bece-3abe5814374a,friendRequestAccepted,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b252787bbe5a
+ntfctt-019ba7dd-6a40-7b7b-bece-3abf022192c7,friendRequestRejected,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b252787bbe5a
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac0e00eaf92,percherAdded,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b2536db18161
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac1061bf4db,percherReleased,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b2536db18161
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac28f9e7dd1,achievementUnlocked,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b254031d52e5
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac31d7d49a5,banRequestCreated,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b255e74e0964
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac4a4897ff3,banRequestApproved,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b255e74e0964
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac5f2df1bfd,banRequestRejected,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b255e74e0964
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac688126c07,userBanned,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b255e74e0964
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac75b3d6752,userUnbanned,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b255e74e0964
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac810f9ab18,roleChanged,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b2566e0e4c28
+ntfctt-019ba7dd-6a40-7b7b-bece-3ac9bd83e293,roleApplicationRejected,ntfctctgr-019ba7d2-94b7-71ae-ac6d-b2566e0e4c28
