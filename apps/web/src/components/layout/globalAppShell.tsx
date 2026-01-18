@@ -239,7 +239,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
           </Button>
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main bg='gray.1'>{children}</AppShell.Main>
     </AppShell>
   );
 }

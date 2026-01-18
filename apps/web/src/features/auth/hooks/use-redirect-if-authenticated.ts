@@ -10,7 +10,7 @@ export function useRedirectIfAuthenticated() {
 
   useEffect(() => {
     if (data) {
-      navigate(APP_ROUTE.HOME);
+      navigate(APP_ROUTE.HOME, { replace: true });
     }
   }, [isLoading, data, navigate]);
 }
