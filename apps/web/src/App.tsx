@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router';
 
 import Layout from '@/components/layout/layout';
+import Achievement from '@/components/pages/achievement/achievementPage';
 import LoginPage from '@/components/pages/auth/signInPage';
 import BanPage from '@/components/pages/ban/banPage';
 import Error404 from '@/components/pages/error/error404';
@@ -27,6 +28,7 @@ export function App() {
       <Route element={<Layout />}>
         <Route path={APP_ROUTE.HOME} element={<HomePage />} />
         <Route path={APP_ROUTE.MANAGE} element={<ManagePage />} />
+        <Route path={APP_ROUTE.ACHIEVEMENT} element={<Achievement />} />
       </Route>
 
       <Route path={APP_ROUTE.BAN} element={<BanPage />} />
