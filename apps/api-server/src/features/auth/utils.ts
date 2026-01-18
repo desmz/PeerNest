@@ -61,6 +61,7 @@ export function clearCookie(res: Response) {
 
 export function pickUserMe(user: TSelectableUser & TSelectableRole): TMeVo {
   return {
+    id: user.userId,
     displayName: user.userDisplayName,
     role: user.roleName,
     roleRank: parseInt(user.roleRank),

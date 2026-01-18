@@ -10,12 +10,12 @@ export default function SignInPage() {
   useRedirectIfAuthenticated();
 
   const signInData: TSignInRo = {
-    // email: 'lalelilolu7729@gmail.com',
-    // password: 'PeerNest!6214',
+    email: 'lalelilolu7729@gmail.com',
+    password: 'PeerNest!6214',
     // email: 'testuser3@gmail.com',
     // password: '!Password13',
-    email: 'testuser1@gmail.com',
-    password: '!Password1',
+    // email: 'testuser1@gmail.com',
+    // password: '!Password1',
   };
 
   const signUpData: TSignUpRo = {
