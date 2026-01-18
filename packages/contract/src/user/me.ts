@@ -8,6 +8,7 @@ export const ME_METHOD: TApiMethod = 'get';
 export const ME_URL = '/me';
 
 export const meVoSchema = z.object({
+  id: z.string().nonempty(),
   displayName: displayNameSchema,
   role: z.string().nonempty(),
   roleRank: z.int(),

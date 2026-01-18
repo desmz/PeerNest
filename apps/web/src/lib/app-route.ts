@@ -6,4 +6,5 @@ export const APP_ROUTE = {
   BAN: '/ban',
   MANAGE: '/manage',
   USER: `${USER_BASE}`,
+  ACHIEVEMENT: '/achievement',
 };
