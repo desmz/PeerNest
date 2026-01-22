@@ -1,8 +1,12 @@
 import { Avatar, Badge, Box, Button, Flex, Group, Paper, Stack, Text, Title } from '@mantine/core';
 import { GET_USER_PROFILE_URL, type TGetUserProfileVo, urlBuilder } from '@peernest/contract';
+import { UserRole } from '@peernest/core';
+import { IconArrowBigUpLine, IconHammer } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useAtom } from 'jotai';
 import { useParams } from 'react-router';
 
+import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
 
 export async function getUserProfile(userId: string) {
@@ -19,6 +23,8 @@ function capitalizeWords(str: string) {
 }
 
 export default function PeerProfilePreviewPage() {
+  const [currentUser] = useAtom(currentUserAtom);
+
   const { userId } = useParams<{ userId: string }>();
 
   const query = useQuery({
@@ -59,9 +65,32 @@ export default function PeerProfilePreviewPage() {
                   {subtitle}
                 </Text>
               </div>
-              <Button radius='md' size='sm' w={'fit-content'}>
-                Send Request
-              </Button>
+              <Flex gap={16}>
+                <Button radius='md' size='sm' w={'fit-content'}>
+                  Send Request
+                </Button>
+                {currentUser && currentUser.role === UserRole.Admin ? (
+                  <>
+                    <Button
+                      radius='md'
+                      size='sm'
+                      w={'fit-content'}
+                      leftSection={<IconArrowBigUpLine size={16} stroke={2.5} />}>
+                      Promote as...
+                    </Button>
+                    <Button
+                      variant='light'
+                      color='red.9'
+                      radius='md'
+                      size='sm'
+                      fw={600}
+                      w={'fit-content'}
+                      leftSection={<IconHammer size={16} stroke={3} />}>
+                      Ban
+                    </Button>
+                  </>
+                ) : null}
+              </Flex>
             </Flex>
           </Group>
         </Paper>

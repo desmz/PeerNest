@@ -12,6 +12,8 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
+import { useHotkeys } from '@mantine/hooks';
+import { Spotlight, spotlight } from '@mantine/spotlight';
 import { FIND_USERS_URL, type TFindUsersVo } from '@peernest/contract';
 import {
   IconAddressBook,
@@ -21,7 +23,7 @@ import {
   IconUserPlus,
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
@@ -33,7 +35,7 @@ export async function findUsers() {
 }
 
 function capitalizeFirstLetter(str: string) {
-  if (!str) return ''; // Handle empty or null strings
+  if (!str) return '';
   return str
     .split(' ')
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
@@ -41,6 +43,8 @@ function capitalizeFirstLetter(str: string) {
 }
 
 export default function PeerMatchingPage() {
+  const navigate = useNavigate();
+
   const query = useQuery({
     queryKey: ['users'],
     queryFn: async (): Promise<TFindUsersVo> => {
@@ -48,6 +52,11 @@ export default function PeerMatchingPage() {
       return res.data;
     },
   });
+
+  useHotkeys([
+    ['mod+K', () => spotlight.open()],
+    ['Escape', () => spotlight.close()],
+  ]);
 
   if (query.isPending) return <Text>Loading…</Text>;
 
@@ -58,12 +67,46 @@ export default function PeerMatchingPage() {
 
   const users = query.data?.users ?? [];
 
-  // Replace with your real logged-in user avatar URL when available
+  const actions = users.map((user) => {
+    const subtitlesArr: string[] = [];
+
+    if (user.pronoun?.pronounName)
+      subtitlesArr.push(capitalizeFirstLetter(user.pronoun.pronounName));
+    if (user.university?.universityName)
+      subtitlesArr.push(capitalizeFirstLetter(user.university.universityName));
+    if (user.domain?.domainName) subtitlesArr.push(capitalizeFirstLetter(user.domain.domainName));
+
+    const subtitles = subtitlesArr.join(' · ');
+
+    return {
+      id: user.userId,
+      label: user.userDisplayName,
+      description: subtitles,
+      leftSection: <Avatar src={user.userAvatarUrl} size={56} radius='xl' />,
+      onClick: () => navigate(`${APP_ROUTE.USER}/${user.userId}`),
+    };
+  });
+
   const currentUserAvatarUrl =
     'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=128&q=80';
 
   return (
     <Box className={classes.page}>
+      <Spotlight
+        actions={actions}
+        nothingFound='No users found...'
+        highlightQuery
+        closeOnEscape
+        closeOnClickOutside
+        searchProps={{
+          leftSection: <IconSearch size={16} />,
+          placeholder: 'Search User',
+        }}
+        classNames={{
+          actionLabel: classes.actionLabel,
+        }}
+      />
+
       {/* Top filter bar */}
       <Paper className={classes.filterBar} radius='md' p='md'>
         <Group justify='space-between' align='center' wrap='nowrap' className={classes.filterRow}>
@@ -100,6 +143,11 @@ export default function PeerMatchingPage() {
                   Ctrl <span className={classes.kbdPlus}>+</span> K
                 </Kbd>
               }
+              readOnly
+              onClick={() => spotlight.open()}
+              styles={{
+                input: { cursor: 'pointer' },
+              }}
             />
 
             <ActionIcon
@@ -129,21 +177,15 @@ export default function PeerMatchingPage() {
 
           const subtitlesArr: string[] = [];
 
-          if (user.pronoun?.pronounName) {
-            subtitlesArr.push(capitalizeFirstLetter(user.pronoun?.pronounName));
-          }
-
-          if (user.university?.universityName) {
-            subtitlesArr.push(capitalizeFirstLetter(user.university?.universityName));
-          }
-
-          if (user.domain?.domainName) {
+          if (user.pronoun?.pronounName)
+            subtitlesArr.push(capitalizeFirstLetter(user.pronoun.pronounName));
+          if (user.university?.universityName)
+            subtitlesArr.push(capitalizeFirstLetter(user.university.universityName));
+          if (user.domain?.domainName)
             subtitlesArr.push(capitalizeFirstLetter(user.domain.domainName));
-          }
 
           const subtitles = subtitlesArr.join(' · ');
 
-          // cap to 4 TOTAL badges to match Figma
           const badgeItems = [
             ...interests.map((i) => ({
               key: `i-${i.interestId}`,
@@ -160,7 +202,6 @@ export default function PeerMatchingPage() {
           return (
             <Paper key={user.userId} className={classes.card} radius='md' p='md'>
               <Group wrap='nowrap' align='flex-start' className={classes.cardRow}>
-                {/* Avatar */}
                 <Avatar
                   src={user.userAvatarUrl}
                   size={56}
@@ -168,7 +209,6 @@ export default function PeerMatchingPage() {
                   className={classes.userAvatar}
                 />
 
-                {/* Main content */}
                 <Box className={classes.main}>
                   <Text fw={700} className={classes.name}>
                     {user.userDisplayName}
@@ -178,10 +218,10 @@ export default function PeerMatchingPage() {
                     {subtitles}
                   </Text>
 
-                  {/* Badges: smaller, one line, truncated */}
                   <Group gap={8} mt={8} wrap='nowrap' className={classes.badgesOneLine}>
                     {badgeItems.map((b) => (
                       <Badge
+                        key={b.key}
                         color={b.color}
                         size='xs'
                         style={{ textTransform: 'capitalize' }}
@@ -191,7 +231,6 @@ export default function PeerMatchingPage() {
                     ))}
                   </Group>
 
-                  {/* Bottom row: lookingFor (left) + actions (right) */}
                   <Group justify='space-between' align='center' mt={12} wrap='nowrap'>
                     <Text size='sm' className={classes.lookingFor}>
                       {user.userInfoLookingFor ?? ''}
