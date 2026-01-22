@@ -220,7 +220,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                   }}
                 />
                 <Flex direction={'row-reverse'}>
-                  <Button w={'fit-content'} variant='filled' type='submit'>
+                  <Button w={'fit-content'} variant='filled' type='submit' disabled={isUploading}>
                     Submit
                   </Button>
                 </Flex>

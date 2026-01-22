@@ -7,4 +7,5 @@ export const APP_ROUTE = {
   MANAGE: '/manage',
   USER: `${USER_BASE}`,
   ACHIEVEMENT: '/achievement',
+  CREATE_DISCUSSION: '/discussions/create',
 };
