@@ -74,8 +74,8 @@ export default function CreateDiscussionPage() {
     initialValues: {
       discussionTitle: '',
       discussionContent: '',
-      goalIds: null,
-      interestIds: null,
+      goalIds: [],
+      interestIds: [],
       attachmentId: null,
     },
     // validate: zod4Resolver(createDiscussionRoSchema),
