@@ -1,6 +1,6 @@
 export const buildQueryParamsUrl = (
   url: string,
-  queryParamsObj?: Record<string, string | number | boolean>
+  queryParamsObj?: Record<string, string | number | boolean | string[] | null>
 ) => {
   if (!queryParamsObj) {
     return url;
@@ -9,7 +9,17 @@ export const buildQueryParamsUrl = (
   const validParams = Object.fromEntries(
     Object.entries(queryParamsObj)
       .filter(([_, value]) => Boolean(value))
-      .map(([key, value]) => [key, String(value)])
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          if (value.length === 1) {
+            return [key, `,${value}`];
+          } else {
+            return [key, value.join(',')];
+          }
+        }
+
+        return [key, String(value)];
+      })
   );
 
   const searchParams = new URLSearchParams(validParams).toString();
