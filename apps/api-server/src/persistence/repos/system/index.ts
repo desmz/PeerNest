@@ -1,3 +1,5 @@
+export * from './achievement-category.repo';
+export * from './achievement.repo';
 export * from './domain.repo';
 export * from './interest.repo';
 export * from './personal-goal.repo';

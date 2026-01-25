@@ -1,5 +1,6 @@
 import { Module, Provider } from '@nestjs/common';
 
+import { UserAchievementRepository } from './repos/achievement';
 import { AttachmentRepository } from './repos/attachment';
 import { BanActionRepository, BanRequestProofRepository, BanRequestRepository } from './repos/ban';
 import {
@@ -8,6 +9,7 @@ import {
   UserCommentReportRepository,
 } from './repos/comment';
 import { ConversationParticipantRepository, ConversationRepository } from './repos/conversation';
+import { CounselorUserRepository } from './repos/counselor';
 import {
   DiscussionAttachmentRepository,
   DiscussionInterestRepository,
@@ -17,12 +19,15 @@ import {
   UserDiscussionReportRepository,
 } from './repos/discussion';
 import { FriendRequestRepository, RelationshipRepository } from './repos/friendship';
+import { NotificationRepository, NotificationTypeRepository } from './repos/notification';
 import {
   RoleApplicationRepository,
   RoleAttachmentRepository,
   RoleChangeActionRepository,
 } from './repos/role-management';
 import {
+  AchievementCategoryRepository,
+  AchievementRepository,
   DomainRepository,
   InterestRepository,
   PersonalGoalRepository,
@@ -94,6 +99,12 @@ const repositories: Provider[] = [
   RoleApplicationRepository,
   RoleAttachmentRepository,
   RoleChangeActionRepository,
+  CounselorUserRepository,
+  AchievementCategoryRepository,
+  AchievementRepository,
+  UserAchievementRepository,
+  NotificationTypeRepository,
+  NotificationRepository,
 ];
 
 @Module({

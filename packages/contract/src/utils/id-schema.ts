@@ -128,3 +128,27 @@ export const roleApplicationIdSchema = (field = 'Role Application Id') => {
     .string(zString(field))
     .startsWith(IdPrefix.RoleApplication, zStartWith(field, IdPrefix.RoleApplication));
 };
+
+export const counselorUserIdSchema = (field = 'Counselor User Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.CounselorUser, zStartWith(field, IdPrefix.CounselorUser));
+};
+
+export const notificationTypeIdSchema = (field = 'Notification Type Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.NotificationType, zStartWith(field, IdPrefix.NotificationType));
+};
+
+export const notificationIdSchema = (field = 'Notification Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.Notification, zStartWith(field, IdPrefix.Notification));
+};
+
+export const achievementIdSchema = (field = 'Achievement Id') => {
+  return z
+    .string(zString(field))
+    .startsWith(IdPrefix.Achievement, zStartWith(field, IdPrefix.Achievement));
+};

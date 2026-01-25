@@ -43,7 +43,8 @@ import {
   updateWellnessFactorRoSchema,
   type TUpdateWellnessFactorRo,
   type TUpdateWellnessFactorVo,
-  TGetRolesVo,
+  type TGetRolesVo,
+  type TGetAchievementsVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 
@@ -109,6 +110,13 @@ export class SystemController {
   @HttpCode(HttpStatus.OK)
   async getWellnessFactors(): Promise<TGetWellnessFactorsVo> {
     return this.systemService.getWellnessFactors();
+  }
+
+  @Roles(UserRole.Admin, UserRole.Moderator)
+  @Get('achievements')
+  @HttpCode(HttpStatus.OK)
+  async getAchievements(): Promise<TGetAchievementsVo> {
+    return this.systemService.getAchievements();
   }
 
   @Roles(UserRole.Admin)

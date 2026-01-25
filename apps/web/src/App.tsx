@@ -1,10 +1,12 @@
 import { Route, Routes, Navigate } from 'react-router';
 
 import Layout from '@/components/layout/layout';
+import AchievementPage from '@/components/pages/achievement/achievementPage';
 import LoginPage from '@/components/pages/auth/signInPage';
 import BanPage from '@/components/pages/ban/banPage';
 import Error404 from '@/components/pages/error/error404';
 import HomePage from '@/components/pages/homePage';
+import ManagePage from '@/components/pages/manage/managePage';
 // import ResourcePage from '@/components/pages/playground/resources';
 import MyProfileEditingPage from '@/components/pages/user/myProfileEditing';
 import MyProfilePage from '@/components/pages/user/myProfilePage';
@@ -31,6 +33,8 @@ export function App() {
 
         {/* temporary page for testing */}
         {/* <Route path='resources' element={<ResourcePage />} /> */}
+        <Route path={APP_ROUTE.MANAGE} element={<ManagePage />} />
+        <Route path={APP_ROUTE.ACHIEVEMENT} element={<AchievementPage />} />
       </Route>
 
       <Route path={APP_ROUTE.BAN} element={<BanPage />} />

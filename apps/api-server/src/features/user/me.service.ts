@@ -4,6 +4,9 @@ import { Injectable } from '@nestjs/common';
 import {
   TChangeEmailRo,
   TChangePasswordRo,
+  TGetMyAchievementsVo,
+  TMarkMyAchievementAsVisibleParams,
+  TMyAchievement,
   TUpdateMeProfileRo,
   TVerifyChangeEmailRo,
 } from '@peernest/contract';
@@ -35,11 +38,17 @@ import { ClsService } from 'nestjs-cls';
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { MailConfig, type TMailConfig } from '@/configs/mail.config';
 import { CustomHttpException } from '@/custom.exception';
+import { AchievementService } from '@/features/achievement/achievement.service';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
 import { MailSenderService } from '@/features/mail-sender/mail-sender.service';
+import { UserAchievementRepository } from '@/persistence/repos/achievement';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
-import { InterestRepository, PersonalGoalRepository } from '@/persistence/repos/system';
+import {
+  AchievementRepository,
+  InterestRepository,
+  PersonalGoalRepository,
+} from '@/persistence/repos/system';
 import {
   AccountRepository,
   UserInfoInterestRepository,
@@ -61,6 +70,7 @@ export class MeService {
 
     private readonly attachmentRepository: AttachmentRepository,
     private readonly accountRepository: AccountRepository,
+    private readonly achievementRepository: AchievementRepository,
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly userRepository: UserRepository,
@@ -68,6 +78,9 @@ export class MeService {
     private readonly userInfoInterestRepository: UserInfoInterestRepository,
     private readonly userInfoPersonalGoalRepository: UserInfoPersonalGoalRepository,
     private readonly userTokenRepository: UserTokenRepository,
+    private readonly userAchievementRepository: UserAchievementRepository,
+
+    private readonly achievementService: AchievementService,
     private readonly mailSenderService: MailSenderService
   ) {}
 
@@ -184,7 +197,6 @@ export class MeService {
     }
 
     await executeTx(this.kyselyService.db, async (tx) => {
-      const now = new Date();
       await this.accountRepository.softDeleteSocialAccountsByUserId(userId, now, tx);
 
       await this.userRepository.updateUserById(
@@ -326,6 +338,14 @@ export class MeService {
       }
     });
 
+    this.achievementService.evaluateImmediate(
+      userId,
+      ['completeProfile', 'maintainWellnessStreak'],
+      {
+        eventData: { userInfoId },
+      }
+    );
+
     return this.getMeProfileAgg(userId, userInfoId);
   }
 
@@ -408,5 +428,85 @@ export class MeService {
       },
       userId
     );
+  }
+
+  async getMyAchievements(): Promise<TGetMyAchievementsVo> {
+    const userId = this.clsService.get('user.id');
+
+    const achievementObjs = await this.userAchievementRepository.getAchievementsByUserId(userId, {
+      orderBy: 'position',
+    });
+
+    const formattedAchievementObjs: TGetMyAchievementsVo = achievementObjs.map(
+      (achievementObj) => ({
+        achievementCategoryId: achievementObj.achievementCategoryId,
+        achievementCategoryName: achievementObj.achievementCategoryName,
+        achievementCategoryPosition: achievementObj.achievementCategoryPosition,
+        achievements: achievementObj.achievements.map(
+          (achievement): TMyAchievement => ({
+            achievementId: achievement.achievementId,
+            achievementTitle: achievement.achievementTitle,
+            achievementDescription: achievement.achievementDescription,
+            achievementPosition: achievement.achievementPosition,
+            isUnlocked: achievement.userAchievementId !== null,
+            isVisible: achievement.userAchievementIsVisible === true,
+            awardedTime: achievement.userAchievementAwardedTime,
+          })
+        ),
+      })
+    );
+
+    return formattedAchievementObjs;
+  }
+  async markMyAchievementAsVisible(
+    markMyAchievementAsVisibleParams: TMarkMyAchievementAsVisibleParams
+  ): Promise<void> {
+    const { achievementId } = markMyAchievementAsVisibleParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const [userAchievements, achievement] = await Promise.all([
+      await this.userAchievementRepository.findUserAchievementsByUserId(userId),
+      await this.achievementRepository.findAchievementById(achievementId),
+    ]);
+
+    if (!achievement) {
+      throw new CustomHttpException(
+        `Achievement ${achievementId} does not exist`,
+        HttpErrorCode.VALIDATION_ERROR
+      );
+    }
+
+    const targetedAchievement = userAchievements.find(
+      (userAchievement) => userAchievement.achievementId === achievementId
+    );
+
+    if (!targetedAchievement) {
+      throw new CustomHttpException(
+        "You haven't unlock this achievement",
+        HttpErrorCode.UNPROCESSABLE_ENTITY
+      );
+    }
+
+    const now = new Date();
+    executeTx(this.kyselyService.db, async (tx) => {
+      await this.userAchievementRepository.updateUserAchievementsByUserId(
+        {
+          userAchievementIsVisible: false,
+          userAchievementUpdatedTime: now,
+        },
+        userId,
+        tx
+      );
+
+      await this.userAchievementRepository.updateUserAchievementByIds(
+        {
+          userAchievementIsVisible: true,
+          userAchievementUpdatedTime: now,
+        },
+        { userId: userId, achievementId: achievementId },
+        tx
+      );
+    });
   }
 }

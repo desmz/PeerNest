@@ -72,6 +72,29 @@ export interface Account {
   accountUserId: string;
 }
 
+export interface Achievement {
+  achievementAchievementCategoryId: string;
+  achievementCreatedTime: Generated<Timestamp>;
+  achievementCriteria: Json | null;
+  achievementDeletedTime: Timestamp | null;
+  achievementDescription: string;
+  achievementId: Generated<string>;
+  achievementIsActive: Generated<boolean>;
+  achievementPosition: Numeric;
+  achievementTitle: string;
+  achievementType: string;
+  achievementUpdatedTime: Timestamp | null;
+}
+
+export interface AchievementCategory {
+  achievementCategoryCreatedTime: Generated<Timestamp>;
+  achievementCategoryDeletedTime: Timestamp | null;
+  achievementCategoryId: Generated<string>;
+  achievementCategoryName: string;
+  achievementCategoryPosition: Numeric;
+  achievementCategoryUpdatedTime: Timestamp | null;
+}
+
 export interface Attachment {
   attachmentCreatedTime: Generated<Timestamp>;
   attachmentDeletedTime: Timestamp | null;
@@ -454,6 +477,16 @@ export interface ConversationParticipant {
   conversationParticipantRole: string;
 }
 
+export interface CounselorUser {
+  counselorUserCounselorId: string;
+  counselorUserCreatedTime: Generated<Timestamp>;
+  counselorUserId: Generated<string>;
+  counselorUserNote: string | null;
+  counselorUserReleasedTime: Timestamp | null;
+  counselorUserUpdatedTime: Timestamp | null;
+  counselorUserUserId: string;
+}
+
 export interface Discussion {
   discussionArchivedBy: string | null;
   discussionArchivedTime: Timestamp | null;
@@ -571,6 +604,35 @@ export interface Interest {
   interestName: string;
   interestPosition: Numeric;
   interestUpdatedTime: Timestamp | null;
+}
+
+export interface Notification {
+  notificationBody: string;
+  notificationCreatedTime: Generated<Timestamp>;
+  notificationId: Generated<string>;
+  notificationNotificationTypeId: string;
+  notificationPayload: Json;
+  notificationReadTime: Timestamp | null;
+  notificationRecipientId: string;
+  notificationSeenTime: Timestamp | null;
+  notificationTitle: string;
+}
+
+export interface NotificationCategory {
+  notificationCategoryCreatedTime: Generated<Timestamp>;
+  notificationCategoryDeletedTime: Timestamp | null;
+  notificationCategoryId: Generated<string>;
+  notificationCategoryName: string;
+  notificationCategoryUpdatedTime: Timestamp | null;
+}
+
+export interface NotificationType {
+  notificationTypeCreatedTime: Generated<Timestamp>;
+  notificationTypeDeletedTime: Timestamp | null;
+  notificationTypeId: Generated<string>;
+  notificationTypeName: string;
+  notificationTypeNotificationCategoryId: string;
+  notificationTypeUpdatedTime: Timestamp | null;
 }
 
 export interface PersonalGoal {
@@ -795,6 +857,15 @@ export interface User {
   userUpdatedTime: Timestamp | null;
 }
 
+export interface UserAchievement {
+  userAchievementAchievementId: string;
+  userAchievementAwardedTime: Generated<Timestamp>;
+  userAchievementId: Generated<string>;
+  userAchievementIsVisible: Generated<boolean>;
+  userAchievementUpdatedTime: Timestamp | null;
+  userAchievementUserId: string;
+}
+
 export interface UserCommentLike {
   userCommentLikeCommentId: string;
   userCommentLikeCreatedTime: Generated<Timestamp>;
@@ -942,6 +1013,8 @@ export interface WellnessSymptomCategory {
 
 export interface DB {
   account: Account;
+  achievement: Achievement;
+  achievementCategory: AchievementCategory;
   attachment: Attachment;
   'auth.auditLogEntries': AuthAuditLogEntries;
   'auth.flowState': AuthFlowState;
@@ -974,6 +1047,7 @@ export interface DB {
   comment: Comment;
   conversation: Conversation;
   conversationParticipant: ConversationParticipant;
+  counselorUser: CounselorUser;
   discussion: Discussion;
   discussionAttachment: DiscussionAttachment;
   discussionInterest: DiscussionInterest;
@@ -983,6 +1057,9 @@ export interface DB {
   'extensions.pgStatStatementsInfo': ExtensionsPgStatStatementsInfo;
   friendRequest: FriendRequest;
   interest: Interest;
+  notification: Notification;
+  notificationCategory: NotificationCategory;
+  notificationType: NotificationType;
   personalGoal: PersonalGoal;
   pronoun: Pronoun;
   'realtime.messages': RealtimeMessages;
@@ -1004,6 +1081,7 @@ export interface DB {
   'storage.vectorIndexes': StorageVectorIndexes;
   university: University;
   user: User;
+  userAchievement: UserAchievement;
   userCommentLike: UserCommentLike;
   userCommentReport: UserCommentReport;
   userDiscussionLike: UserDiscussionLike;

@@ -1,9 +1,11 @@
 export * from './attachment';
 export * from './auth';
 export * from './comment';
+export * from './counselor';
 export * from './discussion';
 export * from './friendship';
 export * from './moderation';
+export * from './notification';
 export * from './role-management';
 export * from './system';
 export type * from './types';
