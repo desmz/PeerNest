@@ -1,486 +1,381 @@
 import {
   Avatar,
+  Badge,
   Box,
   Button,
-  Divider,
   Flex,
+  Grid,
   Group,
   MultiSelect,
   Paper,
   Select,
   Stack,
   Text,
-  TextInput,
   Textarea,
+  TextInput,
   Title,
-  Portal,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import {
+  GET_DOMAINS_URL,
+  GET_INTERESTS_URL,
   GET_ME_PROFILE_URL,
-  ME_URL,
+  GET_PERSONAL_GOALS_URL,
+  GET_PRONOUNS_URL,
+  GET_UNIVERSITIES_URL,
+  TGetDomainsVo,
+  TGetInterestsVo,
+  TGetPersonalGoalsVo,
+  TGetPronounsVo,
+  TGetUniversityVo,
+  TUpdateMeProfileRo,
+  TUpdateMeProfileVo,
   UPDATE_ME_PROFILE_URL,
+  updateMeProfileRoSchema,
   type TGetMeProfileVo,
-  type TMeVo,
-  type TUpdateMeProfileRo,
-  type TUpdateMeProfileVo,
 } from '@peernest/contract';
-import { IconEdit, IconLock, IconMail } from '@tabler/icons-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import React from 'react';
+import { MAX_BIO_LEN, MAX_LOOKING_FOR_LEN, UserRole } from '@peernest/core';
+import { IconChevronDown, IconEdit, IconLock, IconMail } from '@tabler/icons-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAtom } from 'jotai';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
+import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
+import { APP_ROUTE } from '@/lib/app-route';
+import { capitalizeFirstLetter } from '@/lib/util';
 
-type TOption = { value: string; label: string };
-
-const PAGE_PADDING = 24;
-const CARD_PADDING = 16;
-
-const sectionTitleStyle: React.CSSProperties = {
-  fontFamily: 'Roboto, sans-serif',
-  fontWeight: 600,
-  fontSize: 16,
-  lineHeight: '24px',
-};
-
-const sectionBodyStyle: React.CSSProperties = {
-  fontFamily: 'Roboto, sans-serif',
-  fontWeight: 400,
-  fontSize: 14,
-  lineHeight: '20px',
-};
-
-type TMyProfile = {
-  email: string;
-  userDisplayName: string;
-  userAvatarUrl: string | null;
-
-  userInfoPronounId: string;
-  userInfoUniversityId: string;
-  userInfoDomainId: string;
-
-  userInfoBio: string;
-  userInfoLookingFor: string;
-
-  interestIds: string[];
-  personalGoalIds: string[];
-};
-
-function asRecord(v: unknown): Record<string, unknown> {
-  return typeof v === 'object' && v !== null ? (v as Record<string, unknown>) : {};
-}
-function pickString(v: unknown, key: string): string | undefined {
-  const r = asRecord(v);
-  const val = r[key];
-  return typeof val === 'string' ? val : undefined;
-}
-function pickNullableString(v: unknown, key: string): string | null {
-  const s = pickString(v, key);
-  return s ?? null;
-}
-function pickStringArray(v: unknown, key: string): string[] {
-  const r = asRecord(v);
-  const val = r[key];
-  return Array.isArray(val) ? val.filter((x): x is string => typeof x === 'string') : [];
+async function getMeProfile() {
+  return await api.get<TGetMeProfileVo>(GET_ME_PROFILE_URL);
 }
 
-async function getMyProfile(): Promise<TMyProfile> {
-  const [meRes, profileRes] = await Promise.all([
-    api.get<TMeVo>(ME_URL),
-    api.get<TGetMeProfileVo>(GET_ME_PROFILE_URL),
-  ]);
-
-  const meUnknown: unknown = meRes.data;
-  const profileUnknown: unknown = profileRes.data;
-
-  const email = pickString(meUnknown, 'email') ?? '';
-  const userDisplayName =
-    pickString(meUnknown, 'userDisplayName') ?? pickString(profileUnknown, 'userDisplayName') ?? '';
-  const userAvatarUrl =
-    pickNullableString(meUnknown, 'userAvatarUrl') ??
-    pickNullableString(meUnknown, 'avatarUrl') ??
-    pickNullableString(profileUnknown, 'userAvatarUrl');
-
-  const userInfoPronounId = pickString(profileUnknown, 'userInfoPronounId') ?? '';
-  const userInfoUniversityId = pickString(profileUnknown, 'userInfoUniversityId') ?? '';
-  const userInfoDomainId = pickString(profileUnknown, 'userInfoDomainId') ?? '';
-
-  const userInfoBio = pickString(profileUnknown, 'userInfoBio') ?? '';
-  const userInfoLookingFor = pickString(profileUnknown, 'userInfoLookingFor') ?? '';
-
-  const profileRec = asRecord(profileUnknown);
-  const interestsRaw = Array.isArray(profileRec.interests) ? profileRec.interests : [];
-  const personalGoalsRaw = Array.isArray(profileRec.personalGoals) ? profileRec.personalGoals : [];
-
-  const interestIds = interestsRaw
-    .map((x) => pickString(x, 'interestId'))
-    .filter((x): x is string => Boolean(x));
-
-  const personalGoalIds = personalGoalsRaw
-    .map((x) => pickString(x, 'personalGoalId'))
-    .filter((x): x is string => Boolean(x));
-
-  return {
-    email,
-    userDisplayName,
-    userAvatarUrl,
-
-    userInfoPronounId,
-    userInfoUniversityId,
-    userInfoDomainId,
-
-    userInfoBio,
-    userInfoLookingFor,
-
-    interestIds,
-    personalGoalIds,
-  };
+async function getPronouns() {
+  return await api.get<TGetPronounsVo>(GET_PRONOUNS_URL);
 }
 
-async function saveMyProfile(payload: TUpdateMeProfileRo): Promise<TUpdateMeProfileVo> {
-  const res = await api.put<TUpdateMeProfileVo>(UPDATE_ME_PROFILE_URL, payload);
-  return res.data;
+async function getUniversities() {
+  return await api.get<TGetUniversityVo>(GET_UNIVERSITIES_URL);
 }
 
-export default function MyProfileEditingPage() {
-  // TODO: replace  with backend-provided options later
-  const pronounOptions: TOption[] = [
-    { value: 'pronoun-he', label: 'He' },
-    { value: 'pronoun-she', label: 'She' },
-    { value: 'pronoun-they', label: 'They' },
-  ];
-  const uniOptions: TOption[] = [
-    { value: 'uni-mmu', label: 'Multimedia University' },
-    { value: 'uni-uc', label: 'University of California' },
-  ];
-  const domainOptions: TOption[] = [
-    { value: 'domain-cs', label: 'Computer Science' },
-    { value: 'domain-psych', label: 'Psychology' },
-  ];
+async function getDomains() {
+  return await api.get<TGetDomainsVo>(GET_DOMAINS_URL);
+}
 
-  const interestOptions: TOption[] = [
-    { value: 'interest-home', label: 'Home Improvement' },
-    { value: 'interest-martial', label: 'Martial Arts' },
-    { value: 'interest-acro', label: 'Acroyoga' },
-    { value: 'interest-astro', label: 'Amateur Astronomy' },
-  ];
-  const goalOptions: TOption[] = [
-    { value: 'goal-masters', label: "Master's Foundation" },
-    { value: 'goal-grade', label: 'Grade Booster' },
-    { value: 'goal-captain', label: 'Study Squad Captain' },
-    { value: 'goal-journal', label: 'Journal Regularly' },
-  ];
+async function getPersonalGoals() {
+  return await api.get<TGetPersonalGoalsVo>(GET_PERSONAL_GOALS_URL);
+}
 
-  const profileQuery = useQuery({
-    queryKey: ['me', 'profile-edit'],
-    queryFn: getMyProfile,
+async function getInterests() {
+  return await api.get<TGetInterestsVo>(GET_INTERESTS_URL);
+}
+
+async function updateMeProfile(data: TUpdateMeProfileRo) {
+  return await api.put<TUpdateMeProfileVo>(UPDATE_ME_PROFILE_URL, data);
+}
+
+export default function MyProfilePage() {
+  const [currentUser] = useAtom(currentUserAtom);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['users', 'me', 'profile'],
+    queryFn: async () => (await getMeProfile()).data,
+  });
+  const { data: pronounsData } = useQuery({
+    queryKey: ['pronouns'],
+    queryFn: async () => {
+      return (await getPronouns()).data;
+    },
+  });
+  const { data: universitiesData } = useQuery({
+    queryKey: ['universities'],
+    queryFn: async () => {
+      return (await getUniversities()).data;
+    },
+  });
+  const { data: domainsData } = useQuery({
+    queryKey: ['domains'],
+    queryFn: async () => {
+      return (await getDomains()).data;
+    },
+  });
+  const { data: personalGoalsData } = useQuery({
+    queryKey: ['personalGoals'],
+    queryFn: async () => {
+      return (await getPersonalGoals()).data;
+    },
+  });
+  const { data: interestsData } = useQuery({
+    queryKey: ['interests'],
+    queryFn: async () => {
+      return (await getInterests()).data;
+    },
   });
 
-  const DISPLAY_NAME_MAX = 50;
-  const ABOUT_MAX = 500;
-  const LOOKING_FOR_MAX = 500;
+  const me = query.data;
 
-  const form = useForm<TMyProfile>({
+  const updateMeProfileForm = useForm<TUpdateMeProfileRo>({
     initialValues: {
-      email: '',
-      userDisplayName: '',
-      userAvatarUrl: null,
-
-      userInfoPronounId: '',
-      userInfoUniversityId: '',
-      userInfoDomainId: '',
-
-      userInfoBio: '',
-      userInfoLookingFor: '',
-
+      userDisplayName: null,
+      userInfoPronounId: null,
+      userInfoUniversityId: null,
+      userInfoDomainId: null,
+      userInfoBio: null,
+      userInfoLookingFor: null,
       interestIds: [],
       personalGoalIds: [],
     },
-    validate: {
-      userDisplayName: (v) => (v.trim().length === 0 ? 'Display name is required' : null),
+    validate: zod4Resolver(updateMeProfileRoSchema),
+  });
+
+  useEffect(() => {
+    if (!me || !currentUser) return;
+
+    updateMeProfileForm.setValues({
+      userDisplayName: currentUser.displayName ?? null,
+      userInfoPronounId: me.pronoun?.pronounId ?? null,
+      userInfoUniversityId: me.university?.universityId ?? null,
+      userInfoDomainId: me.domain?.domainId ?? null,
+      userInfoBio: me.userInfoBio ?? null,
+      userInfoLookingFor: me.userInfoLookingFor ?? null,
+      interestIds: me.interests?.map((i) => i.interestId) ?? [],
+      personalGoalIds: me.personalGoals?.map((g) => g.personalGoalId) ?? [],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me, currentUser]);
+
+  const updateMeProfileMutation = useMutation<void, Error, TUpdateMeProfileRo>({
+    mutationFn: async (data) => {
+      await updateMeProfile(data);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['users', 'me', 'profile'],
+      });
+      navigate(APP_ROUTE.USER_ME);
     },
   });
 
-  React.useEffect(() => {
-    if (!profileQuery.data) return;
-    form.setValues(profileQuery.data);
-    form.resetDirty();
-  }, [profileQuery.data]);
+  const pronounOptions = pronounsData?.map((pronoun) => ({
+    label: capitalizeFirstLetter(pronoun.pronounName),
+    value: pronoun.pronounId,
+  }));
+  const universityOptions = universitiesData?.map((university) => ({
+    label: university.universityName,
+    value: university.universityId,
+  }));
+  const domainOptions = domainsData?.map((domain) => ({
+    label: capitalizeFirstLetter(domain.domainName),
+    value: domain.domainId,
+  }));
+  const personalGoalOptions = personalGoalsData?.map((goal) => ({
+    label: goal.personalGoalTitle,
+    value: goal.personalGoalId,
+  }));
 
-  const saveMutation = useMutation({
-    mutationFn: saveMyProfile,
-    onSuccess: () => {
-      form.resetDirty();
-      profileQuery.refetch();
-    },
-    onError: (err) => {
-      console.error('Save failed:', err);
-    },
-  });
+  const interestOptions = interestsData?.map((interest) => ({
+    label: interest.interestName,
+    value: interest.interestId,
+  }));
 
-  const handleSave = (values: TMyProfile) => {
-    const payload: TUpdateMeProfileRo = {
-      userDisplayName: values.userDisplayName || null,
-      userInfoPronounId: values.userInfoPronounId || null,
-      userInfoUniversityId: values.userInfoUniversityId || null,
-      userInfoDomainId: values.userInfoDomainId || null,
-      userInfoBio: values.userInfoBio || null,
-      userInfoLookingFor: values.userInfoLookingFor || null,
-      interestIds: values.interestIds.length ? values.interestIds : null,
-      personalGoalIds: values.personalGoalIds.length ? values.personalGoalIds : null,
-    };
-
-    console.log('Submitting payload:', payload);
-    saveMutation.mutate(payload);
+  const onUpdateMeProfileSubmit = (data: TUpdateMeProfileRo) => {
+    updateMeProfileMutation.mutate(data);
   };
 
-  if (profileQuery.isPending) return <Text>Loading…</Text>;
-  if (profileQuery.isError) return <Text c='red'>Failed to load your profile.</Text>;
+  if (query.isPending) return <Text>Loading…</Text>;
+  if (query.isError) return <Text c='red'>Failed to load profile.</Text>;
 
-  const isDirty = form.isDirty();
+  const subtitle = [
+    me?.pronoun?.pronounName,
+    me?.university?.universityName,
+    me?.domain?.domainName,
+  ]
+    .filter(Boolean)
+    .map((s) => capitalizeFirstLetter(String(s)))
+    .join(' · ');
 
   return (
-    <Box p={PAGE_PADDING}>
-      <Box maw={820} mx='auto'>
-        {/* Header card */}
-        <Paper radius='md' p={CARD_PADDING} mb={16}>
-          <Group align='center' justify='space-between' wrap='nowrap'>
-            <Group gap={16} wrap='nowrap'>
-              <Avatar src={form.values.userAvatarUrl || undefined} size={64} radius='xl' />
-              <Box>
-                <Title order={4}>{form.values.userDisplayName || '—'}</Title>
-                <Text size='xs' c='dimmed' mt={4}>
-                  {[
-                    pronounOptions.find((x) => x.value === form.values.userInfoPronounId)?.label,
-                    uniOptions.find((x) => x.value === form.values.userInfoUniversityId)?.label,
-                    domainOptions.find((x) => x.value === form.values.userInfoDomainId)?.label,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </Text>
-              </Box>
-            </Group>
+    <Box>
+      <form onSubmit={updateMeProfileForm.onSubmit(onUpdateMeProfileSubmit)}>
+        <Flex maw='70%' mx='auto' py={24} direction='column'>
+          {/* Header card (avatar + name + buttons) */}
+          <Paper radius='md' p={16} mb={16}>
+            <Group align='center' gap={16} wrap='nowrap'>
+              <Avatar src={currentUser?.avatarUrl} size='xl' radius={100} />
 
-            <Group gap={10} wrap='nowrap'>
-              <Button variant='filled' leftSection={<IconEdit size={16} />} radius='md' h={32}>
-                Edit Profile
-              </Button>
-              <Button
-                variant='light'
-                color='gray'
-                leftSection={<IconLock size={16} />}
-                radius='md'
-                h={32}
-                disabled>
-                Change Password
-              </Button>
-            </Group>
-          </Group>
-        </Paper>
-
-        <form onSubmit={form.onSubmit(handleSave)}>
-          {/* Main form card */}
-          <Paper radius='md' p={CARD_PADDING}>
-            <Stack gap={20}>
-              {/* Email + change email */}
-              <Flex justify='space-between' align='center' wrap='wrap' gap={12}>
-                <Box>
-                  <Text style={sectionTitleStyle}>Email</Text>
-                  <Text mt={4} style={sectionBodyStyle}>
-                    {form.values.email || '—'}
+              <Flex direction='column' gap={12} style={{ flex: 1 }}>
+                <div>
+                  <Flex gap={8} align={'center'}>
+                    <Title order={4}>{currentUser?.displayName}</Title>
+                    {currentUser?.role && currentUser.role !== UserRole.User && (
+                      <Badge color='yellow' size='xs' style={{ textTransform: 'capitalize' }}>
+                        {capitalizeFirstLetter(currentUser.role)}
+                      </Badge>
+                    )}
+                  </Flex>
+                  <Text size='xs' c='dimmed' mt={4}>
+                    {subtitle}
                   </Text>
-                </Box>
+                </div>
 
-                <Button
-                  variant='light'
-                  color='gray'
-                  leftSection={<IconMail size={16} />}
-                  radius='md'
-                  h={32}
-                  disabled>
-                  Change Email
-                </Button>
+                <Group gap={12}>
+                  <Button type='submit' leftSection={<IconEdit size={16} />} radius='md' size='sm'>
+                    Save
+                  </Button>
+
+                  <Button leftSection={<IconLock size={16} />} radius='md' size='sm' disabled>
+                    Change Password
+                  </Button>
+                </Group>
               </Flex>
+            </Group>
+          </Paper>
 
-              <Divider />
+          {/* Info card */}
+          <Paper radius={10} p={16} mb={24}>
+            <Grid gutter={16}>
+              {/* Email row */}
+              <Grid.Col span={6}>
+                <Text fw={600}>Email</Text>
+                <Text mt={6}>{currentUser?.email ?? '—'}</Text>
+              </Grid.Col>
 
-              {/* Display Name + Pronoun */}
-              <Group align='flex-start' grow>
+              <Grid.Col span={6}>
+                <Flex align='flex-end' h={56}>
+                  <Button leftSection={<IconMail size={16} />} radius='md' size='sm' disabled>
+                    Change Email
+                  </Button>
+                </Flex>
+              </Grid.Col>
+
+              {/* Display Name */}
+              <Grid.Col span={6}>
                 <TextInput
-                  label={<Text style={sectionTitleStyle}>Display Name</Text>}
-                  placeholder='Your display name'
-                  value={form.values.userDisplayName}
-                  onChange={(e) =>
-                    form.setFieldValue(
-                      'userDisplayName',
-                      e.currentTarget.value.slice(0, DISPLAY_NAME_MAX)
-                    )
-                  }
-                  rightSection={
-                    <Text size='xs' c='dimmed'>
-                      {form.values.userDisplayName.length}/{DISPLAY_NAME_MAX}
-                    </Text>
-                  }
+                  label={<Text fw={600}>Display Name</Text>}
+                  key={updateMeProfileForm.key('userDisplayName')}
+                  {...updateMeProfileForm.getInputProps('userDisplayName')}
+                  radius={'md'}
                   styles={{ label: { marginBottom: 6 } }}
                 />
+              </Grid.Col>
 
+              {/* Pronoun */}
+              <Grid.Col span={6}>
                 <Select
-                  label={<Text style={sectionTitleStyle}>Pronoun</Text>}
+                  searchable
+                  label={<Text fw={600}>Pronoun</Text>}
                   placeholder='Select'
                   data={pronounOptions}
-                  value={form.values.userInfoPronounId}
-                  onChange={(v) => form.setFieldValue('userInfoPronounId', v || '')}
                   styles={{ label: { marginBottom: 6 } }}
+                  radius={'md'}
+                  key={updateMeProfileForm.key('userInfoPronounId')}
+                  {...updateMeProfileForm.getInputProps('userInfoPronounId')}
                 />
-              </Group>
+              </Grid.Col>
 
-              {/* University + Domain */}
-              <Group align='flex-start' grow>
+              {/* University */}
+              <Grid.Col span={6}>
                 <Select
-                  label={<Text style={sectionTitleStyle}>University/College</Text>}
+                  searchable
+                  label={<Text fw={600}>University/College</Text>}
                   placeholder='Select'
-                  data={uniOptions}
-                  value={form.values.userInfoUniversityId}
-                  onChange={(v) => form.setFieldValue('userInfoUniversityId', v || '')}
+                  data={universityOptions}
                   styles={{ label: { marginBottom: 6 } }}
+                  radius={'md'}
+                  key={updateMeProfileForm.key('userInfoUniversityId')}
+                  {...updateMeProfileForm.getInputProps('userInfoUniversityId')}
                 />
+              </Grid.Col>
 
+              {/* Major */}
+              <Grid.Col span={6}>
                 <Select
-                  label={<Text style={sectionTitleStyle}>Major/Domain</Text>}
+                  searchable
+                  label={<Text fw={600}>Major/Domain</Text>}
                   placeholder='Select'
                   data={domainOptions}
-                  value={form.values.userInfoDomainId}
-                  onChange={(v) => form.setFieldValue('userInfoDomainId', v || '')}
                   styles={{ label: { marginBottom: 6 } }}
+                  radius={'md'}
+                  key={updateMeProfileForm.key('userInfoDomainId')}
+                  {...updateMeProfileForm.getInputProps('userInfoDomainId')}
                 />
-              </Group>
+              </Grid.Col>
+            </Grid>
+          </Paper>
 
-              <Divider />
-
-              {/* About */}
+          {/* Existing Details card */}
+          <Paper radius='md' p={16}>
+            <Stack gap={16}>
               <Box>
-                <Text style={sectionTitleStyle}>About</Text>
+                <Title order={5}>About</Title>
                 <Textarea
                   mt={8}
                   minRows={5}
-                  value={form.values.userInfoBio}
-                  onChange={(e) =>
-                    form.setFieldValue('userInfoBio', e.currentTarget.value.slice(0, ABOUT_MAX))
-                  }
+                  maxRows={10}
+                  autosize
+                  radius={'md'}
+                  key={updateMeProfileForm.key('userInfoBio')}
+                  {...updateMeProfileForm.getInputProps('userInfoBio')}
                 />
                 <Text size='xs' c='dimmed' ta='right' mt={6}>
-                  {form.values.userInfoBio.length}/{ABOUT_MAX}
+                  {updateMeProfileForm.values.userInfoBio?.length ?? 0}/{MAX_BIO_LEN}
                 </Text>
               </Box>
 
-              {/* Looking For */}
               <Box>
-                <Text style={sectionTitleStyle}>Looking For</Text>
+                <Title order={5}>Looking For</Title>
                 <Textarea
                   mt={8}
-                  minRows={4}
-                  value={form.values.userInfoLookingFor}
-                  onChange={(e) =>
-                    form.setFieldValue(
-                      'userInfoLookingFor',
-                      e.currentTarget.value.slice(0, LOOKING_FOR_MAX)
-                    )
-                  }
+                  minRows={5}
+                  maxRows={10}
+                  autosize
+                  radius={'md'}
+                  key={updateMeProfileForm.key('userInfoLookingFor')}
+                  {...updateMeProfileForm.getInputProps('userInfoLookingFor')}
                 />
                 <Text size='xs' c='dimmed' ta='right' mt={6}>
-                  {form.values.userInfoLookingFor.length}/{LOOKING_FOR_MAX}
+                  {updateMeProfileForm.values.userInfoLookingFor?.length ?? 0}/{MAX_LOOKING_FOR_LEN}
                 </Text>
               </Box>
 
-              {/* Interests */}
               <Box>
-                <Text style={sectionTitleStyle}>Interests</Text>
+                <Title order={5}>Interests</Title>
                 <MultiSelect
-                  mt={8}
-                  placeholder='Select interests'
-                  data={interestOptions}
-                  value={form.values.interestIds}
-                  onChange={(v) => form.setFieldValue('interestIds', v)}
-                  clearable
+                  placeholder='Select'
+                  data={interestOptions ?? []}
+                  rightSection={<IconChevronDown size={16} />}
+                  rightSectionPointerEvents='none'
+                  multiple
                   searchable
+                  radius={'md'}
+                  pt={6}
+                  key={updateMeProfileForm.key('interestIds')}
+                  {...updateMeProfileForm.getInputProps('interestIds')}
                 />
               </Box>
 
-              {/* Goals */}
               <Box>
-                <Text style={sectionTitleStyle}>Personal Goals</Text>
+                <Title order={5}>Personal Goals</Title>
                 <MultiSelect
-                  mt={8}
-                  placeholder='Select goals'
-                  data={goalOptions}
-                  value={form.values.personalGoalIds}
-                  onChange={(v) => form.setFieldValue('personalGoalIds', v)}
-                  clearable
+                  placeholder='Select'
+                  data={personalGoalOptions ?? []}
+                  rightSection={<IconChevronDown size={16} />}
+                  rightSectionPointerEvents='none'
+                  multiple
                   searchable
+                  radius={'md'}
+                  pt={6}
+                  key={updateMeProfileForm.key('personalGoalIds')}
+                  {...updateMeProfileForm.getInputProps('personalGoalIds')}
                 />
               </Box>
             </Stack>
           </Paper>
-
-          {/* Bottom unsaved changes bar */}
-          {isDirty && (
-            <Portal>
-              <Box
-                style={{
-                  position: 'fixed',
-                  left: 0,
-                  right: 0,
-                  bottom: 16,
-                  zIndex: 999999,
-                }}>
-                <Box maw={820} mx='auto' px={PAGE_PADDING}>
-                  <Paper radius='md' p='md' shadow='md'>
-                    <Group justify='space-between' align='center' wrap='nowrap'>
-                      <Text fw={600}>Careful, you have unsaved changes!</Text>
-
-                      <Button
-                        radius='md'
-                        loading={saveMutation.isPending}
-                        onMouseDown={() => console.log('mouseDown save')}
-                        onClick={() => {
-                          console.log('CLICK save');
-
-                          const result = form.validate();
-                          console.log('validate:', result);
-
-                          if (result.hasErrors) {
-                            console.log('Validation errors:', result.errors);
-                            return;
-                          }
-
-                          const payload: TUpdateMeProfileRo = {
-                            userDisplayName: form.values.userDisplayName || null,
-                            userInfoPronounId: form.values.userInfoPronounId || null,
-                            userInfoUniversityId: form.values.userInfoUniversityId || null,
-                            userInfoDomainId: form.values.userInfoDomainId || null,
-                            userInfoBio: form.values.userInfoBio || null,
-                            userInfoLookingFor: form.values.userInfoLookingFor || null,
-                            interestIds: form.values.interestIds.length
-                              ? form.values.interestIds
-                              : null,
-                            personalGoalIds: form.values.personalGoalIds.length
-                              ? form.values.personalGoalIds
-                              : null,
-                          };
-
-                          console.log('Saving payload:', payload);
-                          saveMutation.mutate(payload);
-                        }}>
-                        Save Changes
-                      </Button>
-                    </Group>
-                  </Paper>
-                </Box>
-              </Box>
-            </Portal>
-          )}
-        </form>
-      </Box>
+        </Flex>
+      </form>
     </Box>
   );
 }

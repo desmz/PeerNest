@@ -12,6 +12,7 @@ import {
   Title,
 } from '@mantine/core';
 import { GET_ME_PROFILE_URL, type TGetMeProfileVo } from '@peernest/contract';
+import { UserRole } from '@peernest/core';
 import { IconEdit, IconLock, IconMail } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
@@ -20,17 +21,10 @@ import { Link } from 'react-router';
 import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
+import { capitalizeFirstLetter } from '@/lib/util';
 
 export async function getMeProfile() {
   return await api.get<TGetMeProfileVo>(GET_ME_PROFILE_URL);
-}
-
-function capitalizeWords(str: string) {
-  if (!str) return '';
-  return str
-    .split(' ')
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(' ');
 }
 
 export default function MyProfilePage() {
@@ -48,7 +42,7 @@ export default function MyProfilePage() {
 
   const subtitle = [me.pronoun?.pronounName, me.university?.universityName, me.domain?.domainName]
     .filter(Boolean)
-    .map((s) => capitalizeWords(String(s)))
+    .map((s) => capitalizeFirstLetter(String(s)))
     .join(' · ');
 
   return (
@@ -61,7 +55,14 @@ export default function MyProfilePage() {
 
             <Flex direction='column' gap={12} style={{ flex: 1 }}>
               <div>
-                <Title order={4}>{me.userDisplayName}</Title>
+                <Flex gap={8} align={'center'}>
+                  <Title order={4}>{currentUser?.displayName}</Title>
+                  {currentUser?.role && currentUser.role !== UserRole.User && (
+                    <Badge color='yellow' size='xs' style={{ textTransform: 'capitalize' }}>
+                      {capitalizeFirstLetter(currentUser.role)}
+                    </Badge>
+                  )}
+                </Flex>
                 <Text size='xs' c='dimmed' mt={4}>
                   {subtitle}
                 </Text>
@@ -112,7 +113,7 @@ export default function MyProfilePage() {
             <Grid.Col span={6}>
               <Text fw={600}>Pronoun</Text>
               <Text mt={6}>
-                {me.pronoun?.pronounName ? capitalizeWords(me.pronoun.pronounName) : '—'}
+                {me.pronoun?.pronounName ? capitalizeFirstLetter(me.pronoun.pronounName) : '—'}
               </Text>
             </Grid.Col>
 
@@ -121,7 +122,7 @@ export default function MyProfilePage() {
               <Text fw={600}>University/College</Text>
               <Text mt={6}>
                 {me.university?.universityName
-                  ? capitalizeWords(me.university.universityName)
+                  ? capitalizeFirstLetter(me.university.universityName)
                   : '—'}
               </Text>
             </Grid.Col>
@@ -130,7 +131,7 @@ export default function MyProfilePage() {
             <Grid.Col span={6}>
               <Text fw={600}>Major/Domain</Text>
               <Text mt={6}>
-                {me.domain?.domainName ? capitalizeWords(me.domain.domainName) : '—'}
+                {me.domain?.domainName ? capitalizeFirstLetter(me.domain.domainName) : '—'}
               </Text>
             </Grid.Col>
           </Grid>

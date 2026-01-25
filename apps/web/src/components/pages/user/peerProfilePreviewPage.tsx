@@ -8,6 +8,7 @@ import { useParams } from 'react-router';
 
 import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
+import { capitalizeFirstLetter } from '@/lib/util';
 
 export async function getUserProfile(userId: string) {
   const url = urlBuilder(GET_USER_PROFILE_URL, { userId });
@@ -54,21 +55,27 @@ export default function PeerProfilePreviewPage() {
       <Flex maw={'70%'} mx='auto' py={24} direction={'column'}>
         {/* Header card */}
         <Paper radius='md' p={16} mb={16}>
-          <Group align='center' gap={16} wrap='nowrap'>
+          <Group align='flex-start' gap={16} wrap='nowrap'>
             <Avatar src={userData.userAvatarUrl} size={'xl'} radius={100} />
 
-            <Flex direction={'column'} gap={12}>
-              <div>
-                <Title order={4}>{userData.userDisplayName}</Title>
-
+            <Flex pt={6} direction={'column'} gap={12}>
+              <Flex>
+                <Flex gap={8} align={'center'}>
+                  <Title order={4}>{userData.userDisplayName}</Title>
+                  {userData.roleName && userData.roleName !== UserRole.User && (
+                    <Badge color='yellow' size='xs' style={{ textTransform: 'capitalize' }}>
+                      {capitalizeFirstLetter(userData.roleName)}
+                    </Badge>
+                  )}
+                </Flex>
                 <Text size='xs' c='dimmed' mt={4}>
                   {subtitle}
                 </Text>
-              </div>
+              </Flex>
               <Flex gap={16}>
-                <Button radius='md' size='sm' w={'fit-content'}>
+                {/* <Button radius='md' size='sm' w={'fit-content'}>
                   Send Request
-                </Button>
+                </Button> */}
                 {currentUser && currentUser.role === UserRole.Admin ? (
                   <>
                     <Button
@@ -135,7 +142,7 @@ export default function PeerProfilePreviewPage() {
                     size='sm'
                     fw={600}
                     style={{ textTransform: 'capitalize' }}>
-                    {g.personalGoalName}
+                    {g.personalGoalTitle}
                   </Badge>
                 ))}
               </Group>

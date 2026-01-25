@@ -1,176 +1,38 @@
-import {
-  ActionIcon,
-  Avatar,
-  Badge,
-  Box,
-  Button,
-  Group,
-  Kbd,
-  Paper,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core';
-import { useHotkeys } from '@mantine/hooks';
-import { Spotlight, spotlight } from '@mantine/spotlight';
-import { FIND_USERS_URL, type TFindUsersVo } from '@peernest/contract';
-import {
-  IconAddressBook,
-  IconBell,
-  IconChevronDown,
-  IconSearch,
-  IconUserPlus,
-} from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router';
+import { Avatar, Badge, Box, Button, Flex, Group, Paper, Stack, Text } from '@mantine/core';
+import { UserRole } from '@peernest/core';
+import { IconAddressBook } from '@tabler/icons-react';
+import { Link } from 'react-router';
 
-import api from '@/lib/api-client';
+import { useFindUsers } from '@/features/user/hooks/use-find-users';
 import { APP_ROUTE } from '@/lib/app-route';
+import { capitalizeFirstLetter } from '@/lib/util';
 
 import classes from './peerMatchingPage.module.css';
 
-export async function findUsers() {
-  return await api.get<TFindUsersVo>(FIND_USERS_URL);
-}
-
-function capitalizeFirstLetter(str: string) {
-  if (!str) return '';
-  return str
-    .split(' ')
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(' ');
-}
-
 export default function PeerMatchingPage() {
-  const navigate = useNavigate();
+  const usersQuery = useFindUsers();
 
-  const query = useQuery({
-    queryKey: ['users'],
-    queryFn: async (): Promise<TFindUsersVo> => {
-      const res = await findUsers();
-      return res.data;
-    },
-  });
+  if (usersQuery.isPending) return <Text>Loading…</Text>;
 
-  useHotkeys([
-    ['mod+K', () => spotlight.open()],
-    ['Escape', () => spotlight.close()],
-  ]);
-
-  if (query.isPending) return <Text>Loading…</Text>;
-
-  if (query.isError) {
-    const msg = query.error instanceof Error ? query.error.message : String(query.error);
+  if (usersQuery.isError) {
+    const msg =
+      usersQuery.error instanceof Error ? usersQuery.error.message : String(usersQuery.error);
     return <Text c='red'>An error has occurred: {msg}</Text>;
   }
 
-  const users = query.data?.users ?? [];
-
-  const actions = users.map((user) => {
-    const subtitlesArr: string[] = [];
-
-    if (user.pronoun?.pronounName)
-      subtitlesArr.push(capitalizeFirstLetter(user.pronoun.pronounName));
-    if (user.university?.universityName)
-      subtitlesArr.push(capitalizeFirstLetter(user.university.universityName));
-    if (user.domain?.domainName) subtitlesArr.push(capitalizeFirstLetter(user.domain.domainName));
-
-    const subtitles = subtitlesArr.join(' · ');
-
-    return {
-      id: user.userId,
-      label: user.userDisplayName,
-      description: subtitles,
-      leftSection: <Avatar src={user.userAvatarUrl} size={56} radius='xl' />,
-      onClick: () => navigate(`${APP_ROUTE.USER}/${user.userId}`),
-    };
-  });
-
-  const currentUserAvatarUrl =
-    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=128&q=80';
+  const users = usersQuery.data?.users ?? [];
 
   return (
     <Box className={classes.page}>
-      <Spotlight
-        actions={actions}
-        nothingFound='No users found...'
-        highlightQuery
-        closeOnEscape
-        closeOnClickOutside
-        searchProps={{
-          leftSection: <IconSearch size={16} />,
-          placeholder: 'Search User',
-        }}
-        classNames={{
-          actionLabel: classes.actionLabel,
-        }}
-      />
-
       {/* Top filter bar */}
-      <Paper className={classes.filterBar} radius='md' p='md'>
-        <Group justify='space-between' align='center' wrap='nowrap' className={classes.filterRow}>
-          {/* Left: selects */}
-          <Group gap='md' wrap='nowrap' className={classes.filterLeft}>
-            <Select
-              placeholder='Interests'
-              data={[]}
-              w={220}
-              rightSection={<IconChevronDown size={16} />}
-              rightSectionPointerEvents='none'
-              className={classes.selectOneChevron}
-            />
-            <Select
-              placeholder='Goals'
-              data={[]}
-              w={220}
-              rightSection={<IconChevronDown size={16} />}
-              rightSectionPointerEvents='none'
-              className={classes.selectOneChevron}
-            />
-          </Group>
-
-          {/* Right: search + icons */}
-          <Group gap={10} wrap='nowrap' className={classes.filterRight}>
-            <TextInput
-              className={classes.search}
-              leftSection={<IconSearch size={16} />}
-              placeholder='Search User'
-              w={320}
-              rightSectionWidth={90}
-              rightSection={
-                <Kbd className={classes.kbdSingle}>
-                  Ctrl <span className={classes.kbdPlus}>+</span> K
-                </Kbd>
-              }
-              readOnly
-              onClick={() => spotlight.open()}
-              styles={{
-                input: { cursor: 'pointer' },
-              }}
-            />
-
-            <ActionIcon
-              variant='subtle'
-              radius='xl'
-              size={36}
-              aria-label='Notifications'
-              className={classes.topIcon}>
-              <IconBell size={20} />
-            </ActionIcon>
-
-            <Avatar
-              src={currentUserAvatarUrl}
-              radius={100}
-              size={36}
-              className={classes.topAvatar}
-            />
-          </Group>
-        </Group>
-      </Paper>
+      <Group
+        justify='space-between'
+        align='center'
+        wrap='nowrap'
+        className={classes.filterRow}></Group>
 
       {/* User cards */}
-      <Stack gap='md' mt='md'>
+      <Stack gap='md' mt='md' maw={'80%'} mx={'auto'} miw={680}>
         {users.map((user) => {
           const interests = user.interests ?? [];
           const goals = user.personalGoals ?? [];
@@ -188,13 +50,13 @@ export default function PeerMatchingPage() {
 
           const badgeItems = [
             ...interests.map((i) => ({
-              key: `i-${i.interestId}`,
+              key: i.interestId,
               label: i.interestName,
               color: 'blue' as const,
             })),
             ...goals.map((g) => ({
-              key: `g-${g.personalGoalId}`,
-              label: g.personalGoalName,
+              key: g.personalGoalId,
+              label: g.personalGoalTitle,
               color: 'green' as const,
             })),
           ].slice(0, 4);
@@ -210,9 +72,16 @@ export default function PeerMatchingPage() {
                 />
 
                 <Box className={classes.main}>
-                  <Text fw={700} className={classes.name}>
-                    {user.userDisplayName}
-                  </Text>
+                  <Flex gap={8} align={'center'}>
+                    <Text fw={700} className={classes.name}>
+                      {user.userDisplayName}
+                    </Text>
+                    {user.roleName && user.roleName !== UserRole.User && (
+                      <Badge color='yellow' size='xs' style={{ textTransform: 'capitalize' }}>
+                        {capitalizeFirstLetter(user.roleName)}
+                      </Badge>
+                    )}
+                  </Flex>
 
                   <Text size='xs' c='dimmed' className={classes.subtitle}>
                     {subtitles}
@@ -251,7 +120,7 @@ export default function PeerMatchingPage() {
                         View Profile
                       </Button>
 
-                      <Button
+                      {/* <Button
                         variant='light'
                         color='blue'
                         radius='md'
@@ -261,7 +130,7 @@ export default function PeerMatchingPage() {
                         className={classes.actionBtn}
                         bd={'1px solid blue'}>
                         Send Request
-                      </Button>
+                      </Button> */}
                     </Group>
                   </Group>
                 </Box>

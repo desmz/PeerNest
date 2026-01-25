@@ -5,7 +5,7 @@ import LoginPage from '@/components/pages/auth/signInPage';
 import BanPage from '@/components/pages/ban/banPage';
 import Error404 from '@/components/pages/error/error404';
 import HomePage from '@/components/pages/homePage';
-import ResourcePage from '@/components/pages/playground/resources';
+// import ResourcePage from '@/components/pages/playground/resources';
 import MyProfileEditingPage from '@/components/pages/user/myProfileEditing';
 import MyProfilePage from '@/components/pages/user/myProfilePage';
 import PeerMatchingPage from '@/components/pages/user/peerMatchingPage';
@@ -30,7 +30,7 @@ export function App() {
         <Route path={`${APP_ROUTE.USER}/:userId`} element={<PeerProfilePreviewPage />} />
 
         {/* temporary page for testing */}
-        <Route path='resources' element={<ResourcePage />} />
+        {/* <Route path='resources' element={<ResourcePage />} /> */}
       </Route>
 
       <Route path={APP_ROUTE.BAN} element={<BanPage />} />
