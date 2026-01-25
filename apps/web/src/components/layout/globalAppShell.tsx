@@ -1,32 +1,14 @@
 import {
   Anchor,
   AppShell,
-<<<<<<< HEAD
   Avatar,
   Burger,
+  Button,
+  FileInput,
   Flex,
   Group,
   Image,
-  NavLink,
-  ScrollArea,
-  Title,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router';
-
-import logoImage from '@/assets/logo.svg';
-import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
-import { APP_ROUTE } from '@/lib/app-route';
-
-import AppShellHeaderPeerMatching from './components/appShellHeaderPeerMatching';
-=======
-  Button,
-  Burger,
-  FileInput,
-  Group,
-  Image,
+  Menu,
   Modal,
   NavLink,
   ScrollArea,
@@ -34,7 +16,6 @@ import AppShellHeaderPeerMatching from './components/appShellHeaderPeerMatching'
   Stack,
   Textarea,
   Title,
-  Flex,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
@@ -47,23 +28,27 @@ import {
   TGetRolesVo,
 } from '@peernest/contract';
 import { UploadType, UserRole } from '@peernest/core';
-import { IconArrowRight } from '@tabler/icons-react';
+import { IconArrowRight, IconLogout } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useAtom } from 'jotai';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
-import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router';
 
 import logoImage from '@/assets/logo.svg';
 import useUploadAttachment from '@/features/attachment/hooks/use-upload-attachment';
+import useAuth from '@/features/auth/hooks/use-auth';
+import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
+import { APP_ROUTE } from '@/lib/app-route';
 
+import AppShellHeaderPeerMatching from './components/appShellHeaderPeerMatching';
 import classes from './globalAppShell.module.css';
->>>>>>> origin/develop
 
 type TGlobalAppShellProps = {
   children: React.ReactNode;
 };
 
-<<<<<<< HEAD
 const headerMap = {
   [APP_ROUTE.USER]: <AppShellHeaderPeerMatching />,
 };
@@ -73,23 +58,21 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
   const [currentUser] = useAtom(currentUserAtom);
   const location = useLocation();
   const [headerComponent, setHeaderComponent] = useState<React.ReactNode>(null);
+  const { signOut } = useAuth();
 
   useEffect(() => {
     setHeaderComponent(headerMap[location.pathname]);
   }, [location]);
-=======
-// 1. call api
-async function getRole() {
-  return api.get<TGetRolesVo>(GET_ROLES_URL);
-}
+  // 1. call api
+  async function getRole() {
+    return api.get<TGetRolesVo>(GET_ROLES_URL);
+  }
 
-async function applyRole(data: TApplyRoleRo) {
-  const res = await api.post<void>(APPLY_ROLE_URL, data);
-  return res.data;
-}
+  async function applyRole(data: TApplyRoleRo) {
+    const res = await api.post<void>(APPLY_ROLE_URL, data);
+    return res.data;
+  }
 
-export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
-  const [opened, { toggle }] = useDisclosure();
   const [modalOpened, modalHandlers] = useDisclosure(false);
   const { uploadFile, isUploading } = useUploadAttachment();
 
@@ -157,7 +140,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
     },
   });
 
-  async function onSubmit(data: TApplyRoleRo) {
+  async function onApplyRoleSubmit(data: TApplyRoleRo) {
     applyRoleMutation.mutate(data);
   }
 
@@ -167,7 +150,10 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
       label: role.roleName.charAt(0).toUpperCase() + role.roleName.slice(1),
       value: role.roleId,
     }));
->>>>>>> origin/develop
+
+  async function onSignOutClick() {
+    await signOut();
+  }
 
   return (
     <AppShell
@@ -206,7 +192,23 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                 className={classes.topIcon}>
                 <IconBell size={20} />
               </ActionIcon> */}
-              <Avatar src={currentUser?.avatarUrl} radius={100} size={36} />
+              <Menu shadow='md' width={200} position='bottom-end' offset={8}>
+                <Menu.Target>
+                  <Avatar src={currentUser?.avatarUrl} radius={100} size={36} />
+                </Menu.Target>
+                <Menu.Dropdown py={8}>
+                  <Menu.Item>
+                    <Button
+                      leftSection={<IconLogout />}
+                      onClick={onSignOutClick}
+                      variant='transparent'
+                      c={'black'}
+                      size='compact-sm'>
+                      Sign Out
+                    </Button>
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             </Flex>
           </Flex>
         </Group>
@@ -235,7 +237,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
             classNames={{
               title: classes.modalTitle,
             }}>
-            <form onSubmit={applyRoleForm.onSubmit(onSubmit)}>
+            <form onSubmit={applyRoleForm.onSubmit(onApplyRoleSubmit)}>
               <Stack gap='xl'>
                 <Select
                   label='Role'

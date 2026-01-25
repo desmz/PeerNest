@@ -1,9 +1,6 @@
 import '@mantine/core/styles.css';
-<<<<<<< HEAD
 import '@mantine/spotlight/styles.css';
-=======
 import '@mantine/notifications/styles.css';
->>>>>>> origin/develop
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

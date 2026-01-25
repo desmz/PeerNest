@@ -6,16 +6,31 @@ import {
   Flex,
   Grid,
   Group,
+  Modal,
   Paper,
   Stack,
   Text,
+  TextInput,
   Title,
 } from '@mantine/core';
-import { GET_ME_PROFILE_URL, type TGetMeProfileVo } from '@peernest/contract';
+import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
+import {
+  CHANGE_PASSWORD_URL,
+  changePasswordRoSchema,
+  GET_ME_PROFILE_URL,
+  TChangePasswordRo,
+  TVerifyChangeEmailRo,
+  VERIFY_CHANGE_EMAIL_URL,
+  verifyChangeEmailRoSchema,
+  type TGetMeProfileVo,
+} from '@peernest/contract';
 import { UserRole } from '@peernest/core';
 import { IconEdit, IconLock, IconMail } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link } from 'react-router';
 
 import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
@@ -23,17 +38,102 @@ import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
 import { capitalizeFirstLetter } from '@/lib/util';
 
-export async function getMeProfile() {
+async function getMeProfile() {
   return await api.get<TGetMeProfileVo>(GET_ME_PROFILE_URL);
+}
+
+async function changePassword(data: TChangePasswordRo) {
+  await api.patch<void>(CHANGE_PASSWORD_URL, data);
+}
+
+async function verifyChangeEmail(data: TVerifyChangeEmailRo) {
+  await api.patch<void>(VERIFY_CHANGE_EMAIL_URL, data);
 }
 
 export default function MyProfilePage() {
   const [currentUser] = useAtom(currentUserAtom);
+  const [changePasswordModalOpened, changePasswordModalHandler] = useDisclosure(false);
+  const [verifyChangeEmailModalOpened, verifyChangeEmailModalHandler] = useDisclosure(false);
 
   const query = useQuery({
     queryKey: ['users', 'me', 'profile'],
     queryFn: async () => (await getMeProfile()).data,
   });
+
+  const changePasswordForm = useForm<TChangePasswordRo>({
+    initialValues: {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+    validate: zod4Resolver(changePasswordRoSchema),
+  });
+
+  const changePasswordMutation = useMutation<
+    void,
+    { error: { message: string } },
+    TChangePasswordRo
+  >({
+    mutationFn: async (data) => {
+      await changePassword(data);
+    },
+    onSuccess: () => {
+      notifications.show({
+        message: 'You password have been updated successfully!',
+        color: 'green',
+      });
+
+      changePasswordModalHandler.close();
+      changePasswordForm.reset();
+    },
+    onError: (err) => {
+      notifications.show({
+        message: err.error.message,
+        color: 'red',
+      });
+    },
+  });
+
+  const onChangePasswordSubmit = (data: TChangePasswordRo) => {
+    changePasswordMutation.mutate(data);
+  };
+
+  const verifyChangeEmailForm = useForm<TVerifyChangeEmailRo>({
+    initialValues: {
+      newEmail: '',
+    },
+    validate: zod4Resolver(verifyChangeEmailRoSchema),
+  });
+
+  const verifyChangeEmailMutation = useMutation<
+    void,
+    { error: { message: string } },
+    TVerifyChangeEmailRo
+  >({
+    mutationFn: async (data) => {
+      await verifyChangeEmail(data);
+    },
+    onSuccess: () => {
+      notifications.show({
+        message: 'Please check your mailbox to verify new email.',
+        color: 'green',
+      });
+
+      verifyChangeEmailModalHandler.close();
+      verifyChangeEmailForm.reset();
+    },
+    onError: (err) => {
+      console.error(err);
+      notifications.show({
+        message: err.error.message,
+        color: 'red',
+      });
+    },
+  });
+
+  const onVerifyChangeEmailSubmit = (data: TVerifyChangeEmailRo) => {
+    verifyChangeEmailMutation.mutate(data);
+  };
 
   if (query.isPending) return <Text>Loading…</Text>;
   if (query.isError) return <Text c='red'>Failed to load profile.</Text>;
@@ -78,9 +178,75 @@ export default function MyProfilePage() {
                   Edit Profile
                 </Button>
 
-                <Button leftSection={<IconLock size={16} />} radius='md' size='sm'>
+                <Button
+                  leftSection={<IconLock size={16} />}
+                  radius='md'
+                  size='sm'
+                  onClick={changePasswordModalHandler.open}>
                   Change Password
                 </Button>
+                <Modal
+                  opened={changePasswordModalOpened}
+                  onClose={changePasswordModalHandler.close}
+                  title={
+                    <Text fw={600} fz={'lg'}>
+                      Change Your Password
+                    </Text>
+                  }
+                  centered
+                  padding={'lg'}
+                  size={520}>
+                  <form onSubmit={changePasswordForm.onSubmit(onChangePasswordSubmit)}>
+                    <Stack gap={48}>
+                      <Stack>
+                        <TextInput
+                          label='Old Password'
+                          key={changePasswordForm.key('oldPassword')}
+                          type='password'
+                          {...changePasswordForm.getInputProps('oldPassword')}
+                          radius={'md'}
+                          styles={{ label: { marginBottom: 6, fontWeight: 600 } }}
+                          withAsterisk
+                        />
+                        <TextInput
+                          label='New Password'
+                          key={changePasswordForm.key('newPassword')}
+                          {...changePasswordForm.getInputProps('newPassword')}
+                          type='password'
+                          radius={'md'}
+                          styles={{ label: { marginBottom: 6, fontWeight: 600 } }}
+                          withAsterisk
+                        />
+                        <TextInput
+                          label='Confirm Password'
+                          key={changePasswordForm.key('confirmPassword')}
+                          {...changePasswordForm.getInputProps('confirmPassword')}
+                          type='password'
+                          withAsterisk
+                          radius={'md'}
+                          styles={{ label: { marginBottom: 6, fontWeight: 600 } }}
+                        />
+                      </Stack>
+                      <Flex
+                        w={'fit-content'}
+                        direction={{ base: 'column', sm: 'row' }}
+                        gap={'xs'}
+                        justify={'flex-end'}
+                        ml='auto'>
+                        <Button
+                          variant='subtle'
+                          color='gray'
+                          radius='lg'
+                          onClick={changePasswordModalHandler.close}>
+                          Cancel
+                        </Button>
+                        <Button type='submit' variant='filled' radius='lg'>
+                          Submit
+                        </Button>
+                      </Flex>
+                    </Stack>
+                  </form>
+                </Modal>
               </Group>
             </Flex>
           </Group>
@@ -96,11 +262,57 @@ export default function MyProfilePage() {
             </Grid.Col>
 
             <Grid.Col span={6}>
-              <Flex align='flex-end' h={56}>
-                <Button leftSection={<IconMail size={16} />} radius='md' size='sm'>
-                  Change Email
-                </Button>
-              </Flex>
+              <Button
+                leftSection={<IconMail size={16} />}
+                radius='md'
+                size='sm'
+                onClick={verifyChangeEmailModalHandler.open}>
+                Change Email
+              </Button>
+              <Modal
+                opened={verifyChangeEmailModalOpened}
+                onClose={verifyChangeEmailModalHandler.close}
+                title={
+                  <Text fw={600} fz={'lg'}>
+                    Change Your Email
+                  </Text>
+                }
+                centered
+                padding={'lg'}
+                size={520}>
+                <form onSubmit={verifyChangeEmailForm.onSubmit(onVerifyChangeEmailSubmit)}>
+                  <Stack gap={48}>
+                    <Stack>
+                      <TextInput
+                        label='New Email'
+                        type='email'
+                        key={verifyChangeEmailForm.key('newEmail')}
+                        {...verifyChangeEmailForm.getInputProps('newEmail')}
+                        radius={'md'}
+                        styles={{ label: { marginBottom: 6, fontWeight: 600 } }}
+                        withAsterisk
+                      />
+                    </Stack>
+                    <Flex
+                      w={'fit-content'}
+                      direction={{ base: 'column', sm: 'row' }}
+                      gap={'xs'}
+                      justify={'flex-end'}
+                      ml='auto'>
+                      <Button
+                        variant='subtle'
+                        color='gray'
+                        radius='lg'
+                        onClick={verifyChangeEmailModalHandler.close}>
+                        Cancel
+                      </Button>
+                      <Button type='submit' variant='filled' radius='lg'>
+                        Submit
+                      </Button>
+                    </Flex>
+                  </Stack>
+                </form>
+              </Modal>
             </Grid.Col>
 
             {/* Display Name */}
