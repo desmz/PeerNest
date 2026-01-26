@@ -14,8 +14,6 @@ export default function HomePage() {
     await signOut();
   }
 
-  // this is just testing purpose lol
-
   return (
     <>
       <Helmet>

@@ -37,6 +37,19 @@ import {
   CheckInWellnessFactor,
   CheckInHealthMeasurement,
   CheckInWellnessSymptom,
+  BanRequest,
+  BanRequestProof,
+  BanAction,
+  RoleApplication,
+  RoleAttachment,
+  RoleChangeAction,
+  CounselorUser,
+  AchievementCategory,
+  Achievement,
+  UserAchievement,
+  NotificationCategory,
+  NotificationType,
+  Notification,
 } from './db';
 
 // role
@@ -218,3 +231,68 @@ export type TUpdatableCheckInWellnessFactor = Updateable<Omit<CheckInWellnessFac
 export type TSelectableCheckInHealthMeasurement = Selectable<CheckInHealthMeasurement>;
 export type TInsertableCheckInHealthMeasurement = Insertable<CheckInHealthMeasurement>;
 export type TUpdatableCheckInHealthMeasurement = Updateable<Omit<CheckInHealthMeasurement, 'id'>>;
+
+// ban_request
+export type TSelectableBanRequest = Selectable<BanRequest>;
+export type TInsertableBanRequest = Insertable<BanRequest>;
+export type TUpdatableBanRequest = Updateable<Omit<BanRequest, 'id'>>;
+
+// ban_request_proof
+export type TSelectableBanRequestProof = Selectable<BanRequestProof>;
+export type TInsertableBanRequestProof = Insertable<BanRequestProof>;
+export type TUpdatableBanRequestProof = Updateable<Omit<BanRequestProof, 'id'>>;
+
+// ban_action
+export type TSelectableBanAction = Selectable<BanAction>;
+export type TInsertableBanAction = Insertable<BanAction>;
+export type TUpdatableBanAction = Updateable<Omit<BanAction, 'id'>>;
+
+// role_application
+export type TSelectableRoleApplication = Selectable<RoleApplication>;
+export type TInsertableRoleApplication = Insertable<RoleApplication>;
+export type TUpdatableRoleApplication = Updateable<Omit<RoleApplication, 'id'>>;
+
+// role_attachment
+export type TSelectableRoleAttachment = Selectable<RoleAttachment>;
+export type TInsertableRoleAttachment = Insertable<RoleAttachment>;
+export type TUpdatableRoleAttachment = Updateable<Omit<RoleAttachment, 'id'>>;
+
+// role_change_action
+export type TSelectableRoleChangeAction = Selectable<RoleChangeAction>;
+export type TInsertableRoleChangeAction = Insertable<RoleChangeAction>;
+export type TUpdatableRoleChangeAction = Updateable<Omit<RoleChangeAction, 'id'>>;
+
+// counselor_user
+export type TSelectableCounselorUser = Selectable<CounselorUser>;
+export type TInsertableCounselorUser = Insertable<CounselorUser>;
+export type TUpdatableCounselorUser = Updateable<Omit<CounselorUser, 'id'>>;
+
+// achievement_category
+export type TSelectableAchievementCategory = Selectable<AchievementCategory>;
+export type TInsertableAchievementCategory = Insertable<AchievementCategory>;
+export type TUpdatableAchievementCategory = Updateable<Omit<AchievementCategory, 'id'>>;
+
+// achievement
+export type TSelectableAchievement = Selectable<Achievement>;
+export type TInsertableAchievement = Insertable<Achievement>;
+export type TUpdatableAchievement = Updateable<Omit<Achievement, 'id'>>;
+
+// user_achievement
+export type TSelectableUserAchievement = Selectable<UserAchievement>;
+export type TInsertableUserAchievement = Insertable<UserAchievement>;
+export type TUpdatableUserAchievement = Updateable<Omit<UserAchievement, 'id'>>;
+
+// notification_category
+export type TSelectableNotificationCategory = Selectable<NotificationCategory>;
+export type TInsertableNotificationCategory = Insertable<NotificationCategory>;
+export type TUpdatableNotificationCategory = Updateable<Omit<NotificationCategory, 'id'>>;
+
+// notification_type
+export type TSelectableNotificationType = Selectable<NotificationType>;
+export type TInsertableNotificationType = Insertable<NotificationType>;
+export type TUpdatableNotificationType = Updateable<Omit<NotificationType, 'id'>>;
+
+// notification
+export type TSelectableNotification = Selectable<Notification>;
+export type TInsertableNotification = Insertable<Notification>;
+export type TUpdatableNotification = Updateable<Omit<Notification, 'id'>>;

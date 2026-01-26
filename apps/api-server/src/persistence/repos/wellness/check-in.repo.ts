@@ -354,4 +354,60 @@ export class CheckInRepository {
       );
     }
   }
+
+  async hasConsecutiveCheckInStreak(
+    userId: string,
+    streakDays: number,
+    tx?: TKyselyTransaction
+  ): Promise<boolean> {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const result = await db
+        .with('daily_check_in', (eb) =>
+          eb
+            .selectFrom('checkIn')
+            .select((eb) => [
+              'checkIn.checkInUserId',
+              eb.cast<Date>('checkIn.checkInCheckInTime', 'date').as('checkInDate'),
+            ])
+            .distinct()
+            .where('checkIn.checkInUserId', '=', userId)
+        )
+        .with('streak_group', (eb) =>
+          eb.selectFrom('daily_check_in').select([
+            'checkInUserId',
+            'checkInDate',
+            sql`"check_in_date" - CAST(
+              ROW_NUMBER() OVER (
+                PARTITION BY "check_in_user_id"
+                ORDER BY "check_in_date"
+              ) AS INT
+            )`.as('streakKey'),
+          ])
+        )
+        .with('streak_length', (eb) =>
+          eb
+            .selectFrom('streak_group')
+            .select((eb) => [
+              'checkInUserId',
+              eb.fn.count<number>('checkInDate').as('streakLength'),
+            ])
+            .groupBy(['checkInUserId', 'streakKey'])
+        )
+        .selectFrom('streak_length')
+        .select((eb) => [
+          sql<boolean>`MAX(${eb.ref('streakLength')}) >= ${streakDays}`.as('achieved'),
+        ])
+        .executeTakeFirst();
+
+      return Boolean(result?.achieved);
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInRepository.repoName}] | Fail to check has consecutive check in streak`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, streakDays }
+      );
+    }
+  }
 }

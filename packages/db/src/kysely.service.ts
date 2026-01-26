@@ -61,7 +61,7 @@ export class KyselyService implements OnModuleInit, OnModuleDestroy {
     this.pool = new Pool({
       connectionString: envObj.PG_DATABASE_URL,
       ssl: { rejectUnauthorized: false },
-      max: 10,
+      max: 20,
     }).on('error', (err) => {
       console.error('Database error:', err.message);
     });

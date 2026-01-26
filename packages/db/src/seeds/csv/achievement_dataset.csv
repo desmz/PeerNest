@@ -1,0 +1,25 @@
+achievement_id,achievement_title,description,category,type,is_active,criteria_type
+1,Newly Nested,Join PeerNest,general,immediate,TRUE,createAccount
+2,Profile Feathered,Complete full profile setup,general,immediate,TRUE,completeProfile
+3,Nest Loyalist,Active for 30 days (visited app),general,periodic,FALSE,
+4,Early Wing,Log in between 6-9 AM for 10 days,general,periodic,FALSE,
+5,Night Percher,Log in between 11 PM-3 AM for 10 days,general,periodic,FALSE,
+6,Badge Collector,Earn 10 titles,general,immediate,FALSE,
+7,Nest Veteran,1 year of account age,general,periodic,FALSE,
+8,Community Guardian,Zero rule violations for 180 days,general,periodic,FALSE,
+9,Nonstop Flyer,Active (any activity) for 7 consecutive days,general,periodic,FALSE,
+10,Nest Starter,Create first discussion post,discussion,immediate,TRUE,makeDiscussion
+11,Branch Contributor,Post 10 high-quality replies with 5+ likes each,discussion,periodic,TRUE,writeHighQualityComment
+12,Helpful Wing,Receive 30 total likes across discussions,discussion,periodic,TRUE,receiveDiscussionLikes
+13,Thread Keeper,Start 5 discussions with 10+ comments each,discussion,periodic,FALSE,
+14,Conversation Builder,Start 15 discussions with more than 5 likes,discussion,periodic,TRUE,earnDiscussionLike
+15,Community Nestmaker,Successfully report 3 genuinely harmful posts or comments,discussion,periodic,FALSE,
+16,Rapid Responder,Comment to 10 discussions within 10 minutes of posting,discussion,periodic,FALSE,
+17,Echo Listener,First reply to 20 discussions,discussion,periodic,FALSE,
+18,Mood Tracker Hatchling,Check-in for 7 consecutive days,mood & wellness,immediate,TRUE,maintainWellnessStreak
+19,Consistency Feather,Check-in for 30 consecutive days,mood & wellness,immediate,TRUE,maintainWellnessStreak
+20,Wellness Explorer,Track all different wellness factors in a check-in,mood & wellness,immediate,TRUE,coverAllWellnessFactors
+21,Wellness Analyst,View own analytics page 10 times,mood & wellness,immediate,FALSE,
+22,Slow & Steady,60-day tracking streak,mood & wellness,periodic,FALSE,
+23,Self-Care Sparrow,Complete all Personal Care tags in a check-in,mood & wellness,periodic,FALSE,
+24,Restful Percher,Track sleep time for 15 days,mood & wellness,periodic,FALSE,

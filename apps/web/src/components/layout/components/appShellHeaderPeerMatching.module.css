@@ -1,0 +1,32 @@
+/* Search input */
+.search {
+  width: 320px;
+}
+
+/* Ctrl + K capsule (small like Figma) */
+.kbdSingle {
+  background: #eef1f4;
+  border: 1px solid #d9dee3;
+  border-radius: 8px;
+
+  padding: 2px 10px;
+  height: 22px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Bell + profile */
+.topIcon {
+  width: 36px;
+  height: 36px;
+}
+
+.actionLabel {
+  font-weight: 600;
+}

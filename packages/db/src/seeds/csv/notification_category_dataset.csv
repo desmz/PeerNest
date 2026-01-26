@@ -1,0 +1,8 @@
+notification_category_id,notification_category_name
+1,discussion
+2,friendship
+3,counselor
+4,achievement
+5,moderation
+6,role
+7,system

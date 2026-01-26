@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { HttpErrorCode } from '@peernest/core';
-import { dbOrTx, KyselyService, TKyselyTransaction, TSelectableInterest } from '@peernest/db';
+import { generateInterestId, HttpErrorCode } from '@peernest/core';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableInterest,
+  TKyselyTransaction,
+  TSelectableInterest,
+  TUpdatableInterest,
+} from '@peernest/db';
 
 import { CustomHttpException } from '@/custom.exception';
 
@@ -9,6 +16,116 @@ export class InterestRepository {
   private static repoName = 'INTEREST_REPOSITORY';
 
   constructor(private readonly kyselyService: KyselyService) {}
+
+  async createInterest(interestObj: TInsertableInterest, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = interestObj.interestCreatedTime ? interestObj.interestCreatedTime : new Date();
+
+      const interest = await db
+        .insertInto('interest')
+        .values({
+          ...interestObj,
+          interestId: interestObj.interestId ? interestObj.interestId : generateInterestId(),
+          interestCreatedTime: now,
+        })
+        .returningAll()
+        .executeTakeFirst();
+
+      return interest!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to create interest`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, interestObj }
+      );
+    }
+  }
+
+  async updateInterestById(
+    interestPayload: TUpdatableInterest,
+    id: string,
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const now = interestPayload.interestUpdatedTime
+        ? interestPayload.interestUpdatedTime
+        : new Date();
+
+      const interest = await db
+        .updateTable('interest')
+        .set({
+          ...interestPayload,
+          interestUpdatedTime: now,
+        })
+        .where('interestId', '=', id)
+        .returningAll()
+        .executeTakeFirst();
+
+      return interest!;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to update interest by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, interestPayload, id }
+      );
+    }
+  }
+
+  async findInterestById(
+    id: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db.selectFrom('interest').where('interestId', '=', id).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('interestDeletedTime', 'is', null);
+      }
+
+      const interest = await query.executeTakeFirst();
+
+      return interest;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to find interest by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
+      );
+    }
+  }
+
+  async findInterestByName(
+    name: string,
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      let query = db.selectFrom('interest').where('interestName', '=', name).selectAll();
+
+      if (!options?.includedDeleted) {
+        query = query.where('interestDeletedTime', 'is', null);
+      }
+
+      const interest = await query.executeTakeFirst();
+
+      return interest;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to find interest by name`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
+      );
+    }
+  }
 
   async findInterests(
     options?: {
@@ -40,6 +157,30 @@ export class InterestRepository {
         `[${InterestRepository.repoName}] | Fail to find interests`,
         HttpErrorCode.INTERNAL_SERVER_ERROR,
         { error, options }
+      );
+    }
+  }
+
+  //* -1 indicates not found (zero row)
+  async findMaxPosition(tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const interest = await db
+        .selectFrom('interest')
+        .select((eb) =>
+          eb.cast<number>(eb.fn.max('interestPosition'), 'bigint').as('interestMaxPosition')
+        )
+        .executeTakeFirst();
+
+      const maxPos = interest?.interestMaxPosition ? interest.interestMaxPosition : -1;
+
+      return maxPos;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${InterestRepository.repoName}] | Fail to find max position by id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
       );
     }
   }
