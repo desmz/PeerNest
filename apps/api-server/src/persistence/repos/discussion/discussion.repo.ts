@@ -921,6 +921,7 @@ export class DiscussionRepository {
         )
         .selectFrom('base_discussion')
         .innerJoin('discussion', 'discussion.discussionId', 'base_discussion.discussionId')
+        .innerJoin('user as archiver', 'archiver.userId', 'discussion.discussionArchivedBy')
         .innerJoin('user', 'user.userId', 'discussion.discussionAuthorId')
         .innerJoin('role', 'role.roleId', 'user.userRoleId')
         .leftJoin('discussion_stat', 'discussion_stat.discussionId', 'discussion.discussionId')
@@ -947,6 +948,7 @@ export class DiscussionRepository {
           'discussion.discussionCreatedTime',
           'discussion.discussionUpdatedTime',
           'discussion.discussionArchivedBy',
+          'archiver.userDisplayName as discussionArchivedByName',
           'discussion.discussionArchivedTime',
           jsonBuildObject({
             userId: eb.ref('user.userId'),

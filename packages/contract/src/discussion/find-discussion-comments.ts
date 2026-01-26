@@ -39,7 +39,7 @@ export const findDiscussionCommentSchema = z.object({
   isLiked: z.boolean(),
   isReplied: z.boolean(),
   isReported: z.boolean(),
-  isDeleted: z.literal(true),
+  isDeleted: z.literal(false),
 
   get replies() {
     return z.array(findDiscussionCommentSchema).nullable();
@@ -49,7 +49,7 @@ export const findDiscussionCommentSchema = z.object({
 export const deletedFindDiscussionCommentsSchema = z.object({
   commentId: commentIdSchema(),
   commentParentCommentId: commentIdSchema().nullable(),
-  isDeleted: z.literal(false),
+  isDeleted: z.literal(true),
   replies: z.array(z.any()),
 });
 

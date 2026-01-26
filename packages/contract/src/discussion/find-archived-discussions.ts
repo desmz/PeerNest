@@ -33,6 +33,7 @@ export const findArchivedDiscussionSchema = getDiscussionVoSchema
   })
   .extend({
     discussionArchivedBy: userIdSchema(),
+    discussionArchivedByName: z.string().nonempty(),
     discussionArchivedTime: z.date(),
   });
 
