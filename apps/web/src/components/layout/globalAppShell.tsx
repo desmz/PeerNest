@@ -135,7 +135,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
     <AppShell
       header={{ height: 60 }}
       navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      padding='md'>
+      padding='0'>
       <AppShell.Header>
         <Group h='100%' px='md'>
           <Burger opened={opened} onClick={toggle} hiddenFrom='sm' size='sm' />

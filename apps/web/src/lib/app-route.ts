@@ -9,4 +9,6 @@ export const APP_ROUTE = {
   ACHIEVEMENT: '/achievement',
   CREATE_DISCUSSION: '/discussions/create',
   DISCUSSION: '/discussions',
+  PROFILE_DISCUSSION_POST: 'me/profile',
+  MANAGE_DISCUSSIONS: '/manage/discussions',
 };
