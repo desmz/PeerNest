@@ -107,7 +107,7 @@ export default function DiscussionForumPage() {
 
   return (
     <Stack>
-      <Group px={'md'} gap={24} pb={'xs'}>
+      <Group px={'md'} gap={24} pt={'xs'}>
         <Select
           value={selectedSort}
           onChange={(value) => {
@@ -162,7 +162,7 @@ export default function DiscussionForumPage() {
           {discussionsData?.discussions?.map((discussionGroup) => {
             return (
               <Anchor
-                href={APP_ROUTE.HOME}
+                href={`${APP_ROUTE.DISCUSSION}/${discussionGroup.discussionId}`}
                 underline='never'
                 c={'black'}
                 key={discussionGroup.discussionId}>

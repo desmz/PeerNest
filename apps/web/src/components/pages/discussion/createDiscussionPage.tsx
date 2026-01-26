@@ -93,7 +93,7 @@ export default function CreateDiscussionPage() {
     },
     onError: () => {
       notifications.show({
-        message: `Error: Your application is failed to submit. Please try again.`,
+        message: `Error: Your discussion is failed to submit. Please try again.`,
         color: 'red',
       });
     },
