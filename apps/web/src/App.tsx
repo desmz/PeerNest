@@ -17,6 +17,7 @@ import MyProfileEditingPage from '@/components/pages/user/myProfileEditing';
 import MyProfilePage from '@/components/pages/user/myProfilePage';
 import PeerMatchingPage from '@/components/pages/user/peerMatchingPage';
 import PeerProfilePreviewPage from '@/components/pages/user/peerProfilePreviewPage';
+import MoodAndWellnessPage from '@/components/pages/wellness/moodAndWellnessPage';
 import { APP_ROUTE } from '@/lib/app-route';
 
 export function App() {
@@ -36,7 +37,6 @@ export function App() {
         {/* Peer profile preview */}
         <Route path={`${APP_ROUTE.USER}/:userId`} element={<PeerProfilePreviewPage />} />
 
-        {/* temporary page for testing */}
         {/* <Route path='resources' element={<ResourcePage />} /> */}
         <Route path={APP_ROUTE.MANAGE} element={<ManagePage />} />
         <Route path={APP_ROUTE.MANAGE_DISCUSSIONS} element={<ManageDiscussions />} />
@@ -45,6 +45,9 @@ export function App() {
         <Route path={APP_ROUTE.CREATE_DISCUSSION} element={<CreateDiscussionPage />} />
         <Route path={APP_ROUTE.PROFILE_DISCUSSION_POST} element={<ProfileDiscussionPage />} />
         <Route path={`${APP_ROUTE.DISCUSSION}/:discussionId`} element={<PostDetailPage />} />
+
+        {/* Mood and wellness page */}
+        <Route path={APP_ROUTE.WELLNESS} element={<MoodAndWellnessPage />} />
       </Route>
 
       <Route path={APP_ROUTE.BAN} element={<BanPage />} />

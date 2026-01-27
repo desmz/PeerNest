@@ -7,7 +7,7 @@ import {
   TGetMyWellnessCheckInsQueryParams,
   TGetMyWellnessCheckInsVo,
   TGetWellnessCalendarQueryParams,
-  TGetWellnessCalendarVoSchema,
+  TGetWellnessCalendarVo,
   TGetWellnessCheckInVo,
   TGetWellnessFactorsSummaryQueryParams,
   TGetWellnessFactorsSummaryVo,
@@ -469,7 +469,7 @@ export class WellnessService {
 
   async getWellnessCalendar(
     getWellnessCalendarQueryParams: TGetWellnessCalendarQueryParams
-  ): Promise<TGetWellnessCalendarVoSchema> {
+  ): Promise<TGetWellnessCalendarVo> {
     const { month: providedMonth, year: providedYear } = getWellnessCalendarQueryParams;
 
     const userId = this.clsService.get('user.id');
