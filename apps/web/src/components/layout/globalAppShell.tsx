@@ -28,7 +28,7 @@ import {
   TGetRolesVo,
 } from '@peernest/contract';
 import { UploadType, UserRole } from '@peernest/core';
-import { IconArrowRight, IconLogout } from '@tabler/icons-react';
+import { IconArrowRight, IconDoorExit } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
@@ -43,6 +43,7 @@ import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
 
 import AppShellHeaderPeerMatching from './components/appShellHeaderPeerMatching';
+import AppShellHeaderWellness from './components/appShellHeaderWellness';
 import classes from './globalAppShell.module.css';
 
 type TGlobalAppShellProps = {
@@ -51,6 +52,7 @@ type TGlobalAppShellProps = {
 
 const headerMap = {
   [APP_ROUTE.USER]: <AppShellHeaderPeerMatching />,
+  [APP_ROUTE.WELLNESS]: <AppShellHeaderWellness />,
 };
 
 export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
@@ -199,7 +201,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                 <Menu.Dropdown py={8}>
                   <Menu.Item>
                     <Button
-                      leftSection={<IconLogout />}
+                      leftSection={<IconDoorExit />}
                       onClick={onSignOutClick}
                       variant='transparent'
                       c={'black'}
@@ -296,7 +298,9 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
           </Button>
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main bg='gray.1'>{children}</AppShell.Main>
+      <AppShell.Main h={'fit-content'} bg='gray.1'>
+        {children}
+      </AppShell.Main>
     </AppShell>
   );
 }

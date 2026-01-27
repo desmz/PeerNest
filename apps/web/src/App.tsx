@@ -12,6 +12,7 @@ import MyProfileEditingPage from '@/components/pages/user/myProfileEditing';
 import MyProfilePage from '@/components/pages/user/myProfilePage';
 import PeerMatchingPage from '@/components/pages/user/peerMatchingPage';
 import PeerProfilePreviewPage from '@/components/pages/user/peerProfilePreviewPage';
+import MoodAndWellnessPage from '@/components/pages/wellness/moodAndWellnessPage';
 import { APP_ROUTE } from '@/lib/app-route';
 
 export function App() {
@@ -31,10 +32,12 @@ export function App() {
         {/* Peer profile preview */}
         <Route path={`${APP_ROUTE.USER}/:userId`} element={<PeerProfilePreviewPage />} />
 
-        {/* temporary page for testing */}
         {/* <Route path='resources' element={<ResourcePage />} /> */}
         <Route path={APP_ROUTE.MANAGE} element={<ManagePage />} />
         <Route path={APP_ROUTE.ACHIEVEMENT} element={<AchievementPage />} />
+
+        {/* Mood and wellness page */}
+        <Route path={APP_ROUTE.WELLNESS} element={<MoodAndWellnessPage />} />
       </Route>
 
       <Route path={APP_ROUTE.BAN} element={<BanPage />} />

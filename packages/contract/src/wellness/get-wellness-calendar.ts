@@ -33,4 +33,4 @@ export const getWellnessCalendarVoSchema = z.array(
   })
 );
 
-export type TGetWellnessCalendarVoSchema = z.infer<typeof getWellnessCalendarVoSchema>;
+export type TGetWellnessCalendarVo = z.infer<typeof getWellnessCalendarVoSchema>;
