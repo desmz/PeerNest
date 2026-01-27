@@ -5,7 +5,11 @@ import {
   TGetWellnessOverviewQueryParams,
   TGetWellnessOverviewVo,
 } from '@peernest/contract';
-import { MAX_CHECK_IN_MOOD_RATING, WELLNESS_OVERVIEW_DEFAULT_DAYS } from '@peernest/core';
+import {
+  MAX_CHECK_IN_MOOD_RATING,
+  MAX_CHECK_IN_SLEEP_QUALITY_RATING,
+  WELLNESS_OVERVIEW_DEFAULT_DAYS,
+} from '@peernest/core';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -40,6 +44,8 @@ export default function WellnessOverviewSection() {
     return `${hours}h ${minutes}`;
   };
 
+  console.log(overviewData);
+
   return (
     <Stack gap={12}>
       <Title order={3}>Health Stats</Title>
@@ -59,7 +65,9 @@ export default function WellnessOverviewSection() {
           {overviewData ? (
             <Flex align={'flex-end'}>
               <Text fz={32} fw={700}>
-                {overviewData?.moodRating.average.toFixed(2)}
+                {overviewData?.moodRating.average
+                  ? overviewData?.moodRating.average.toFixed(2)
+                  : '-'}
               </Text>
               <WellnessOverviewTrendIndicator
                 trend={overviewData?.moodRating.trend}
@@ -78,12 +86,13 @@ export default function WellnessOverviewSection() {
           {overviewData ? (
             <Flex align={'flex-end'}>
               <Text fz={32} fw={700}>
-                {minutesToHourMinuteString(overviewData?.sleepTime.average)}
+                {overviewData?.sleepTime.average
+                  ? minutesToHourMinuteString(overviewData?.sleepTime.average)
+                  : '-'}
               </Text>
               <WellnessOverviewTrendIndicator
                 trend={overviewData?.sleepTime.trend}
                 changePercentage={overviewData?.sleepTime.changePercentage.toFixed(2)}
-                maxValue={MAX_CHECK_IN_MOOD_RATING}
               />
             </Flex>
           ) : (
@@ -97,12 +106,14 @@ export default function WellnessOverviewSection() {
           {overviewData ? (
             <Flex align={'flex-end'}>
               <Text fz={32} fw={700}>
-                {overviewData?.sleepQualityRating.average.toFixed(2)}
+                {overviewData?.sleepQualityRating.average
+                  ? overviewData?.sleepQualityRating.average.toFixed(2)
+                  : '-'}
               </Text>
               <WellnessOverviewTrendIndicator
                 trend={overviewData?.sleepQualityRating.trend}
                 changePercentage={overviewData?.sleepQualityRating.changePercentage.toFixed(2)}
-                maxValue={MAX_CHECK_IN_MOOD_RATING}
+                maxValue={MAX_CHECK_IN_SLEEP_QUALITY_RATING}
               />
             </Flex>
           ) : (

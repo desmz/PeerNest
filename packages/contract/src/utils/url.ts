@@ -1,6 +1,6 @@
 export const buildQueryParamsUrl = (
   url: string,
-  queryParamsObj?: Record<string, string | number | boolean | string[] | null>
+  queryParamsObj?: Record<string, string | number | boolean | null | unknown[]>
 ) => {
   if (!queryParamsObj) {
     return url;
@@ -12,12 +12,10 @@ export const buildQueryParamsUrl = (
       .map(([key, value]) => {
         if (Array.isArray(value)) {
           if (value.length === 1) {
-            return [key, `,${value}`];
-          } else {
-            return [key, value.join(',')];
+            return [key, `,${value[0]}`];
           }
+          return [key, value.join(',')];
         }
-
         return [key, String(value)];
       })
   );

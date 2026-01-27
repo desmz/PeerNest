@@ -1,10 +1,17 @@
 import { Avatar, Badge, Box, Button, Flex, Group, Paper, Stack, Text, Title } from '@mantine/core';
-import { GET_USER_PROFILE_URL, type TGetUserProfileVo, urlBuilder } from '@peernest/contract';
+import { notifications } from '@mantine/notifications';
+import {
+  ADD_PERCHER_URL,
+  GET_USER_PROFILE_URL,
+  TAddPercherRo,
+  type TGetUserProfileVo,
+  urlBuilder,
+} from '@peernest/contract';
 import { UserRole } from '@peernest/core';
-import { IconArrowBigUpLine, IconHammer } from '@tabler/icons-react';
+import { IconArrowBigUpLine, IconEmpathize, IconHammer } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
@@ -23,7 +30,12 @@ function capitalizeWords(str: string) {
     .join(' ');
 }
 
+async function addPerchers(data: TAddPercherRo) {
+  return api.post<TAddPercherRo>(ADD_PERCHER_URL, data);
+}
+
 export default function PeerProfilePreviewPage() {
+  const navigate = useNavigate();
   const [currentUser] = useAtom(currentUserAtom);
 
   const { userId } = useParams<{ userId: string }>();
@@ -36,9 +48,11 @@ export default function PeerProfilePreviewPage() {
 
   if (!userId) return <Text c='red'>Missing userId.</Text>;
   if (query.isPending) return <Text>Loading…</Text>;
-  if (query.isError) return <Text c='red'>Failed to load profile.</Text>;
+  if (query.isError || !query.data) {
+    navigate(-1);
+  }
 
-  const userData = query.data;
+  const userData = query.data!;
 
   const subtitle = [
     userData.pronoun?.pronounName,
@@ -48,6 +62,18 @@ export default function PeerProfilePreviewPage() {
     .filter(Boolean)
     .map((s) => capitalizeWords(String(s)))
     .join(' · ');
+
+  async function onAddPercherClick(percherId: string) {
+    await addPerchers({
+      percherId: percherId,
+      note: null,
+    });
+    console.log('success');
+    notifications.show({
+      message: 'You have successfully added the user as your percher.',
+      color: 'green',
+    });
+  }
 
   return (
     <Box>
@@ -59,7 +85,7 @@ export default function PeerProfilePreviewPage() {
             <Avatar src={userData.userAvatarUrl} size={'xl'} radius={100} />
 
             <Flex pt={6} direction={'column'} gap={12}>
-              <Flex>
+              <Flex direction={'column'}>
                 <Flex gap={8} align={'center'}>
                   <Title order={4}>{userData.userDisplayName}</Title>
                   {userData.roleName && userData.roleName !== UserRole.User && (
@@ -96,6 +122,17 @@ export default function PeerProfilePreviewPage() {
                       Ban
                     </Button>
                   </>
+                ) : null}
+
+                {currentUser && currentUser.role === UserRole.Counselor ? (
+                  <Button
+                    radius='md'
+                    size='sm'
+                    w={'fit-content'}
+                    onClick={() => onAddPercherClick(userData.userId)}
+                    leftSection={<IconEmpathize size={16} stroke={2.5} />}>
+                    Add as Percher
+                  </Button>
                 ) : null}
               </Flex>
             </Flex>

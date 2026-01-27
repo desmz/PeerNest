@@ -11,6 +11,7 @@ import {
   Menu,
   Modal,
   NavLink,
+  NavLinkProps,
   ScrollArea,
   Select,
   Stack,
@@ -28,12 +29,19 @@ import {
   TGetRolesVo,
 } from '@peernest/contract';
 import { UploadType, UserRole } from '@peernest/core';
-import { IconArrowRight, IconDoorExit } from '@tabler/icons-react';
+import {
+  IconArrowRight,
+  IconDoorExit,
+  IconMessages,
+  IconMoodSmile,
+  IconShieldCheckered,
+  IconUser,
+} from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 
 import logoImage from '@/assets/logo.svg';
 import useUploadAttachment from '@/features/attachment/hooks/use-upload-attachment';
@@ -42,6 +50,7 @@ import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
 
+import AppShellHeaderDiscussions from './components/appShellHeaderDiscussions';
 import AppShellHeaderPeerMatching from './components/appShellHeaderPeerMatching';
 import AppShellHeaderWellness from './components/appShellHeaderWellness';
 import classes from './globalAppShell.module.css';
@@ -53,17 +62,47 @@ type TGlobalAppShellProps = {
 const headerMap = {
   [APP_ROUTE.USER]: <AppShellHeaderPeerMatching />,
   [APP_ROUTE.WELLNESS]: <AppShellHeaderWellness />,
+  [APP_ROUTE.DISCUSSION]: <AppShellHeaderDiscussions />,
 };
+
+const navigationItems: (NavLinkProps & { href: string; allowedRoles?: UserRole[] })[] = [
+  {
+    label: 'Discussions',
+    leftSection: <IconMessages />,
+    href: APP_ROUTE.DISCUSSION,
+  },
+  {
+    label: 'Mood & Wellness',
+    leftSection: <IconMoodSmile />,
+    href: APP_ROUTE.WELLNESS,
+  },
+  {
+    label: 'Profile & Analytics',
+    leftSection: <IconUser />,
+    href: APP_ROUTE.USER_ME,
+  },
+  {
+    label: 'Manage',
+    leftSection: <IconShieldCheckered />,
+    href: APP_ROUTE.MANAGE,
+    allowedRoles: [UserRole.Admin, UserRole.Counselor, UserRole.Moderator],
+  },
+];
 
 export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
   const [opened, { toggle }] = useDisclosure();
   const [currentUser] = useAtom(currentUserAtom);
   const location = useLocation();
+  const navigate = useNavigate();
   const [headerComponent, setHeaderComponent] = useState<React.ReactNode>(null);
   const { signOut } = useAuth();
 
   useEffect(() => {
-    setHeaderComponent(headerMap[location.pathname]);
+    const matchedHeader = Object.entries(headerMap).find(([route]) =>
+      location.pathname.startsWith(route)
+    )?.[1];
+
+    setHeaderComponent(matchedHeader);
   }, [location]);
   // 1. call api
   async function getRole() {
@@ -161,7 +200,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
     <AppShell
       header={{ height: 60 }}
       navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      padding='md'>
+      padding='0'>
       <AppShell.Header>
         <Group h='100%' px='md'>
           <Burger opened={opened} onClick={toggle} hiddenFrom='sm' size='sm' />
@@ -199,15 +238,12 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                   <Avatar src={currentUser?.avatarUrl} radius={100} size={36} />
                 </Menu.Target>
                 <Menu.Dropdown py={8}>
-                  <Menu.Item>
-                    <Button
-                      leftSection={<IconDoorExit />}
-                      onClick={onSignOutClick}
-                      variant='transparent'
-                      c={'black'}
-                      size='compact-sm'>
-                      Sign Out
-                    </Button>
+                  <Menu.Item
+                    leftSection={<IconDoorExit />}
+                    onClick={onSignOutClick}
+                    variant='transparent'
+                    c={'black'}>
+                    Sign Out
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
@@ -217,16 +253,27 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
       </AppShell.Header>
       <AppShell.Navbar>
         <AppShell.Section pt='lg' grow my='md' component={ScrollArea} px='md'>
-          {Array(10)
-            .fill(0)
-            .map((_, index) => (
+          {navigationItems.map((navItem, idx) => {
+            if (
+              navItem.allowedRoles &&
+              !navItem.allowedRoles.find((role) => role === currentUser?.role)
+            ) {
+              return null;
+            }
+
+            return (
               <NavLink
-                href='#'
-                key={index}
-                onClick={(event) => event.preventDefault()}
-                label='Navbar link'
+                href={navItem.href}
+                key={idx}
+                label={navItem.label}
+                leftSection={navItem.leftSection}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(navItem.href);
+                }}
               />
-            ))}
+            );
+          })}
         </AppShell.Section>
         <AppShell.Section p='md'>
           <Modal
@@ -279,7 +326,7 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
                   }}
                 />
                 <Flex direction={'row-reverse'}>
-                  <Button w={'fit-content'} variant='filled' type='submit'>
+                  <Button w={'fit-content'} variant='filled' type='submit' disabled={isUploading}>
                     Submit
                   </Button>
                 </Flex>

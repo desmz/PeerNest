@@ -4,9 +4,12 @@ import Layout from '@/components/layout/layout';
 import AchievementPage from '@/components/pages/achievement/achievementPage';
 import LoginPage from '@/components/pages/auth/signInPage';
 import BanPage from '@/components/pages/ban/banPage';
+import DiscussionForumPage from '@/components/pages/discussion/discussionForumPage';
+import PostDetailPage from '@/components/pages/discussion/postDetailPage';
 import Error404 from '@/components/pages/error/error404';
 import HomePage from '@/components/pages/homePage';
 import ManagePage from '@/components/pages/manage/managePage';
+import ProfileDiscussionPage from '@/components/pages/profile/profileDiscussionPage';
 // import ResourcePage from '@/components/pages/playground/resources';
 import MyProfileEditingPage from '@/components/pages/user/myProfileEditing';
 import MyProfilePage from '@/components/pages/user/myProfilePage';
@@ -34,7 +37,11 @@ export function App() {
 
         {/* <Route path='resources' element={<ResourcePage />} /> */}
         <Route path={APP_ROUTE.MANAGE} element={<ManagePage />} />
+
         <Route path={APP_ROUTE.ACHIEVEMENT} element={<AchievementPage />} />
+        <Route path={APP_ROUTE.DISCUSSION} element={<DiscussionForumPage />} />
+        <Route path={APP_ROUTE.PROFILE_DISCUSSION_POST} element={<ProfileDiscussionPage />} />
+        <Route path={`${APP_ROUTE.DISCUSSION}/:discussionId`} element={<PostDetailPage />} />
 
         {/* Mood and wellness page */}
         <Route path={APP_ROUTE.WELLNESS} element={<MoodAndWellnessPage />} />
