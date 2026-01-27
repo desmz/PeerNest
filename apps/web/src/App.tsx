@@ -4,7 +4,6 @@ import Layout from '@/components/layout/layout';
 import AchievementPage from '@/components/pages/achievement/achievementPage';
 import LoginPage from '@/components/pages/auth/signInPage';
 import BanPage from '@/components/pages/ban/banPage';
-import CreateDiscussionPage from '@/components/pages/discussion/createDiscussionPage';
 import DiscussionForumPage from '@/components/pages/discussion/discussionForumPage';
 import PostDetailPage from '@/components/pages/discussion/postDetailPage';
 import Error404 from '@/components/pages/error/error404';
@@ -42,7 +41,6 @@ export function App() {
         <Route path={APP_ROUTE.MANAGE_DISCUSSIONS} element={<ManageDiscussions />} />
         <Route path={APP_ROUTE.ACHIEVEMENT} element={<AchievementPage />} />
         <Route path={APP_ROUTE.DISCUSSION} element={<DiscussionForumPage />} />
-        <Route path={APP_ROUTE.CREATE_DISCUSSION} element={<CreateDiscussionPage />} />
         <Route path={APP_ROUTE.PROFILE_DISCUSSION_POST} element={<ProfileDiscussionPage />} />
         <Route path={`${APP_ROUTE.DISCUSSION}/:discussionId`} element={<PostDetailPage />} />
 

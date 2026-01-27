@@ -2,6 +2,7 @@ import {
   Button,
   FileInput,
   Flex,
+  Modal,
   MultiSelect,
   Stack,
   Text,
@@ -9,6 +10,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
   CREATE_DISCUSSION_URL,
@@ -20,8 +22,9 @@ import {
   TGetPersonalGoalsVo,
 } from '@peernest/contract';
 import { UploadType } from '@peernest/core';
+import { IconPlus } from '@tabler/icons-react';
 // import { zod4Resolver } from 'mantine-form-zod-resolver';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import useUploadAttachment from '@/features/attachment/hooks/use-upload-attachment';
 import api from '@/lib/api-client';
@@ -39,8 +42,10 @@ async function createPost(data: TCreateDiscussionRo) {
   return res.data;
 }
 
-export default function CreateDiscussionPage() {
+export default function AppShellHeaderDiscussions() {
+  const [opened, handler] = useDisclosure(false);
   const { uploadFile, isUploading } = useUploadAttachment();
+  const queryClient = useQueryClient();
 
   const { data: goalData } = useQuery({
     queryKey: ['goals'],
@@ -90,11 +95,17 @@ export default function CreateDiscussionPage() {
       });
 
       createPostForm.reset();
+      handler.close();
     },
     onError: () => {
       notifications.show({
         message: `Error: Your discussion is failed to submit. Please try again.`,
         color: 'red',
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['discussions'],
       });
     },
   });
@@ -119,16 +130,17 @@ export default function CreateDiscussionPage() {
   }
 
   async function onSubmit(data: TCreateDiscussionRo) {
-    console.log('success');
-    console.log(data);
     createPostMutation.mutate(data);
   }
 
   return (
-    <Flex mx='auto' maw={'640'} direction={'column'} w={'100%'} bg={'white'} p={'sm'} bdrs={'lg'}>
-      <Flex>
+    <Flex w={'100%'} justify={'flex-end'} align={'center'} px={'md'}>
+      <Button onClick={handler.open} leftSection={<IconPlus size={16} stroke={3} />}>
+        Create Post
+      </Button>
+      <Modal opened={opened} onClose={handler.close} size={720}>
         <form onSubmit={createPostForm.onSubmit(onSubmit)}>
-          <Stack p={'sm'} gap='md' w={608}>
+          <Stack p={'sm'} gap='md' w={'100%'}>
             <Text size='xl' fw={700}>
               Create Post
             </Text>
@@ -138,6 +150,7 @@ export default function CreateDiscussionPage() {
               placeholder='Title'
               pb={'md'}
               minLength={5}
+              withAsterisk
               {...createPostForm.getInputProps('discussionTitle')}
             />
             <Textarea
@@ -186,7 +199,7 @@ export default function CreateDiscussionPage() {
             </Flex>
           </Stack>
         </form>
-      </Flex>
+      </Modal>
     </Flex>
   );
 }

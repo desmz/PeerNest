@@ -35,9 +35,6 @@ import { capitalizeFirstLetter } from '@/lib/util';
 dayjs.extend(requiredTime);
 
 async function getDiscussions(queryParams: TFindDiscussionsQueryParams) {
-  // const cleanParams = Object.fromEntries(
-  //   Object.entries(queryParams).filter(([, value]) => value != null)
-  // ) as Record<string, string | number | boolean>;
   const url = buildQueryParamsUrl(FIND_DISCUSSIONS_URL, queryParams);
   return api.get<TFindDiscussionsVo>(url);
 }
@@ -197,16 +194,14 @@ export default function DiscussionForumPage() {
                       </Badge>
                     ))}
                   </Group>
-                  <Flex>
+                  <Stack>
                     <Text size='sm'>{discussionGroup.discussionContent}</Text>
-                  </Flex>
+                  </Stack>
                   <Group w={'auto'} justify='space-between' align='centre'>
                     <Flex align={'center'} gap={12}>
                       <Avatar
                         src={discussionGroup.author.userAvatarUrl}
                         onClick={(e) => {
-                          console.log(currentUser);
-                          console.log(discussionGroup.author);
                           if (currentUser?.id === discussionGroup?.author.userId) {
                             e.preventDefault();
                             e.stopPropagation();

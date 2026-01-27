@@ -42,6 +42,7 @@ import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
 
+import AppShellHeaderDiscussions from './components/appShellHeaderDiscussions';
 import AppShellHeaderPeerMatching from './components/appShellHeaderPeerMatching';
 import AppShellHeaderWellness from './components/appShellHeaderWellness';
 import classes from './globalAppShell.module.css';
@@ -53,6 +54,7 @@ type TGlobalAppShellProps = {
 const headerMap = {
   [APP_ROUTE.USER]: <AppShellHeaderPeerMatching />,
   [APP_ROUTE.WELLNESS]: <AppShellHeaderWellness />,
+  [APP_ROUTE.DISCUSSION]: <AppShellHeaderDiscussions />,
 };
 
 export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
@@ -63,7 +65,11 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
   const { signOut } = useAuth();
 
   useEffect(() => {
-    setHeaderComponent(headerMap[location.pathname]);
+    const matchedHeader = Object.entries(headerMap).find(([route]) =>
+      location.pathname.startsWith(route)
+    )?.[1];
+
+    setHeaderComponent(matchedHeader);
   }, [location]);
   // 1. call api
   async function getRole() {

@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   Group,
+  Image,
   Input,
   Modal,
   Select,
@@ -555,6 +556,14 @@ export default function PostDetailPage() {
 
         {/* CONTENT */}
         <Text size='sm'>{discussion?.discussionContent}</Text>
+        <Image
+          src={discussion?.attachmentUrl}
+          p={'xl'}
+          pt={'sm'}
+          maw={680}
+          mah={480}
+          fit='contain'
+        />
 
         {/* FOOTER */}
         <Group justify='space-between'>
