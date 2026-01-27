@@ -58,10 +58,11 @@ import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 // import { zod4Resolver } from 'mantine-form-zod-resolver';
 import React from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
+import { APP_ROUTE } from '@/lib/app-route';
 import { capitalizeFirstLetter } from '@/lib/util';
 import { queryClient } from '@/main';
 
@@ -95,6 +96,8 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
   const [open, handle] = useDisclosure(false);
   const [opened, handled] = useDisclosure(false);
   const [replyToCommentId, setReplyToCommentId] = React.useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   async function handleReportCommentConfirm() {
     if (!selectedReportComment) return;
@@ -181,6 +184,8 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
     });
   }
 
+  const [currentUser] = useAtom(currentUserAtom);
+
   const [selectedReportComment, setSelectedReportComment] = React.useState<string | null>(null);
   return (
     <>
@@ -198,7 +203,15 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
       {!comment.isDeleted && (
         <Flex py={'xs'}>
           <Group align='top'>
-            <Avatar src={comment.author.userAvatarUrl} size={32} />
+            <Avatar
+              src={comment.author.userAvatarUrl}
+              onClick={() =>
+                currentUser?.id === comment?.author.userId
+                  ? navigate(`${APP_ROUTE.USER_ME}`)
+                  : navigate(`${APP_ROUTE.USER}/${comment?.author.userId}`)
+              }
+              size={32}
+            />
             <Stack dir='column' gap={2} w={740}>
               {comment.commentParentCommentId === null ? (
                 <Text fw={700}>{comment.author.userDisplayName}</Text>
@@ -210,20 +223,36 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
               )}
 
               <Text>{comment.commentContent}</Text>
-              <Flex gap={12}>
-                <Flex align='center' gap={4}>
-                  <Button
-                    variant='subtle'
-                    leftSection={<IconHeart size={14} />}
-                    loading={likeRepliesMutation.isPending || unlikeRepliesMutation.isPending}
-                    onClick={handleLikeRepliesToggle}
-                    color={comment?.isLiked ? 'red' : 'black'}>
-                    {comment?.likeCount}
-                  </Button>
+              <Flex>
+                <Flex align='center' p={0}>
+                  {currentUser?.displayName !== comment?.author.userDisplayName ? (
+                    <Button
+                      variant='subtle'
+                      size='xs'
+                      leftSection={<IconHeart size={14} />}
+                      loading={likeRepliesMutation.isPending || unlikeRepliesMutation.isPending}
+                      onClick={handleLikeRepliesToggle}
+                      color={comment?.isLiked ? 'red' : 'black'}>
+                      {comment?.likeCount}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant='transparent'
+                      size='xs'
+                      style={{
+                        cursor: 'not-allowed',
+                      }}
+                      leftSection={<IconHeart size={14} />}
+                      loading={likeRepliesMutation.isPending || unlikeRepliesMutation.isPending}
+                      color={comment?.isLiked ? 'red' : 'black'}>
+                      {comment?.likeCount}
+                    </Button>
+                  )}
                 </Flex>
-                <Flex align='center' gap={4}>
+                <Flex align='center'>
                   <Button
                     variant='subtle'
+                    size='xs'
                     leftSection={<IconArrowBack size={14} />}
                     color='black'
                     onClick={(e) => {
@@ -238,8 +267,8 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
                 <Flex align='center' gap={4}>
                   <Button
                     size='xs'
-                    variant='transparent'
-                    c={'red'}
+                    variant='subtle'
+                    color='red'
                     leftSection={<IconFlag size={14} />}
                     onClick={(e) => {
                       e.preventDefault();
@@ -284,13 +313,21 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
           <Modal
             opened={opened}
             onClose={handled.close}
-            title='Replying to Comment.'
+            title={
+              <Text fz={'lg'} fw={600}>
+                Replying to Comment
+              </Text>
+            }
             centered
-            bdrs={'lg'}>
+            bdrs={'lg'}
+            size={720}>
             <form onSubmit={replyCommentForm.onSubmit(onReplySubmit)}>
               <Textarea
-                label='Reply Comment'
-                placeholder='Input placeholder'
+                label={<Text mb={8}>Reply</Text>}
+                minRows={4}
+                maxRows={12}
+                autosize={true}
+                placeholder='Input Insert your reply.'
                 {...replyCommentForm.getInputProps('commentContent')}
               />
               <Flex justify={'flex-end'} p={'sm'}>
@@ -356,6 +393,7 @@ async function unlikeDiscussion(params: TUnlikeDiscussionParams) {
 }
 
 export default function PostDetailPage() {
+  const navigate = useNavigate();
   const [selectedSort, setSelectedSort] = React.useState<string | null>(
     capitalizeFirstLetter(FindDiscussionCommentsSortOption.Newest)
   );
@@ -510,7 +548,14 @@ export default function PostDetailPage() {
         {/* FOOTER */}
         <Group justify='space-between'>
           <Flex align='center' gap={12}>
-            <Avatar src={discussion?.author.userAvatarUrl} />
+            <Avatar
+              src={discussion?.author.userAvatarUrl}
+              onClick={() =>
+                currentUser?.id === discussion?.author.userId
+                  ? navigate(`${APP_ROUTE.USER_ME}`)
+                  : navigate(`${APP_ROUTE.USER}/${discussion?.author.userId}`)
+              }
+            />
             <Stack gap={0}>
               <Text size='sm'>{discussion?.author.userDisplayName}</Text>
               <Text size='xs' c='gray.6'>
@@ -521,14 +566,27 @@ export default function PostDetailPage() {
 
           <Flex gap={12}>
             <Flex align='center' gap={4}>
-              <Button
-                variant='subtle'
-                leftSection={<IconHeart size={16} />}
-                loading={likeDiscussionMutation.isPending || unlikeDiscussionMutation.isPending}
-                onClick={handleLikeToggle}
-                color={discussion?.isLiked ? 'red' : 'black'}>
-                {discussion?.likeCount}
-              </Button>
+              {currentUser?.displayName !== discussion?.author.userDisplayName ? (
+                <Button
+                  variant='subtle'
+                  leftSection={<IconHeart size={16} />}
+                  loading={likeDiscussionMutation.isPending || unlikeDiscussionMutation.isPending}
+                  onClick={handleLikeToggle}
+                  color={discussion?.isLiked ? 'red' : 'black'}>
+                  {discussion?.likeCount}
+                </Button>
+              ) : (
+                <Button
+                  variant='transparent'
+                  style={{
+                    cursor: 'not-allowed',
+                  }}
+                  leftSection={<IconHeart size={16} />}
+                  loading={likeDiscussionMutation.isPending || unlikeDiscussionMutation.isPending}
+                  color={discussion?.isLiked ? 'red' : 'black'}>
+                  {discussion?.likeCount}
+                </Button>
+              )}
             </Flex>
             <Flex align='center' gap={4}>
               <Button
@@ -550,7 +608,7 @@ export default function PostDetailPage() {
       </Flex>
       <Flex direction='column' bg='white' bdrs='md' p='sm' gap={8} w={816}>
         <Group justify='space-between'>
-          <Text fw={700}>{discussion?.commentCount} Replies</Text>
+          <Text fw={700}>{comments?.count} Replies</Text>
           <Select
             value={selectedSort}
             onChange={setSelectedSort}
@@ -564,7 +622,10 @@ export default function PostDetailPage() {
         <form onSubmit={createCommentForm.onSubmit(onSubmit)}>
           <Stack>
             <Group>
-              <Avatar src={currentUser?.avatarUrl} size={36}></Avatar>
+              <Avatar
+                src={currentUser?.avatarUrl}
+                size={36}
+                onClick={() => navigate(`${APP_ROUTE.USER_ME}`)}></Avatar>
               <Input
                 variant='filled'
                 radius='md'

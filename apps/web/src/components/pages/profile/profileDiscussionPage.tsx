@@ -6,7 +6,7 @@ import ProfileDiscussionPosts from './profileDiscussionPosts';
 
 export default function ProfileDiscussionPage() {
   return (
-    <Tabs defaultValue='posts' bg={'white'} w={'100%'}>
+    <Tabs defaultValue='posts' bg={'white'} w={'100%'} pt={'md'}>
       <Tabs.List>
         <Tabs.Tab value='posts'>Posts</Tabs.Tab>
         <Tabs.Tab value='likes'>Likes</Tabs.Tab>

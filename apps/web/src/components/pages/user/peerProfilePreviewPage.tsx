@@ -1,7 +1,14 @@
 import { Avatar, Badge, Box, Button, Flex, Group, Paper, Stack, Text, Title } from '@mantine/core';
-import { GET_USER_PROFILE_URL, type TGetUserProfileVo, urlBuilder } from '@peernest/contract';
+import { notifications } from '@mantine/notifications';
+import {
+  ADD_PERCHER_URL,
+  GET_USER_PROFILE_URL,
+  TAddPercherRo,
+  type TGetUserProfileVo,
+  urlBuilder,
+} from '@peernest/contract';
 import { UserRole } from '@peernest/core';
-import { IconArrowBigUpLine, IconHammer } from '@tabler/icons-react';
+import { IconArrowBigUpLine, IconEmpathize, IconHammer } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 import { useParams } from 'react-router';
@@ -21,6 +28,10 @@ function capitalizeWords(str: string) {
     .split(' ')
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
     .join(' ');
+}
+
+async function addPerchers(data: TAddPercherRo) {
+  return api.post<TAddPercherRo>(ADD_PERCHER_URL, data);
 }
 
 export default function PeerProfilePreviewPage() {
@@ -49,6 +60,18 @@ export default function PeerProfilePreviewPage() {
     .map((s) => capitalizeWords(String(s)))
     .join(' · ');
 
+  async function onAddPercherClick(percherId: string) {
+    await addPerchers({
+      percherId: percherId,
+      note: null,
+    });
+    console.log('success');
+    notifications.show({
+      message: 'You have successfully added the user as your percher.',
+      color: 'green',
+    });
+  }
+
   return (
     <Box>
       {/* Main content */}
@@ -59,7 +82,7 @@ export default function PeerProfilePreviewPage() {
             <Avatar src={userData.userAvatarUrl} size={'xl'} radius={100} />
 
             <Flex pt={6} direction={'column'} gap={12}>
-              <Flex>
+              <Flex direction={'column'}>
                 <Flex gap={8} align={'center'}>
                   <Title order={4}>{userData.userDisplayName}</Title>
                   {userData.roleName && userData.roleName !== UserRole.User && (
@@ -96,6 +119,17 @@ export default function PeerProfilePreviewPage() {
                       Ban
                     </Button>
                   </>
+                ) : null}
+
+                {currentUser && currentUser.role === UserRole.Counselor ? (
+                  <Button
+                    radius='md'
+                    size='sm'
+                    w={'fit-content'}
+                    onClick={() => onAddPercherClick(userData.userId)}
+                    leftSection={<IconEmpathize size={16} stroke={2.5} />}>
+                    Add as Percher
+                  </Button>
                 ) : null}
               </Flex>
             </Flex>

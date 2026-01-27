@@ -243,8 +243,8 @@ export default function ManageDiscussionsReport() {
                 {/* FOOTER */}
                 <Divider my='xs' />
                 <Flex>
-                  <Stack align='top'>
-                    <Group justify='space-between'>
+                  <Stack align='top' w={'100%'}>
+                    <Flex justify='space-between'>
                       <Flex c={'red'} align={'top'}>
                         <Text fw={600} size='xs'>
                           By: {report.reporter.userDisplayName}
@@ -280,26 +280,21 @@ export default function ManageDiscussionsReport() {
                           Delete
                         </Button>
                       </Flex>
-                    </Group>
-                    <Avatar src={report.target.author.userAvatarUrl}></Avatar>
-                    <Stack gap={0}>
-                      <Text size='sm' fw={700}>
-                        {report.target.author.userDisplayName}
-                      </Text>
-                      <Text size='xs' c='gray.6'>
-                        Posted{' '}
-                        {dayjs(
-                          'commentCreatedTime' in report.target
-                            ? report.target.commentCreatedTime
-                            : (report.target.discussionCreatedTime ?? '')
-                        ).fromNow()}
-                      </Text>
-                      <Text size='sm' pt={'sm'}>
-                        {'discussionContent' in report.target
-                          ? report.target.discussionContent
-                          : report.target.commentContent}
-                      </Text>
-                    </Stack>
+                    </Flex>
+                    <Flex gap={12}>
+                      <Avatar src={report.target.author.userAvatarUrl}></Avatar>
+                      <Flex direction={'column'} gap={4}>
+                        <Text size='sm' fw={700}>
+                          {report.target.author.userDisplayName}
+                        </Text>
+
+                        <Text size='sm'>
+                          {'discussionContent' in report.target
+                            ? report.target.discussionContent
+                            : report.target.commentContent}
+                        </Text>
+                      </Flex>
+                    </Flex>
                   </Stack>
                 </Flex>
               </Flex>

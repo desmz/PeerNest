@@ -24,8 +24,11 @@ import { dayjs, FindDiscussionsSortOption } from '@peernest/core';
 import { IconChevronDown, IconHeart, IconMessage } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import requiredTime from 'dayjs/plugin/relativeTime';
+import { useAtom } from 'jotai';
 import React from 'react';
+import { useNavigate } from 'react-router';
 
+import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
 import { capitalizeFirstLetter } from '@/lib/util';
@@ -54,6 +57,9 @@ export default function DiscussionForumPage() {
   );
   const [selectedInterests, setSelectedInterests] = React.useState<string[]>([]);
   const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
+
+  const navigate = useNavigate();
+  const [currentUser] = useAtom(currentUserAtom);
 
   const { data: goalData } = useQuery({
     queryKey: ['goals'],
@@ -107,7 +113,7 @@ export default function DiscussionForumPage() {
 
   return (
     <Stack>
-      <Group px={'md'} gap={24} pt={'xs'}>
+      <Group px={'md'} gap={24} py={'lg'}>
         <Select
           value={selectedSort}
           onChange={(value) => {
@@ -197,7 +203,21 @@ export default function DiscussionForumPage() {
                   </Flex>
                   <Group w={'auto'} justify='space-between' align='centre'>
                     <Flex align={'center'} gap={12}>
-                      <Avatar src={discussionGroup.author.userAvatarUrl}></Avatar>
+                      <Avatar
+                        src={discussionGroup.author.userAvatarUrl}
+                        onClick={(e) => {
+                          console.log(currentUser);
+                          console.log(discussionGroup.author);
+                          if (currentUser?.id === discussionGroup?.author.userId) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            navigate(`${APP_ROUTE.USER_ME}`);
+                          } else {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            navigate(`${APP_ROUTE.USER}/${discussionGroup?.author.userId}`);
+                          }
+                        }}></Avatar>
                       <Stack gap={0}>
                         <Text size='md'>{discussionGroup.author.userDisplayName}</Text>
                         <Text size='xs' c={'gray.6'}>
@@ -232,7 +252,7 @@ export default function DiscussionForumPage() {
           <Flex direction={'column'} p={'xs'}>
             {discussionsTrending?.discussions?.slice(0, 6).map((discussion) => (
               <Anchor
-                href={APP_ROUTE.HOME}
+                href={`${APP_ROUTE.DISCUSSION}/${discussion.discussionId}`}
                 underline='never'
                 c={'black'}
                 key={discussion.discussionId}>
