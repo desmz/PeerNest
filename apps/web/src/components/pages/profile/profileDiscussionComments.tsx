@@ -218,7 +218,11 @@ export default function ProfileDiscussionComments() {
               </Flex>
             </Anchor>
           ) : (
-            <Anchor key={comment.discussionId} href={APP_ROUTE.HOME} underline='never' c='black'>
+            <Anchor
+              key={comment.discussionId}
+              href={`${APP_ROUTE.DISCUSSION}/${comment.discussionId}`}
+              underline='never'
+              c='black'>
               <Flex direction='column' bg='white' bdrs='md' p='xs' gap={8} w={816}>
                 {/* HEADER */}
                 <Flex justify='space-between'>

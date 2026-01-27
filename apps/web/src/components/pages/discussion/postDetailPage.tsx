@@ -66,47 +66,48 @@ import { APP_ROUTE } from '@/lib/app-route';
 import { capitalizeFirstLetter } from '@/lib/util';
 import { queryClient } from '@/main';
 
+const COMMENT_MAX_MARGIN_LEFT = 200;
+const COMMENT_MARGIN_LEFT_STEP = 50;
+
 type TCommentComponentProps = {
   comment: TMixedFindDiscussionCommentsSchema;
   parentCommentAuthorName: string | null;
+  commentMarginLeft: number;
 };
 
-function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponentProps) {
-  async function reportComment(params: TReportCommentParams) {
-    const url = urlBuilder(REPORT_COMMENT_URL, params);
-    return api.post<void>(url);
-  }
+async function reportComment(params: TReportCommentParams) {
+  const url = urlBuilder(REPORT_COMMENT_URL, params);
+  return api.post<void>(url);
+}
 
-  async function replyComments(params: TReplyCommentParams, data: TReplyCommentRo) {
-    const url = urlBuilder(REPLY_COMMENT_URL, params);
-    const res = await api.post<void>(url, data);
-    return res.data;
-  }
+async function replyComments(params: TReplyCommentParams, data: TReplyCommentRo) {
+  const url = urlBuilder(REPLY_COMMENT_URL, params);
+  const res = await api.post<void>(url, data);
+  return res.data;
+}
 
-  async function likeReplies(params: TLikeCommentParams) {
-    const url = urlBuilder(LIKE_COMMENT_URL, params);
-    return api.post<void>(url);
-  }
+async function likeReplies(params: TLikeCommentParams) {
+  const url = urlBuilder(LIKE_COMMENT_URL, params);
+  return api.post<void>(url);
+}
 
-  async function unlikeReplies(params: TUnlikeCommentParams) {
-    const url = urlBuilder(UNLIKE_COMMENT_URL, params);
-    return api.delete<void>(url);
-  }
+async function unlikeReplies(params: TUnlikeCommentParams) {
+  const url = urlBuilder(UNLIKE_COMMENT_URL, params);
+  return api.delete<void>(url);
+}
 
+function CommentComponent({
+  comment,
+  parentCommentAuthorName,
+  commentMarginLeft,
+}: TCommentComponentProps) {
   const [open, handle] = useDisclosure(false);
   const [opened, handled] = useDisclosure(false);
   const [replyToCommentId, setReplyToCommentId] = React.useState<string | null>(null);
+  const [selectedReportComment, setSelectedReportComment] = React.useState<string | null>(null);
+  const [currentUser] = useAtom(currentUserAtom);
 
   const navigate = useNavigate();
-
-  async function handleReportCommentConfirm() {
-    if (!selectedReportComment) return;
-
-    await reportComment({ commentId: selectedReportComment });
-
-    handle.close();
-    setSelectedReportComment(null);
-  }
 
   const likeRepliesMutation = useMutation({
     mutationFn: (params: TLikeCommentParams) => likeReplies(params),
@@ -127,6 +128,15 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
       });
     },
   });
+
+  async function handleReportCommentConfirm() {
+    if (!selectedReportComment) return;
+
+    await reportComment({ commentId: selectedReportComment });
+
+    handle.close();
+    setSelectedReportComment(null);
+  }
 
   function handleLikeRepliesToggle() {
     if (!comment?.commentId || comment.isDeleted) return;
@@ -184,13 +194,10 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
     });
   }
 
-  const [currentUser] = useAtom(currentUserAtom);
-
-  const [selectedReportComment, setSelectedReportComment] = React.useState<string | null>(null);
   return (
     <>
       {comment.isDeleted && (
-        <Flex py={'sm'}>
+        <Flex py={'sm'} ml={commentMarginLeft}>
           <Group align='top'>
             <Avatar radius='xl' />
             <Stack dir='column' gap={2}>
@@ -201,8 +208,8 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
         </Flex>
       )}
       {!comment.isDeleted && (
-        <Flex py={'xs'}>
-          <Group align='top'>
+        <Flex py={'xs'} ml={commentMarginLeft}>
+          <Flex gap={'md'}>
             <Avatar
               src={comment.author.userAvatarUrl}
               onClick={() =>
@@ -212,7 +219,7 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
               }
               size={32}
             />
-            <Stack dir='column' gap={2} w={740}>
+            <Stack dir='column' gap={2}>
               {comment.commentParentCommentId === null ? (
                 <Text fw={700}>{comment.author.userDisplayName}</Text>
               ) : (
@@ -222,7 +229,7 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
                 </Text>
               )}
 
-              <Text>{comment.commentContent}</Text>
+              <Text w={'100%'}>{comment.commentContent}</Text>
               <Flex>
                 <Flex align='center' p={0}>
                   {currentUser?.displayName !== comment?.author.userDisplayName ? (
@@ -281,7 +288,7 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
                 </Flex>
               </Flex>
             </Stack>
-          </Group>
+          </Flex>
 
           {/* Comment Report */}
           <Modal
@@ -352,6 +359,10 @@ function CommentComponent({ comment, parentCommentAuthorName }: TCommentComponen
             comment={reply}
             parentCommentAuthorName={comment.isDeleted ? null : comment.author.userDisplayName}
             key={reply.commentId}
+            commentMarginLeft={Math.min(
+              commentMarginLeft + COMMENT_MARGIN_LEFT_STEP,
+              COMMENT_MAX_MARGIN_LEFT
+            )}
           />
         ))}
     </>
@@ -394,8 +405,8 @@ async function unlikeDiscussion(params: TUnlikeDiscussionParams) {
 
 export default function PostDetailPage() {
   const navigate = useNavigate();
-  const [selectedSort, setSelectedSort] = React.useState<string | null>(
-    capitalizeFirstLetter(FindDiscussionCommentsSortOption.Newest)
+  const [selectedSort, setSelectedSort] = React.useState<string>(
+    FindDiscussionCommentsSortOption.Newest
   );
 
   const [currentUser] = useAtom(currentUserAtom);
@@ -610,8 +621,8 @@ export default function PostDetailPage() {
         <Group justify='space-between'>
           <Text fw={700}>{comments?.count} Replies</Text>
           <Select
-            value={selectedSort}
-            onChange={setSelectedSort}
+            value={capitalizeFirstLetter(selectedSort)}
+            onChange={() => setSelectedSort}
             data={Object.values(FindDiscussionCommentsSortOption).map(capitalizeFirstLetter)}
             radius='xl'
             w={125}
@@ -653,6 +664,7 @@ export default function PostDetailPage() {
               comment={comment}
               key={comment.commentId}
               parentCommentAuthorName={null}
+              commentMarginLeft={0}
             />
           ))}
         </Flex>

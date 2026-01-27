@@ -2,7 +2,6 @@ import {
   Anchor,
   Avatar,
   Badge,
-  Center,
   Flex,
   Group,
   MultiSelect,
@@ -112,7 +111,7 @@ export default function DiscussionForumPage() {
     })) ?? [];
 
   return (
-    <Stack>
+    <Stack pb={'xl'}>
       <Group px={'md'} gap={24} py={'lg'}>
         <Select
           value={selectedSort}
@@ -245,34 +244,36 @@ export default function DiscussionForumPage() {
             );
           })}
         </Stack>
-        <Flex direction={'column'} bg={'white'} w={'28%'} p={'xs'} h='220' bdrs='md'>
+        <Flex direction={'column'} bg={'white'} w={'28%'} p={'xs'} h='fit-content' bdrs='md'>
           <Text fw={600} px={'xs'}>
             Trending This Week
           </Text>
-          <Flex direction={'column'} p={'xs'}>
+          <Flex direction={'column'} p={'xs'} gap={'md'}>
             {discussionsTrending?.discussions?.slice(0, 6).map((discussion) => (
               <Anchor
                 href={`${APP_ROUTE.DISCUSSION}/${discussion.discussionId}`}
                 underline='never'
                 c={'black'}
                 key={discussion.discussionId}>
-                <Group>
-                  <Flex w={208}>
+                <Group justify='space-between'>
+                  <Flex w={180}>
                     <Text key={discussion.discussionId} lineClamp={1}>
                       {discussion.discussionTitle}
                     </Text>
                   </Flex>
-                  <Flex w={'fit-content'} align={Center} justify={'flex-end'} px={2}>
-                    <Text key={discussion.discussionId} lineClamp={1}>
-                      <IconHeart size={14} />
-                      {discussion.likeCount}
-                    </Text>
-                  </Flex>
-                  <Flex w={'fit-content'} align={Center} justify={'flex-end'} px={2}>
-                    <Text key={discussion.discussionId} lineClamp={1}>
-                      <IconMessage size={14} />
-                      {discussion.commentCount}
-                    </Text>
+                  <Flex gap={'xs'}>
+                    <Flex w={'fit-content'} align={'center'} justify={'flex-end'} px={2}>
+                      <Text key={discussion.discussionId} lineClamp={1}>
+                        <IconHeart size={14} />
+                        {discussion.likeCount}
+                      </Text>
+                    </Flex>
+                    <Flex w={'fit-content'} align={'center'} justify={'flex-end'} px={2}>
+                      <Text key={discussion.discussionId} lineClamp={1}>
+                        <IconMessage size={14} />
+                        {discussion.commentCount}
+                      </Text>
+                    </Flex>
                   </Flex>
                 </Group>
               </Anchor>
