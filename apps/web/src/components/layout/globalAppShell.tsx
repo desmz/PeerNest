@@ -298,7 +298,9 @@ export default function GlobalAppShell({ children }: TGlobalAppShellProps) {
           </Button>
         </AppShell.Section>
       </AppShell.Navbar>
-      <AppShell.Main bg='gray.1'>{children}</AppShell.Main>
+      <AppShell.Main h={'fit-content'} bg='gray.1'>
+        {children}
+      </AppShell.Main>
     </AppShell>
   );
 }

@@ -19,7 +19,7 @@ import {
   type TGetWellnessFactorsSummaryQueryParams,
   type TGetWellnessFactorsSummaryVo,
   type TGetWellnessCalendarQueryParams,
-  type TGetWellnessCalendarVoSchema,
+  type TGetWellnessCalendarVo,
   getWellnessCalendarQueryParamsSchema,
   getWellnessTrendsQueryParamsSchema,
   type TGetWellnessTrendsVo,
@@ -99,7 +99,7 @@ export class WellnessController {
   async getWellnessCalendar(
     @Query(new ZodValidationPipe(getWellnessCalendarQueryParamsSchema))
     getWellnessCalendarQueryParams: TGetWellnessCalendarQueryParams
-  ): Promise<TGetWellnessCalendarVoSchema> {
+  ): Promise<TGetWellnessCalendarVo> {
     return this.wellnessService.getWellnessCalendar(getWellnessCalendarQueryParams);
   }
 

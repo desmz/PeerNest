@@ -33,7 +33,7 @@ import {
   MIN_CHECK_IN_MOOD_RATING,
 } from '@peernest/core';
 import { IconLogout } from '@tabler/icons-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import duration from 'dayjs/plugin/duration';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useMemo, useRef } from 'react';
@@ -63,6 +63,7 @@ async function createWellnessCheckIn(data: TCreateWellnessCheckInRo) {
 }
 
 export function WellnessCheckInModal({ opened, onClose, moods, symptoms, factors }: TProps) {
+  const queryClient = useQueryClient();
   const timePickerRef = useRef<HTMLInputElement>(null);
 
   const createWellnessCheckInForm = useForm<TCreateWellnessCheckInRo>({
@@ -167,6 +168,11 @@ export function WellnessCheckInModal({ opened, onClose, moods, symptoms, factors
         color: 'red',
       });
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['wellness'],
+      });
+    },
   });
 
   function onCreateWellnessCheckInSubmit(data: TCreateWellnessCheckInRo) {
@@ -183,7 +189,6 @@ export function WellnessCheckInModal({ opened, onClose, moods, symptoms, factors
       overlayProps={{ blur: 2 }}
       centered
       padding={'lg'}
-      pt={100}
       styles={{
         header: { paddingBottom: 0, paddingTop: 0 },
       }}>
