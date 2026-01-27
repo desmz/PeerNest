@@ -5,7 +5,7 @@ import { IconArrowDownRight, IconArrowUpRight } from '@tabler/icons-react';
 type TWellnessOverviewTrend = {
   trend: WellnessOverviewTrend;
   changePercentage: string;
-  maxValue: string | number;
+  maxValue?: string | number;
 };
 
 export default function WellnessOverviewTrendIndicator({
@@ -20,7 +20,7 @@ export default function WellnessOverviewTrendIndicator({
     [WellnessOverviewTrend.Up]: (
       <>
         <Text c='dimmed' size='sm' ml={4} mb={8}>
-          /{maxValue}
+          {maxValue && `/${maxValue}`}
         </Text>
         <Flex ml={8} mb={8} c={upColor}>
           {changePercentage}%
@@ -31,7 +31,7 @@ export default function WellnessOverviewTrendIndicator({
     [WellnessOverviewTrend.Down]: (
       <>
         <Text c='dimmed' size='sm' ml={4} mb={8}>
-          /{maxValue}
+          {maxValue && `/${maxValue}`}
         </Text>
         <Flex ml={8} mb={8} c={downColor}>
           {changePercentage}%
@@ -41,7 +41,7 @@ export default function WellnessOverviewTrendIndicator({
     ),
     [WellnessOverviewTrend.Neutral]: (
       <Text c='dimmed' size='sm' ml={4} mb={8}>
-        /{maxValue}
+        {maxValue && `/${maxValue}`}
       </Text>
     ),
   };

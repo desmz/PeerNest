@@ -70,7 +70,6 @@ export default function ManageDiscussionsReport() {
     if (!selectedDeleteId) return;
 
     await deleteReports({ reportId: selectedDeleteId });
-    console.log(selectedDeleteId);
 
     handlers.close();
     setSelectedDeleteId(null);
@@ -229,7 +228,11 @@ export default function ManageDiscussionsReport() {
               </Flex>
             </Anchor>
           ) : (
-            <Anchor key={report.reportId} href={APP_ROUTE.HOME} underline='never' c='black'>
+            <Anchor
+              key={report.reportId}
+              href={`${APP_ROUTE.DISCUSSION}/${'discussionId' in report.target ? report.target.discussionId : report.target.discussion?.discussionId}`}
+              underline='never'
+              c='black'>
               <Flex direction='column' bg='white' bdrs='md' p='xs' gap={8} w={816}>
                 {/* HEADER */}
                 <Flex justify='space-between'>
@@ -239,7 +242,6 @@ export default function ManageDiscussionsReport() {
                       : report.target.discussion?.discussionTitle}
                   </Text>
                 </Flex>
-
                 {/* FOOTER */}
                 <Divider my='xs' />
                 <Flex>

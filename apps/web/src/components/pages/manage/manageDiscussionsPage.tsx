@@ -3,7 +3,7 @@ import { Tabs } from '@mantine/core';
 import ManageDiscussionsArchived from './manageDiscussionsArchived';
 import ManageDiscussionsReport from './manageDiscussionsReport';
 
-export default function ProfileDiscussionPage() {
+export default function ManageDiscussionsPage() {
   return (
     <Tabs defaultValue='reports' bg={'white'} w={'100%'}>
       <Tabs.List>

@@ -19,7 +19,7 @@ export const getWellnessOverviewQueryParamsSchema = z.object({
 export type TGetWellnessOverviewQueryParams = z.infer<typeof getWellnessOverviewQueryParamsSchema>;
 
 export const wellnessOverviewValueSchema = z.object({
-  average: z.int().positive(),
+  average: z.int().positive().nullable(),
   changePercentage: z.number(),
   trend: z.enum(WellnessOverviewTrend),
 });

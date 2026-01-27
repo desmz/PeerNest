@@ -8,7 +8,6 @@ import DiscussionForumPage from '@/components/pages/discussion/discussionForumPa
 import PostDetailPage from '@/components/pages/discussion/postDetailPage';
 import Error404 from '@/components/pages/error/error404';
 import HomePage from '@/components/pages/homePage';
-import ManageDiscussions from '@/components/pages/manage/manageDiscussions';
 import ManagePage from '@/components/pages/manage/managePage';
 import ProfileDiscussionPage from '@/components/pages/profile/profileDiscussionPage';
 // import ResourcePage from '@/components/pages/playground/resources';
@@ -38,7 +37,7 @@ export function App() {
 
         {/* <Route path='resources' element={<ResourcePage />} /> */}
         <Route path={APP_ROUTE.MANAGE} element={<ManagePage />} />
-        <Route path={APP_ROUTE.MANAGE_DISCUSSIONS} element={<ManageDiscussions />} />
+
         <Route path={APP_ROUTE.ACHIEVEMENT} element={<AchievementPage />} />
         <Route path={APP_ROUTE.DISCUSSION} element={<DiscussionForumPage />} />
         <Route path={APP_ROUTE.PROFILE_DISCUSSION_POST} element={<ProfileDiscussionPage />} />

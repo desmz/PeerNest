@@ -11,7 +11,7 @@ import { UserRole } from '@peernest/core';
 import { IconArrowBigUpLine, IconEmpathize, IconHammer } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
 import api from '@/lib/api-client';
@@ -35,6 +35,7 @@ async function addPerchers(data: TAddPercherRo) {
 }
 
 export default function PeerProfilePreviewPage() {
+  const navigate = useNavigate();
   const [currentUser] = useAtom(currentUserAtom);
 
   const { userId } = useParams<{ userId: string }>();
@@ -47,9 +48,11 @@ export default function PeerProfilePreviewPage() {
 
   if (!userId) return <Text c='red'>Missing userId.</Text>;
   if (query.isPending) return <Text>Loading…</Text>;
-  if (query.isError) return <Text c='red'>Failed to load profile.</Text>;
+  if (query.isError || !query.data) {
+    navigate(-1);
+  }
 
-  const userData = query.data;
+  const userData = query.data!;
 
   const subtitle = [
     userData.pronoun?.pronounName,
