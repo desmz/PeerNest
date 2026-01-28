@@ -6,7 +6,7 @@ export const APP_ROUTE = {
   SIGN_UP: '/signup',
   SIGN_IN: '/signin',
   SIGN_OUT: '/signout',
-  FORGET_PASSWORD: 'forget-password',
+  FORGET_PASSWORD: '/forget-password',
   RESET_PASSWORD: '/reset-password',
 
   // protected

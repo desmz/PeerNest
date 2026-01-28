@@ -2,6 +2,8 @@ import { Route, Routes, Navigate } from 'react-router';
 
 import Layout from '@/components/layout/layout';
 import AchievementPage from '@/components/pages/achievement/achievementPage';
+import ForgetPasswordPage from '@/components/pages/auth/forgetPasswordPage';
+import ResetPasswordPage from '@/components/pages/auth/resetPasswordPage';
 import SignInPage from '@/components/pages/auth/signInPage';
 import SignUpPage from '@/components/pages/auth/signUpPage';
 import BanPage from '@/components/pages/ban/banPage';
@@ -25,6 +27,8 @@ export function App() {
       <Route index element={<Navigate to={APP_ROUTE.HOME} />} />
       <Route path={APP_ROUTE.SIGN_UP} element={<SignUpPage />} />
       <Route path={APP_ROUTE.SIGN_IN} element={<SignInPage />} />
+      <Route path={APP_ROUTE.FORGET_PASSWORD} element={<ForgetPasswordPage />} />
+      <Route path={APP_ROUTE.RESET_PASSWORD} element={<ResetPasswordPage />} />
 
       <Route element={<Layout />}>
         <Route path={APP_ROUTE.HOME} element={<HomePage />} />
