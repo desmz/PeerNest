@@ -71,7 +71,7 @@ export class UserCommentReportRepository {
       const userCommentReport = await db
         .updateTable('userCommentReport')
         .set(userCommentReportPayload)
-        .where('userCommentReportId', '=', commentId)
+        .where('userCommentReportCommentId', '=', commentId)
         .returningAll()
         .executeTakeFirst();
 
