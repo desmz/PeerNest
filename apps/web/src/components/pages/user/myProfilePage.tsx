@@ -21,13 +21,13 @@ import {
   changePasswordRoSchema,
   GET_ME_PROFILE_URL,
   TChangePasswordRo,
-  TVerifyChangeEmailRo,
-  VERIFY_CHANGE_EMAIL_URL,
-  verifyChangeEmailRoSchema,
+  // TVerifyChangeEmailRo,
+  // VERIFY_CHANGE_EMAIL_URL,
+  // verifyChangeEmailRoSchema,
   type TGetMeProfileVo,
 } from '@peernest/contract';
 import { UserRole } from '@peernest/core';
-import { IconEdit, IconLock, IconMail } from '@tabler/icons-react';
+import { IconEdit, IconLock } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
@@ -46,14 +46,14 @@ async function changePassword(data: TChangePasswordRo) {
   await api.patch<void>(CHANGE_PASSWORD_URL, data);
 }
 
-async function verifyChangeEmail(data: TVerifyChangeEmailRo) {
-  await api.patch<void>(VERIFY_CHANGE_EMAIL_URL, data);
-}
+// async function verifyChangeEmail(data: TVerifyChangeEmailRo) {
+//   await api.patch<void>(VERIFY_CHANGE_EMAIL_URL, data);
+// }
 
 export default function MyProfilePage() {
   const [currentUser] = useAtom(currentUserAtom);
   const [changePasswordModalOpened, changePasswordModalHandler] = useDisclosure(false);
-  const [verifyChangeEmailModalOpened, verifyChangeEmailModalHandler] = useDisclosure(false);
+  // const [verifyChangeEmailModalOpened, verifyChangeEmailModalHandler] = useDisclosure(false);
 
   const query = useQuery({
     queryKey: ['users', 'me', 'profile'],
@@ -98,42 +98,42 @@ export default function MyProfilePage() {
     changePasswordMutation.mutate(data);
   };
 
-  const verifyChangeEmailForm = useForm<TVerifyChangeEmailRo>({
-    initialValues: {
-      newEmail: '',
-    },
-    validate: zod4Resolver(verifyChangeEmailRoSchema),
-  });
+  // const verifyChangeEmailForm = useForm<TVerifyChangeEmailRo>({
+  //   initialValues: {
+  //     newEmail: '',
+  //   },
+  //   validate: zod4Resolver(verifyChangeEmailRoSchema),
+  // });
 
-  const verifyChangeEmailMutation = useMutation<
-    void,
-    { error: { message: string } },
-    TVerifyChangeEmailRo
-  >({
-    mutationFn: async (data) => {
-      await verifyChangeEmail(data);
-    },
-    onSuccess: () => {
-      notifications.show({
-        message: 'Please check your mailbox to verify new email.',
-        color: 'green',
-      });
+  // const verifyChangeEmailMutation = useMutation<
+  //   void,
+  //   { error: { message: string } },
+  //   TVerifyChangeEmailRo
+  // >({
+  //   mutationFn: async (data) => {
+  //     await verifyChangeEmail(data);
+  //   },
+  //   onSuccess: () => {
+  //     notifications.show({
+  //       message: 'Please check your mailbox to verify new email.',
+  //       color: 'green',
+  //     });
 
-      verifyChangeEmailModalHandler.close();
-      verifyChangeEmailForm.reset();
-    },
-    onError: (err) => {
-      console.error(err);
-      notifications.show({
-        message: err.error.message,
-        color: 'red',
-      });
-    },
-  });
+  //     verifyChangeEmailModalHandler.close();
+  //     verifyChangeEmailForm.reset();
+  //   },
+  //   onError: (err) => {
+  //     console.error(err);
+  //     notifications.show({
+  //       message: err.error.message,
+  //       color: 'red',
+  //     });
+  //   },
+  // });
 
-  const onVerifyChangeEmailSubmit = (data: TVerifyChangeEmailRo) => {
-    verifyChangeEmailMutation.mutate(data);
-  };
+  // const onVerifyChangeEmailSubmit = (data: TVerifyChangeEmailRo) => {
+  //   verifyChangeEmailMutation.mutate(data);
+  // };
 
   if (query.isPending) return <Text>Loading…</Text>;
   if (query.isError) return <Text c='red'>Failed to load profile.</Text>;
@@ -262,14 +262,14 @@ export default function MyProfilePage() {
             </Grid.Col>
 
             <Grid.Col span={6}>
-              <Button
+              {/* <Button
                 leftSection={<IconMail size={16} />}
                 radius='md'
                 size='sm'
                 onClick={verifyChangeEmailModalHandler.open}>
                 Change Email
-              </Button>
-              <Modal
+              </Button> */}
+              {/* <Modal
                 opened={verifyChangeEmailModalOpened}
                 onClose={verifyChangeEmailModalHandler.close}
                 title={
@@ -312,7 +312,7 @@ export default function MyProfilePage() {
                     </Flex>
                   </Stack>
                 </form>
-              </Modal>
+              </Modal> */}
             </Grid.Col>
 
             {/* Display Name */}

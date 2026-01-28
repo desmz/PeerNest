@@ -58,7 +58,7 @@ export default function useAuth() {
   const handleSignOut = async () => {
     setCurrentUser(RESET);
     await signOut();
-    window.location.replace(APP_ROUTE.AUTH);
+    window.location.replace(APP_ROUTE.SIGN_IN);
   };
 
   return {

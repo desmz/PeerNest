@@ -490,8 +490,6 @@ export default function PostDetailPage() {
   });
 
   async function onSubmit(data: TCreateCommentRo) {
-    console.log('success');
-    console.log(data);
     createCommentMutation.mutate({
       ...data,
       discussionId: discussion?.discussionId ?? '',

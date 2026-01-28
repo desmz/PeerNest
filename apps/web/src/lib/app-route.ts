@@ -2,8 +2,15 @@ const USER_BASE = '/users';
 const USER_ME = `/me`;
 
 export const APP_ROUTE = {
+  // auth
+  SIGN_UP: '/signup',
+  SIGN_IN: '/signin',
+  SIGN_OUT: '/signout',
+  FORGET_PASSWORD: '/forget-password',
+  RESET_PASSWORD: '/reset-password',
+
+  // protected
   HOME: '/home',
-  AUTH: '/auth',
   USER: `${USER_BASE}`,
   USER_ME: USER_ME,
   BAN: '/ban',
