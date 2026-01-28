@@ -36,6 +36,7 @@ import {
   IconMoodSmile,
   IconShieldCheckered,
   IconUser,
+  IconUsers,
 } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
@@ -80,6 +81,11 @@ const navigationItems: (NavLinkProps & { href: string; allowedRoles?: UserRole[]
     label: 'Profile & Analytics',
     leftSection: <IconUser />,
     href: APP_ROUTE.USER_ME,
+  },
+  {
+    label: 'Peers',
+    leftSection: <IconUsers />,
+    href: APP_ROUTE.USER,
   },
   {
     label: 'Manage',
