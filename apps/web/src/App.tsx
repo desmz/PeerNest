@@ -3,6 +3,7 @@ import { Route, Routes, Navigate } from 'react-router';
 import Layout from '@/components/layout/layout';
 import AchievementPage from '@/components/pages/achievement/achievementPage';
 import SignInPage from '@/components/pages/auth/signInPage';
+import SignUpPage from '@/components/pages/auth/signUpPage';
 import BanPage from '@/components/pages/ban/banPage';
 import DiscussionForumPage from '@/components/pages/discussion/discussionForumPage';
 import PostDetailPage from '@/components/pages/discussion/postDetailPage';
@@ -22,6 +23,7 @@ export function App() {
   return (
     <Routes>
       <Route index element={<Navigate to={APP_ROUTE.HOME} />} />
+      <Route path={APP_ROUTE.SIGN_UP} element={<SignUpPage />} />
       <Route path={APP_ROUTE.SIGN_IN} element={<SignInPage />} />
 
       <Route element={<Layout />}>
