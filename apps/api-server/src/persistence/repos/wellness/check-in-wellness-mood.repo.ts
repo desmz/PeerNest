@@ -1,0 +1,161 @@
+import { Injectable } from '@nestjs/common';
+import { HttpErrorCode } from '@peernest/core';
+import {
+  dbOrTx,
+  KyselyService,
+  TInsertableCheckInWellnessMood,
+  TKyselyTransaction,
+} from '@peernest/db';
+
+import { CustomHttpException } from '@/custom.exception';
+
+@Injectable()
+export class CheckInWellnessMoodRepository {
+  private static repoName = 'CHECK_IN_WELLNESS_MOOD_REPOSITORY';
+
+  constructor(private readonly kyselyService: KyselyService) {}
+
+  //* created time is not guaranteed, make sure the objs have the created time
+  async createCheckInWellnessMoods(
+    checkInWellnessMoodObjs: TInsertableCheckInWellnessMood[],
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const checkInWellnessMoods = await db
+        .insertInto('checkInWellnessMood')
+        .values(checkInWellnessMoodObjs)
+        .returningAll()
+        .execute();
+
+      return checkInWellnessMoods;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessMoodRepository.repoName}] | Fail to create check in-wellness moods`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkInWellnessMoodObjs }
+      );
+    }
+  }
+
+  async findWellnessMoodsByCheckInId(checkId: string, tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const wellnessMoods = await db
+        .selectFrom('checkInWellnessMood')
+        .innerJoin(
+          'wellnessMood',
+          'wellnessMood.wellnessMoodId',
+          'checkInWellnessMood.checkInWellnessMoodWellnessMoodId'
+        )
+        .where('checkInWellnessMood.checkInWellnessMoodCheckInId', '=', checkId)
+        .where('wellnessMood.wellnessMoodDeletedTime', 'is', null)
+        .selectAll('wellnessMood')
+        .select('checkInWellnessMood.checkInWellnessMoodCheckInId')
+        .execute();
+
+      return wellnessMoods;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessMoodRepository.repoName}] | Fail to find check in-wellness moods by check in id`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkId }
+      );
+    }
+  }
+
+  async findWellnessMoodsByCheckInIds(checkInIds: string[], tx?: TKyselyTransaction) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      if (checkInIds.length === 0) {
+        return [];
+      }
+
+      const wellnessMoods = await db
+        .selectFrom('checkInWellnessMood')
+        .innerJoin(
+          'wellnessMood',
+          'wellnessMood.wellnessMoodId',
+          'checkInWellnessMood.checkInWellnessMoodWellnessMoodId'
+        )
+        .where('checkInWellnessMood.checkInWellnessMoodCheckInId', 'in', checkInIds)
+        .where('wellnessMood.wellnessMoodDeletedTime', 'is', null)
+        .selectAll('wellnessMood')
+        .select('checkInWellnessMood.checkInWellnessMoodCheckInId')
+        .execute();
+
+      return wellnessMoods;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessMoodRepository.repoName}] | Fail to find check in-wellness moods by check in ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, checkInIds }
+      );
+    }
+  }
+
+  // special case
+  /**
+   *
+   * @param userId
+   * @param options
+   * @param tx
+   * @returns
+   *
+   * @description interval: [`from`, `to`)
+   */
+  async getWellnessMoodsSummary(
+    userId: string,
+    options: {
+      from: Date;
+      to: Date;
+    },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { from, to } = options;
+
+      const wellnessMoodsSummary = await db
+        .selectFrom('checkInWellnessMood')
+        .innerJoin(
+          'checkIn',
+          'checkIn.checkInId',
+          'checkInWellnessMood.checkInWellnessMoodCheckInId'
+        )
+        .innerJoin(
+          'wellnessMood',
+          'wellnessMood.wellnessMoodId',
+          'checkInWellnessMood.checkInWellnessMoodWellnessMoodId'
+        )
+        .where('checkIn.checkInUserId', '=', userId)
+        .where('checkIn.checkInCheckInTime', '>=', from)
+        .where('checkIn.checkInCheckInTime', '<', to)
+        .groupBy([
+          'wellnessMood.wellnessMoodId',
+          'wellnessMood.wellnessMoodName',
+          'wellnessMood.wellnessMoodPosition',
+        ])
+        .orderBy('wellnessMood.wellnessMoodPosition', 'asc')
+        .select((eb) => [
+          'wellnessMood.wellnessMoodId',
+          'wellnessMood.wellnessMoodName',
+          'wellnessMood.wellnessMoodPosition',
+          eb.fn.count<number>('wellnessMood.wellnessMoodId').as('count'),
+        ])
+        .execute();
+
+      return wellnessMoodsSummary;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CheckInWellnessMoodRepository.repoName}] | Fail to get wellness moods summary`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error }
+      );
+    }
+  }
+}

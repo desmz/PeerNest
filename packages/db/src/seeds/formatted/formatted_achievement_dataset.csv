@@ -1,0 +1,25 @@
+achievement_id,achievement_title,achievement_description,achievement_type,achievement_is_active,achievement_achievement_category_id,achievement_criteria,achievement_position
+achm-019b9740-03be-755a-9ec2-a4c7607c5684,Newly Nested,Join PeerNest,immediate,true,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,"{""type"":""createAccount"",""event"":""accountCreated""}",0
+achm-019b9740-03bf-7146-b4af-9155d6700f96,Profile Feathered,Complete full profile setup,immediate,true,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,"{""type"":""completeProfile"",""fields"":[""displayName"",""pronoun"",""university"",""domain"",""bio"",""lookingFor"",""interests"",""personalGoals""]}",1
+achm-019b9740-03bf-7146-b4af-915681fd60cd,Nest Loyalist,Active for 30 days (visited app),periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,,2
+achm-019b9740-03bf-7146-b4af-9157bbac6684,Early Wing,Log in between 6-9 AM for 10 days,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,,3
+achm-019b9740-03bf-7146-b4af-915894a2fbc0,Night Percher,Log in between 11 PM-3 AM for 10 days,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,,4
+achm-019b9740-03bf-7146-b4af-91598018ee32,Badge Collector,Earn 10 titles,immediate,false,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,,5
+achm-019b9740-03c0-77b6-b638-5ae7b5ff4f7c,Nest Veteran,1 year of account age,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,,6
+achm-019b9740-03c0-77b6-b638-5ae8abc66493,Community Guardian,Zero rule violations for 180 days,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,,7
+achm-019b9740-03c0-77b6-b638-5ae999a2d10b,Nonstop Flyer,Active (any activity) for 7 consecutive days,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001b02b21907,,8
+achm-019b9740-03c0-77b6-b638-5aea0b4615b9,Nest Starter,Create first discussion post,immediate,true,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,"{""type"":""makeDiscussion"",""discussionCount"":1}",9
+achm-019b9740-03c0-77b6-b638-5aebcbd41bcc,Branch Contributor,Post 10 high-quality replies with 5+ likes each,periodic,true,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,"{""type"":""writeHighQualityComment"",""commentCount"":10,""minLikes"":5}",10
+achm-019b9740-03c0-77b6-b638-5aec8655c847,Helpful Wing,Receive 30 total likes across discussions,periodic,true,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,"{""type"":""receiveDiscussionLikes"",""likes"":30}",11
+achm-019b9740-03c0-77b6-b638-5aed145aa28f,Thread Keeper,Start 5 discussions with 10+ comments each,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,,12
+achm-019b9740-03c0-77b6-b638-5aeed5c78e5d,Conversation Builder,Start 15 discussions with more than 5 likes,periodic,true,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,"{""type"":""earnDiscussionLike"",""discussionCount"":15,""minLikes"":5}",13
+achm-019b9740-03c0-77b6-b638-5aeff463e38a,Community Nestmaker,Successfully report 3 genuinely harmful posts or comments,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,,14
+achm-019b9740-03c0-77b6-b638-5af031f1eefc,Rapid Responder,Comment to 10 discussions within 10 minutes of posting,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,,15
+achm-019b9740-03c0-77b6-b638-5af1399f15ab,Echo Listener,First reply to 20 discussions,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001c51bfc608,,16
+achm-019b9740-03c0-77b6-b638-5af2d7b18d2b,Mood Tracker Hatchling,Check-in for 7 consecutive days,immediate,true,achmctgr-019b973e-b48c-74e7-b48e-001d4a045cbc,"{""type"":""maintainWellnessStreak"",""streaks"":7}",17
+achm-019b9740-03c0-77b6-b638-5af3bdaa776f,Consistency Feather,Check-in for 30 consecutive days,immediate,true,achmctgr-019b973e-b48c-74e7-b48e-001d4a045cbc,"{""type"":""maintainWellnessStreak"",""streaks"":30}",18
+achm-019b9740-03c1-734d-a3b0-ead9bbac0328,Wellness Explorer,Track all different wellness factors in a check-in,immediate,true,achmctgr-019b973e-b48c-74e7-b48e-001d4a045cbc,"{""type"":""coverAllWellnessFactors"",""coverage"":""all""}",19
+achm-019b9740-03c1-734d-a3b0-eada3f909d73,Wellness Analyst,View own analytics page 10 times,immediate,false,achmctgr-019b973e-b48c-74e7-b48e-001d4a045cbc,,20
+achm-019b9740-03c1-734d-a3b0-eadb78b7cb65,Slow & Steady,60-day tracking streak,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001d4a045cbc,,21
+achm-019b9740-03c1-734d-a3b0-eadcd00a7039,Self-Care Sparrow,Complete all Personal Care tags in a check-in,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001d4a045cbc,,22
+achm-019b9740-03c1-734d-a3b0-eadd44a8605c,Restful Percher,Track sleep time for 15 days,periodic,false,achmctgr-019b973e-b48c-74e7-b48e-001d4a045cbc,,23

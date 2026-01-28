@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   TCreateCommentRo,
   TCreateCommentVo,
@@ -21,6 +22,7 @@ import {
   generateUserCommentLikeId,
   generateUserCommentReportId,
   HttpErrorCode,
+  NOTIFICATION_EVENT,
   UploadType,
   UserCommentReportStatus,
   UserRole,
@@ -30,7 +32,8 @@ import { ClsService } from 'nestjs-cls';
 import { CustomHttpException } from '@/custom.exception';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
-import { getFullStorageUrl } from '@/features/attachment/utils';
+import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
+import { TCommentReplyEvent } from '@/features/domain/events';
 import {
   CommentRepository,
   UserCommentLikeRepository,
@@ -44,6 +47,7 @@ export class CommentService {
   constructor(
     @InjectStorageAdapter() private readonly storageAdapter: StorageAdapter,
     private readonly clsService: ClsService<IClsStore>,
+    private eventEmitter: EventEmitter2,
 
     private readonly commentRepository: CommentRepository,
     private readonly discussionRepository: DiscussionRepository,
@@ -106,6 +110,18 @@ export class CommentService {
       commentContent: commentContent,
       commentCreatedTime: now,
     });
+
+    // don't need to notify yourself
+    if (userId !== parentComment.commentAuthorId) {
+      const commentReplyEvent: TCommentReplyEvent = {
+        replyCommentId: reply.commentId,
+        parentCommentId: parentComment.commentId,
+        discussionId: reply.commentDiscussionId,
+        replierId: userId,
+        parentAuthorId: parentComment.commentAuthorId,
+      };
+      this.eventEmitter.emit(NOTIFICATION_EVENT.COMMENT_REPLY, commentReplyEvent);
+    }
 
     return this.getCommentAgg(reply.commentId, userId);
   }
@@ -314,15 +330,12 @@ export class CommentService {
                 //   ? getFullStorageUrl(discussion.author?.userAvatarUrl)
                 //   : '',
               },
-              attachmentUrl: discussion.attachmentPath
-                ? await this.storageAdapter.getPreviewUrl(
-                    StorageAdapter.getBucket(UploadType.Discussion),
-                    discussion.attachmentPath,
-                    undefined,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    { 'Content-Type': discussion.attachmentMimetype }
-                  )
-                : null,
+              attachmentUrl: await getAttachmentPreviewUrl(
+                this.storageAdapter,
+                UploadType.Discussion,
+                discussion.attachmentPath,
+                discussion.attachmentMimetype
+              ),
             }
           : null,
         parentComment: parentComment
@@ -331,9 +344,6 @@ export class CommentService {
               author: {
                 ...parentComment.author,
                 userAvatarUrl: getFullStorageUrl(parentComment.author!.userAvatarUrl),
-                // userAvatarUrl: parentComment.author?.userAvatarUrl
-                //   ? getFullStorageUrl(parentComment.author?.userAvatarUrl)
-                //   : '',
               },
             }
           : null,

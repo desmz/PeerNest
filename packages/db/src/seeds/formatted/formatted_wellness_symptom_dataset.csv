@@ -1,0 +1,53 @@
+wellness_symptom_id,wellness_symptom_name,wellness_symptom_position,wellness_symptom_wellness_symptom_category_id
+wnst-019b5593-ae5b-794f-aa8c-66ad7679ca31,anxiety,0,wnstctgr-019b5573-5f01-71b3-ab53-b3c7a472efea
+wnst-019b5593-ae5c-7742-9b5f-33c5b4b1dd58,depression,1,wnstctgr-019b5573-5f01-71b3-ab53-b3c7a472efea
+wnst-019b5593-ae5c-7742-9b5f-33c6e5971c68,dissociation,2,wnstctgr-019b5573-5f01-71b3-ab53-b3c7a472efea
+wnst-019b5593-ae5c-7742-9b5f-33c79255e838,irritability,3,wnstctgr-019b5573-5f01-71b3-ab53-b3c7a472efea
+wnst-019b5593-ae5c-7742-9b5f-33c8bff60b2b,mood swings,4,wnstctgr-019b5573-5f01-71b3-ab53-b3c7a472efea
+wnst-019b5593-ae5c-7742-9b5f-33c99eacb81a,sense of dread,5,wnstctgr-019b5573-5f01-71b3-ab53-b3c7a472efea
+wnst-019b5593-ae5c-7742-9b5f-33ca01d62829,difficulty concentrating,6,wnstctgr-019b5573-5f02-7c01-bd64-ffa36e5df81b
+wnst-019b5593-ae5c-7742-9b5f-33cbdc72960c,brain fog,7,wnstctgr-019b5573-5f02-7c01-bd64-ffa36e5df81b
+wnst-019b5593-ae5c-7742-9b5f-33cc7780ac5a,forgetfulness,8,wnstctgr-019b5573-5f02-7c01-bd64-ffa36e5df81b
+wnst-019b5593-ae5c-7742-9b5f-33cd3f63bc62,pessimism,9,wnstctgr-019b5573-5f02-7c01-bd64-ffa36e5df81b
+wnst-019b5593-ae5c-7742-9b5f-33ce99834b8b,racing thoughts,10,wnstctgr-019b5573-5f02-7c01-bd64-ffa36e5df81b
+wnst-019b5593-ae5c-7742-9b5f-33cf8b781595,heartburn,11,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d05620c10d,indigestion,12,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d1c69d26e1,nausea,13,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d2225f4f95,stomachache,14,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d32b272040,stomach cramps,15,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d4fb86a26f,abdominal pain,16,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d50cc688a8,acid reflux,17,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d6e758885a,bloating,18,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d7a83e22c5,constipation,19,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d87b4d0f5b,diarrhoea,20,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33d9bd8abb76,flatulence,21,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33dad0f3a1aa,low appetite,22,wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f
+wnst-019b5593-ae5c-7742-9b5f-33db464dfcd7,headache,23,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33dcaae26656,arthritis,24,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33ddbb69e6cc,back (lower) pain,25,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33def43bd5c6,back (upper) pain,26,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33df37c28c4f,chest pain,27,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e0b9e49e84,earache,28,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e1399bee0c,eye pain,29,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e261a113e2,generalised pain,30,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e36e70d3c2,jaw pain,31,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e4aa641e7b,joint pain,32,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e5ea7859c4,migraine pain,33,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e65cec922b,neck pain,34,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e7748b879d,toothache,35,wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853
+wnst-019b5593-ae5c-7742-9b5f-33e8d850b148,drowsiness,36,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33e9935739b8,fatigue,37,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33ea9c22220c,insomnia,38,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33ebf86b0464,blurred vision,39,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33ecf56da91c,brain zaps,40,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33ed73e5969a,dizziness,41,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33ee553818d6,dry mouth,42,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33ef29b01422,heart palpitations,43,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f09f0ba840,high blood pressure,44,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f142ec4560,low blood pressure,45,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f2c28491c7,night sweats,46,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f36072cc7d,seizure,47,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f436f5aede,swelling,48,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f5168d65c5,tinnitus,49,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f6d8d4aec0,tremors,50,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b
+wnst-019b5593-ae5c-7742-9b5f-33f7f31b421c,vertigo,51,wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b

@@ -1,0 +1,6 @@
+wellness_symptom_category_id,wellness_symptom_category_name,wellness_symptom_category_position
+wnstctgr-019b5573-5f01-71b3-ab53-b3c7a472efea,mental,0
+wnstctgr-019b5573-5f02-7c01-bd64-ffa36e5df81b,cognitive,1
+wnstctgr-019b5573-5f02-7c01-bd64-ffa42222510f,digestive,2
+wnstctgr-019b5573-5f02-7c01-bd64-ffa5b334d853,physical pain,3
+wnstctgr-019b5573-5f02-7c01-bd64-ffa6ea7ff77b,physical other,4

@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
+  TArchiveDiscussionParams,
   TDeleteDiscussionParams,
   TEditDiscussionParams,
   TEditDiscussionRo,
   TEditDiscussionVo,
+  TFindArchivedDiscussionsQueryParams,
+  TFindArchivedDiscussionVo,
   TFindDiscussionCommentsParams,
   TFindDiscussionCommentsQueryParams,
   TFindDiscussionCommentsVo,
@@ -14,11 +17,13 @@ import {
   TGetDiscussionVo,
   TLikeDiscussionParams,
   TReportDiscussionParams,
+  TUnarchiveDiscussionParams,
   TUnlikeDiscussionParams,
   type TCreateDiscussionRo,
   type TCreateDiscussionVo,
 } from '@peernest/contract';
 import {
+  ALLOWED_DELETE_DISCUSSION_USER_ROLE,
   AttachmentStatus,
   DiscussionStatus,
   generateDiscussionAttachmentId,
@@ -41,9 +46,10 @@ import {
 import { ClsService } from 'nestjs-cls';
 
 import { CustomHttpException } from '@/custom.exception';
+import { AchievementService } from '@/features/achievement/achievement.service';
 import StorageAdapter from '@/features/attachment/plugins/adapter';
 import { InjectStorageAdapter } from '@/features/attachment/plugins/storage-provider';
-import { getFullStorageUrl } from '@/features/attachment/utils';
+import { getAttachmentPreviewUrl, getFullStorageUrl } from '@/features/attachment/utils';
 import { AttachmentRepository } from '@/persistence/repos/attachment';
 import { CommentRepository } from '@/persistence/repos/comment';
 import {
@@ -73,7 +79,9 @@ export class DiscussionService {
     private readonly interestRepository: InterestRepository,
     private readonly personalGoalRepository: PersonalGoalRepository,
     private readonly userDiscussionLikeRepository: UserDiscussionLikeRepository,
-    private readonly userDiscussionReportRepository: UserDiscussionReportRepository
+    private readonly userDiscussionReportRepository: UserDiscussionReportRepository,
+
+    private readonly achievementService: AchievementService
   ) {}
 
   async createDiscussion(createDiscussionRo: TCreateDiscussionRo): Promise<TCreateDiscussionVo> {
@@ -167,6 +175,8 @@ export class DiscussionService {
         );
       }
     });
+
+    this.achievementService.evaluateImmediate(userId, ['makeDiscussion']);
 
     return this.getDiscussionAgg(discussionId, userId, attachment);
   }
@@ -388,13 +398,11 @@ export class DiscussionService {
 
     let attachmentUrl: string | null = null;
     if (attachment) {
-      const bucket = StorageAdapter.getBucket(UploadType.Discussion);
-      attachmentUrl = await this.storageAdapter.getPreviewUrl(
-        bucket,
+      attachmentUrl = await getAttachmentPreviewUrl(
+        this.storageAdapter,
+        UploadType.Discussion,
         attachment.attachmentPath,
-        undefined,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        { 'Content-Type': attachment.attachmentMimetype }
+        attachment.attachmentMimetype
       );
     }
 
@@ -417,6 +425,7 @@ export class DiscussionService {
     const { discussionId } = deleteDiscussionParams;
 
     const userId = this.clsService.get('user.id');
+    const userRole = this.clsService.get('user.role');
 
     const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
       statuses: [DiscussionStatus.Active],
@@ -429,9 +438,12 @@ export class DiscussionService {
       );
     }
 
-    if (discussion.discussionAuthorId !== userId) {
+    if (
+      discussion.discussionAuthorId !== userId &&
+      !ALLOWED_DELETE_DISCUSSION_USER_ROLE.includes(userRole)
+    ) {
       throw new CustomHttpException(
-        `You are not the author of this discussion`,
+        `You must be the author or have the role of ${ALLOWED_DELETE_DISCUSSION_USER_ROLE.join(', ')} to delete the discussion`,
         HttpErrorCode.RESTRICTED_RESOURCE
       );
     }
@@ -440,6 +452,7 @@ export class DiscussionService {
     await this.discussionRepository.updateDiscussionById(
       {
         discussionStatus: DiscussionStatus.Deleted,
+        discussionDeletedBy: userId,
         discussionDeletedTime: now,
       },
       discussionId
@@ -592,15 +605,12 @@ export class DiscussionService {
             ...author,
             userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
           },
-          attachmentUrl: attachmentPath
-            ? await this.storageAdapter.getPreviewUrl(
-                StorageAdapter.getBucket(UploadType.Discussion),
-                attachmentPath,
-                undefined,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                { 'Content-Type': attachmentMimetype }
-              )
-            : null,
+          attachmentUrl: await getAttachmentPreviewUrl(
+            this.storageAdapter,
+            UploadType.Discussion,
+            attachmentPath,
+            attachmentMimetype
+          ),
         })
       )
     );
@@ -609,5 +619,101 @@ export class DiscussionService {
       count: formattedDiscussionAggs.length,
       discussions: formattedDiscussionAggs,
     } as TFindDiscussionsVo;
+  }
+
+  async archiveDiscussion(archiveDiscussionParams: TArchiveDiscussionParams): Promise<void> {
+    const { discussionId } = archiveDiscussionParams;
+
+    const userId = this.clsService.get('user.id');
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active, DiscussionStatus.Archived],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionStatus === DiscussionStatus.Archived) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} is already in ${DiscussionStatus.Archived} mode`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    const now = new Date();
+    await this.discussionRepository.updateDiscussionById(
+      {
+        discussionStatus: DiscussionStatus.Archived,
+        discussionArchivedTime: now,
+        discussionArchivedBy: userId,
+      },
+      discussionId
+    );
+  }
+
+  async unarchiveDiscussion(unarchiveDiscussionParams: TUnarchiveDiscussionParams): Promise<void> {
+    const { discussionId } = unarchiveDiscussionParams;
+
+    const discussion = await this.discussionRepository.findDiscussionById(discussionId, {
+      statuses: [DiscussionStatus.Active, DiscussionStatus.Archived],
+    });
+
+    if (!discussion) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} does not exist`,
+        HttpErrorCode.NOT_FOUND
+      );
+    }
+
+    if (discussion.discussionStatus === DiscussionStatus.Active) {
+      throw new CustomHttpException(
+        `Discussion ${discussionId} is not in ${DiscussionStatus.Archived} mode`,
+        HttpErrorCode.CONFLICT
+      );
+    }
+
+    await this.discussionRepository.updateDiscussionById(
+      {
+        discussionStatus: DiscussionStatus.Active,
+        discussionArchivedTime: null,
+        discussionArchivedBy: null,
+      },
+      discussionId
+    );
+  }
+
+  async findArchivedDiscussions(
+    findArchivedDiscussionsQueryParams: TFindArchivedDiscussionsQueryParams
+  ): Promise<TFindArchivedDiscussionVo> {
+    const discussionAggs = await this.discussionRepository.findArchivedDiscussions(
+      findArchivedDiscussionsQueryParams
+    );
+
+    const formattedDiscussions = await Promise.all(
+      discussionAggs.map(
+        async ({ attachmentMimetype, attachmentPath, author, ...otherDiscussionAgg }) => ({
+          ...otherDiscussionAgg,
+          author: {
+            ...author,
+            userAvatarUrl: getFullStorageUrl(author.userAvatarUrl),
+          },
+          attachmentUrl: await getAttachmentPreviewUrl(
+            this.storageAdapter,
+            UploadType.Discussion,
+            attachmentPath,
+            attachmentMimetype
+          ),
+        })
+      )
+    );
+
+    return {
+      count: formattedDiscussions.length,
+      discussions: formattedDiscussions,
+    } as TFindArchivedDiscussionVo;
   }
 }

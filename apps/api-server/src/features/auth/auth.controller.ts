@@ -40,7 +40,7 @@ export class AuthController {
 
   @Public()
   @HttpCode(HttpStatus.CREATED)
-  @Post('/signup')
+  @Post('signup')
   async signup(
     @Body(new ZodValidationPipe(signUpRoSchema)) userRo: TSignUpRo,
     @Res({ passthrough: true }) res: Response

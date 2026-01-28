@@ -86,6 +86,7 @@
       "unaccent",
       "mantine",
       "presign",
+      "unban",
     ],
     "peacock.remoteColor": "#374d6a",
     "github.copilot.enable": {

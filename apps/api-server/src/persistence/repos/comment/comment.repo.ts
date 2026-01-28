@@ -118,6 +118,38 @@ export class CommentRepository {
     }
   }
 
+  async findCommentsByIds(
+    ids: string[],
+    options?: { includedDeleted?: boolean },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { includedDeleted } = options || {};
+
+      if (ids.length === 0) {
+        return [];
+      }
+
+      let query = db.selectFrom('comment').selectAll().where('comment.commentId', 'in', ids);
+
+      if (!includedDeleted) {
+        query = query.where('commentDeletedTime', 'is', null);
+      }
+
+      const comments = await query.execute();
+
+      return comments;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CommentRepository.repoName}] | Fail to find comments by ids`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, ids, options }
+      );
+    }
+  }
+
   async findCommentAggByIds(
     ids: {
       commentId: string;
@@ -263,6 +295,56 @@ export class CommentRepository {
           )
           .as('is_reported'),
       ]);
+  }
+
+  async findUserCommentsByLikeCount(
+    userId: string,
+    likeCount: number,
+    options?: { minOrMax: 'min' | 'max' },
+    tx?: TKyselyTransaction
+  ) {
+    try {
+      const db = dbOrTx(this.kyselyService.db, tx);
+
+      const { minOrMax = 'min' } = options || {};
+
+      let query = db
+        .selectFrom('comment')
+        .innerJoin(
+          'userCommentLike',
+          'userCommentLike.userCommentLikeCommentId',
+          'comment.commentId'
+        )
+        .where('comment.commentAuthorId', '=', userId)
+        .where('comment.commentDeletedTime', 'is', null)
+        .select((eb) => [
+          'comment.commentId',
+          eb.fn.count<number>('userCommentLike.userCommentLikeId').as('commentLikeCount'),
+        ])
+        .groupBy('comment.commentId');
+
+      query = query.having((eb) => {
+        const commentLikeCount = eb.fn.count<number>('userCommentLike.userCommentLikeId');
+
+        if (minOrMax === 'max') {
+          return eb(commentLikeCount, '<=', likeCount);
+        } else {
+          return eb(commentLikeCount, '>=', likeCount);
+        }
+      });
+
+      query = query.orderBy('comment.commentCreatedTime', 'asc');
+
+      const comments = await query.execute();
+
+      return comments;
+    } catch (error) {
+      throw new CustomHttpException(
+        `[${CommentRepository.repoName}] | Fail to find user comments by like counts`,
+        HttpErrorCode.INTERNAL_SERVER_ERROR,
+        { error, userId, likeCount, options }
+      );
+    }
   }
 
   // special case

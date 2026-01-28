@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Newly Nested",
+    "type": "createAccount",
+    "event": "accountCreated"
+  },
+  {
+    "title": "Profile Feathered",
+    "type": "completeProfile",
+    "fields": [
+      "displayName",
+      "pronoun",
+      "university",
+      "domain",
+      "bio",
+      "lookingFor",
+      "interests",
+      "personalGoals"
+    ]
+  },
+  {
+    "title": "Nest Starter",
+    "type": "makeDiscussion",
+    "discussionCount": 1
+  },
+  {
+    "title": "Branch Contributor",
+    "type": "writeHighQualityComment",
+    "commentCount": 10,
+    "minLikes": 5
+  },
+  {
+    "title": "Helpful Wing",
+    "type": "receiveDiscussionLikes",
+    "likes": 30
+  },
+  {
+    "title": "Conversation Builder",
+    "type": "earnDiscussionLike",
+    "discussionCount": 15,
+    "minLikes": 5
+  },
+  {
+    "title": "Mood Tracker Hatchling",
+    "type": "maintainWellnessStreak",
+    "streaks": 7
+  },
+  {
+    "title": "Consistency Feather",
+    "type": "maintainWellnessStreak",
+    "streaks": 30
+  },
+  {
+    "title": "Wellness Explorer",
+    "type": "coverAllWellnessFactors",
+    "coverage": "all"
+  }
+]

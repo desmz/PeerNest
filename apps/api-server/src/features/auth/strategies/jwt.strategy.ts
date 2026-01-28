@@ -7,6 +7,7 @@ import { Strategy } from 'passport-jwt';
 
 import { AuthConfig, type TAuthConfig } from '@/configs/auth.config';
 import { CustomHttpException } from '@/custom.exception';
+import { BanActionRepository } from '@/persistence/repos/ban';
 import { UserRepository } from '@/persistence/repos/user';
 import { IClsStore } from '@/types/cls';
 
@@ -19,6 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
     @AuthConfig() authConfig: TAuthConfig,
     private readonly clsService: ClsService<IClsStore>,
 
+    private readonly banActionRepository: BanActionRepository,
     private readonly userRepository: UserRepository
   ) {
     super({
@@ -47,11 +49,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN_STRATEG
       );
     }
 
-    // todo: add ban check
+    const now = new Date();
+    const isBanned = await this.banActionRepository.validateIfUserIsBanned(userId, now);
+
+    if (isBanned) {
+      throw new CustomHttpException(
+        `You have been banned or suspended`,
+        HttpErrorCode.FREEZE_ACCOUNT
+      );
+    }
 
     this.clsService.set('user.email', user.userEmail);
     this.clsService.set('user.id', user.userId);
     this.clsService.set('user.role', user.roleName as UserRole);
+    this.clsService.set('user.roleRank', parseInt(user.roleRank));
 
     return pickUserMe(user);
   }

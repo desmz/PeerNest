@@ -6,7 +6,7 @@ import { CustomHttpException } from '@/custom.exception';
 
 @Injectable()
 export class DomainRepository {
-  private static repoName = 'PRONOUN_REPOSITORY';
+  private static repoName = 'DOMAIN_REPOSITORY';
 
   constructor(private readonly kyselyService: KyselyService) {}
 

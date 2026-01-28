@@ -6,5 +6,6 @@ export interface IClsStore extends ClsStore {
     id: string;
     email: string;
     role: UserRole;
+    roleRank: number;
   };
 }
