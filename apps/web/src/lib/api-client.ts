@@ -38,9 +38,9 @@ api.interceptors.response.use(
 );
 
 function redirectToLogin() {
-  const exemptPaths = [APP_ROUTE.AUTH];
+  const exemptPaths = [APP_ROUTE.SIGN_IN];
   if (!exemptPaths.some((path) => window.location.pathname.startsWith(path))) {
-    window.location.href = APP_ROUTE.AUTH;
+    window.location.href = APP_ROUTE.SIGN_IN;
   }
 }
 

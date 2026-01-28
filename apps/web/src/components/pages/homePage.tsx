@@ -1,18 +1,29 @@
 import { envObj } from '@peernest/config/static';
 import { useAtom } from 'jotai';
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router';
 
 import useAuth from '@/features/auth/hooks/use-auth';
 import { currentUserAtom } from '@/features/user/atoms/current-user.atom';
+import { APP_ROUTE } from '@/lib/app-route';
 
 export default function HomePage() {
-  const { signOut, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   const [currentUser] = useAtom(currentUserAtom);
 
-  async function onSignOutClick() {
-    await signOut();
-  }
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate(APP_ROUTE.DISCUSSION);
+    }
+  }, [isLoading, currentUser, navigate]);
+
+  // async function onSignOutClick() {
+  //   await signOut();
+  // }
 
   return (
     <>
@@ -22,7 +33,7 @@ export default function HomePage() {
         </title>
       </Helmet>
       <div>
-        <p>This is a home page</p>
+        {/* <p>This is a home page</p>
         <br />
         <p>{envObj.PUBLIC_ORIGIN}</p>
         <br />
@@ -39,7 +50,7 @@ export default function HomePage() {
         )}
         <button type='button' onClick={onSignOutClick} disabled={isLoading}>
           Sign out
-        </button>
+        </button> */}
       </div>
     </>
   );
