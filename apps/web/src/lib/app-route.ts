@@ -12,12 +12,12 @@ export const APP_ROUTE = {
   // protected
   HOME: '/home',
   USER: `${USER_BASE}`,
-  USER_ME: USER_ME,
   BAN: '/ban',
   MANAGE: '/manage',
-  ACHIEVEMENT: '/achievement',
-  DISCUSSION: '/discussions',
-  PROFILE_DISCUSSION_POST: 'me/profile',
-  MANAGE_DISCUSSIONS: '/manage/discussions',
+  USER_ME: USER_ME,
+  PROFILE_DISCUSSION_POST: `${USER_ME}/discussions`,
   WELLNESS: `${USER_ME}/wellness`,
+  ACHIEVEMENTS: `${USER_ME}/achievements`,
+  DISCUSSION: '/discussions',
+  MANAGE_DISCUSSIONS: '/manage/discussions',
 };

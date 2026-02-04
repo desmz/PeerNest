@@ -34,9 +34,11 @@ export function App() {
         <Route path={APP_ROUTE.HOME} element={<HomePage />} />
         <Route path={APP_ROUTE.USER} element={<PeerMatchingPage />} />
 
-        {/* My profile */}
+        {/* Profile & Analytics */}
         <Route path={APP_ROUTE.USER_ME} element={<MyProfilePage />} />
         <Route path={`${APP_ROUTE.USER_ME}/edit`} element={<MyProfileEditingPage />} />
+        <Route path={APP_ROUTE.PROFILE_DISCUSSION_POST} element={<ProfileDiscussionPage />} />
+        <Route path={APP_ROUTE.ACHIEVEMENTS} element={<AchievementPage />} />
 
         {/* Peer profile preview */}
         <Route path={`${APP_ROUTE.USER}/:userId`} element={<PeerProfilePreviewPage />} />
@@ -44,9 +46,7 @@ export function App() {
         {/* <Route path='resources' element={<ResourcePage />} /> */}
         <Route path={APP_ROUTE.MANAGE} element={<ManagePage />} />
 
-        <Route path={APP_ROUTE.ACHIEVEMENT} element={<AchievementPage />} />
         <Route path={APP_ROUTE.DISCUSSION} element={<DiscussionForumPage />} />
-        <Route path={APP_ROUTE.PROFILE_DISCUSSION_POST} element={<ProfileDiscussionPage />} />
         <Route path={`${APP_ROUTE.DISCUSSION}/:discussionId`} element={<PostDetailPage />} />
 
         {/* Mood and wellness page */}

@@ -52,6 +52,7 @@ import api from '@/lib/api-client';
 import { APP_ROUTE } from '@/lib/app-route';
 
 import AppShellHeaderDiscussions from './components/appShellHeaderDiscussions';
+import AppShellHeaderMe from './components/appShellHeaderMe';
 import AppShellHeaderPeerMatching from './components/appShellHeaderPeerMatching';
 import AppShellHeaderWellness from './components/appShellHeaderWellness';
 import classes from './globalAppShell.module.css';
@@ -64,6 +65,7 @@ const headerMap = {
   [APP_ROUTE.USER]: <AppShellHeaderPeerMatching />,
   [APP_ROUTE.WELLNESS]: <AppShellHeaderWellness />,
   [APP_ROUTE.DISCUSSION]: <AppShellHeaderDiscussions />,
+  [APP_ROUTE.USER_ME]: <AppShellHeaderMe />,
 };
 
 const navigationItems: (NavLinkProps & { href: string; allowedRoles?: UserRole[] })[] = [

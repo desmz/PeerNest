@@ -98,7 +98,15 @@ export default function AchievementPage() {
   };
 
   return (
-    <Flex mx='auto' maw={640} direction={'column'} w={'100%'} bg={'white'} p={16} bdrs={'lg'}>
+    <Flex
+      my={24}
+      mx='auto'
+      maw={640}
+      direction={'column'}
+      w={'100%'}
+      bg={'white'}
+      p={16}
+      bdrs={'lg'}>
       <Stack p={'sm'} gap='md' w={608}>
         <Flex gap={'lg'}>
           <Text c='blue' fw={550} size='sm'>
