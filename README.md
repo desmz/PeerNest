@@ -189,9 +189,9 @@ pnpm many:serve
 - [x] Discussion forum pages (list, detail, create)
 - [x] Wellness tracking pages (check-in form, dashboard)
 - [x] Achievements page
-- [x] Notifications UI
-- [x] Counselor management pages
 - [x] Moderation pages (manage discussions, manage reports)
+- [ ] Notifications UI
+- [ ] Counselor management pages
 - [ ] Direct messaging / chat UI
 - [ ] UI design completion (several pages incomplete)
 - [ ] Admin panel
